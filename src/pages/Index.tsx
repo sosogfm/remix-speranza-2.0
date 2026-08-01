@@ -224,11 +224,12 @@ const Index = () => {
             className="text-center mb-16"
           >
             <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-3">
-              Browse By
+              Navegue por
             </p>
             <h2 className="font-serif text-4xl md:text-5xl text-foreground">
-              Collections
+              Categorias
             </h2>
+
           </motion.div>
 
           {/* Asymmetric grid layout */}
