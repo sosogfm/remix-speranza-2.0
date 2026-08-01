@@ -74,7 +74,7 @@ export const Footer = () => {
             <ul className="space-y-3">
               <li>
                 <Link
-                  to="/products"
+                  to="/produtos"
                   className="text-sm text-background/60 hover:text-background transition-colors duration-300"
                 >
                   Shop All
@@ -82,7 +82,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/about"
+                  to="/sobre"
                   className="text-sm text-background/60 hover:text-background transition-colors duration-300"
                 >
                   Our Story
@@ -90,7 +90,7 @@ export const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/cart"
+                  to="/sacola"
                   className="text-sm text-background/60 hover:text-background transition-colors duration-300"
                 >
                   Shopping Bag

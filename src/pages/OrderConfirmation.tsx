@@ -46,7 +46,7 @@ const OrderConfirmation = () => {
         <div className="container-narrow py-28 text-center space-y-6">
           <h1 className="font-serif text-4xl">Pedido não encontrado</h1>
           <Button asChild className="rounded-none">
-            <Link to="/products">Voltar à loja</Link>
+            <Link to="/produtos">Voltar à loja</Link>
           </Button>
         </div>
       </Layout>
@@ -117,7 +117,7 @@ const OrderConfirmation = () => {
 
           <div className="text-center">
             <Button asChild variant="outline" className="rounded-none px-8">
-              <Link to="/products">Continuar comprando</Link>
+              <Link to="/produtos">Continuar comprando</Link>
             </Button>
           </div>
         </div>

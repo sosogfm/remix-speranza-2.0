@@ -70,7 +70,7 @@ const Checkout = () => {
         <div className="container-narrow py-28 text-center space-y-6">
           <h1 className="font-serif text-4xl">Sua sacola está vazia</h1>
           <Button asChild className="rounded-none px-8 text-sm tracking-[0.1em] uppercase">
-            <Link to="/products">Ver peças</Link>
+            <Link to="/produtos">Ver peças</Link>
           </Button>
         </div>
       </Layout>
@@ -148,7 +148,7 @@ const Checkout = () => {
     <Layout>
       <div className="container-full py-6 border-b border-border">
         <Link
-          to="/cart"
+          to="/sacola"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="w-4 h-4" /> Voltar para a sacola

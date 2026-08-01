@@ -34,7 +34,7 @@ const Cart = () => {
               size="lg"
               className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase btn-premium"
             >
-              <Link to="/products">
+              <Link to="/produtos">
                 Start Shopping
                 <ArrowRight className="ml-3 w-4 h-4" />
               </Link>
@@ -50,7 +50,7 @@ const Cart = () => {
       {/* Breadcrumb */}
       <div className="container-full py-6 border-b border-border">
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <Link to="/products" className="hover:text-foreground transition-colors">
+          <Link to="/produtos" className="hover:text-foreground transition-colors">
             Shop
           </Link>
           <span className="text-border">/</span>
@@ -138,7 +138,7 @@ const Cart = () => {
               </div>
 
               <Link
-                to="/products"
+                to="/produtos"
                 className="inline-flex items-center gap-2 mt-8 text-sm tracking-[0.1em] uppercase text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowRight className="w-4 h-4 rotate-180" />
@@ -187,7 +187,7 @@ const Cart = () => {
                   size="lg"
                   className="w-full rounded-none py-6 text-sm tracking-[0.15em] uppercase btn-premium"
                 >
-                  <Link to="/checkout">
+                  <Link to="/finalizar">
                     Proceed to Checkout
                     <ArrowRight className="ml-3 w-4 h-4" />
                   </Link>

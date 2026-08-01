@@ -25,7 +25,7 @@ const NotFound = () => {
                 <Link to="/">Return Home</Link>
               </Button>
               <Button asChild variant="outline" className="rounded-sm">
-                <Link to="/products">Browse Products</Link>
+                <Link to="/produtos">Ver as peças</Link>
               </Button>
             </div>
           </motion.div>

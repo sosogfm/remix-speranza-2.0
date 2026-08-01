@@ -80,7 +80,7 @@ const Index = () => {
                 size="lg"
                 className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase btn-premium"
               >
-                <Link to="/products">
+                <Link to="/produtos">
                   Shop Now
                   <ArrowRight className="ml-3 w-4 h-4" />
                 </Link>
@@ -175,7 +175,7 @@ const Index = () => {
               </h2>
             </motion.div>
             <Link
-              to="/products"
+              to="/produtos"
               className="hidden md:flex items-center gap-3 text-sm font-medium tracking-[0.1em] uppercase text-muted-foreground hover:text-foreground transition-colors group"
             >
               View All
@@ -195,7 +195,7 @@ const Index = () => {
               variant="outline"
               className="rounded-none px-8 py-5 text-sm tracking-[0.15em] uppercase"
             >
-              <Link to="/products">View All Products</Link>
+              <Link to="/produtos">Ver todas as peças</Link>
             </Button>
           </div>
         </div>
@@ -296,7 +296,7 @@ const Index = () => {
               size="lg"
               className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase"
             >
-              <Link to="/about">
+              <Link to="/sobre">
                 Read Our Story
                 <ArrowRight className="ml-3 w-4 h-4" />
               </Link>

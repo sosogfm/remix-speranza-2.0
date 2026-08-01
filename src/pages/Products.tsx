@@ -158,7 +158,7 @@ const Products = () => {
                 Nenhuma peça encontrada com esses filtros.
               </p>
               <Button asChild variant="outline" className="rounded-none">
-                <Link to="/products">Ver todas as peças</Link>
+                <Link to="/produtos">Ver todas as peças</Link>
               </Button>
             </div>
           ) : (
