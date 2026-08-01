@@ -421,6 +421,7 @@ const Admin = () => {
           <Tabs defaultValue="products">
             <TabsList className="rounded-none">
               <TabsTrigger value="products" className="rounded-none">Peças e estoque</TabsTrigger>
+              <TabsTrigger value="categories" className="rounded-none">Categorias</TabsTrigger>
               <TabsTrigger value="orders" className="rounded-none">Pedidos</TabsTrigger>
               <TabsTrigger value="workshops" className="rounded-none">Oficinas</TabsTrigger>
               <TabsTrigger value="events" className="rounded-none">Eventos privativos</TabsTrigger>
@@ -431,6 +432,10 @@ const Admin = () => {
             <TabsContent value="products" className="pt-4">
               <AdminProducts />
             </TabsContent>
+            <TabsContent value="categories" className="pt-4">
+              <AdminCategories />
+            </TabsContent>
+
             <TabsContent value="orders" className="pt-4">
               <AdminOrders />
             </TabsContent>
