@@ -286,23 +286,28 @@ export const AdminNewProduct = () => {
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs">Categoria</Label>
-              <Select
-                value={form.categoryId}
-                onValueChange={(v) => set("categoryId", v)}
-              >
-                <SelectTrigger className="rounded-none h-9">
-                  <SelectValue placeholder="Escolha" />
-                </SelectTrigger>
-                <SelectContent className="rounded-none">
-                  {categories.map((c: any) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label className="text-xs">Categorias</Label>
+              <div className="border border-border p-3 max-h-40 overflow-auto space-y-1.5">
+                {categories.map((c: any) => (
+                  <label key={c.id} className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={form.categoryIds.includes(c.id)}
+                      onChange={(e) =>
+                        set(
+                          "categoryIds",
+                          e.target.checked
+                            ? [...form.categoryIds, c.id]
+                            : form.categoryIds.filter((id: string) => id !== c.id)
+                        )
+                      }
+                    />
+                    {c.name}
+                  </label>
+                ))}
+              </div>
             </div>
+
             <div className="space-y-1">
               <Label className="text-xs">Preço (R$)</Label>
               <Input
