@@ -82,7 +82,9 @@ const ProductDetail = () => {
     );
   }
 
-  const collection = collections.find((c) => c.slug === product.collection);
+  const collection = product.collectionName
+    ? { name: product.collectionName, slug: product.collection }
+    : undefined;
   const relatedProducts = allProducts
     .filter((p) => p.collection === product.collection && p.id !== product.id)
     .slice(0, 3);
