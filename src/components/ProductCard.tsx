@@ -92,7 +92,8 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
             onClick={handleWishlistToggle}
             aria-label={inWishlist ? "Remover dos favoritos" : "Adicionar aos favoritos"}
             className={cn(
-              "absolute top-5 right-5 p-2.5 rounded-full transition-all duration-500",
+              "absolute right-5 p-2.5 rounded-full transition-all duration-500 z-10",
+              discountPct != null && discountPct > 0 ? "top-16" : "top-5",
               "bg-background/90 backdrop-blur-md hover:bg-background shadow-sm",
               "md:opacity-0 md:translate-y-2 md:group-hover:opacity-100 md:group-hover:translate-y-0",
               inWishlist && "md:opacity-100 md:translate-y-0"
