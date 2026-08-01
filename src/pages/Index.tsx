@@ -97,7 +97,9 @@ const Index = () => {
       </section>
 
       {/* Featured Collection */}
-      <section className={featuredCollection ? "py-20 md:py-28" : "hidden"}>
+      {featuredCollection && (
+      <section className="py-20 md:py-28">
+
         <div className="container-full">
           <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
 
