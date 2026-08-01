@@ -70,9 +70,9 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
             alt={product.name}
             loading="lazy"
             className={cn(
-              "w-full h-full object-cover transition-all duration-[1s] ease-out",
+              "w-full h-full object-cover transition-transform duration-700 ease-out",
               hasSecondImage
-                ? "group-hover:opacity-0 group-hover:scale-105"
+                ? "group-hover:-translate-x-full"
                 : "group-hover:scale-105"
             )}
           />
@@ -82,11 +82,10 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
               src={product.images[1]}
               alt={`${product.name} — outra vista`}
               loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover opacity-0 scale-105 transition-all duration-[1s] ease-out group-hover:opacity-100 group-hover:scale-100"
+              className="absolute inset-0 w-full h-full object-cover translate-x-full transition-transform duration-700 ease-out group-hover:translate-x-0"
             />
           )}
 
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
           {/* Favoritar */}
           <button
