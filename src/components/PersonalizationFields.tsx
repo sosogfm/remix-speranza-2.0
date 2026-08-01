@@ -30,16 +30,9 @@ export const PersonalizationFields = ({ fields, values, onChange }: Props) => {
   const [uploadingId, setUploadingId] = useState<string | null>(null);
 
   const handleUpload = async (field: PersonalizationField, file: File) => {
-    if (!user) {
-      toast({
-        title: "Entre para enviar uma imagem",
-        description: "É preciso estar logada para anexar arquivos.",
-        variant: "destructive",
-      });
-      return;
-    }
     setUploadingId(field.id);
-    const path = `${user.id}/${Date.now()}-${file.name.replace(/\s+/g, "-")}`;
+    const folder = user ? user.id : "guest";
+    const path = `${folder}/${Date.now()}-${file.name.replace(/\s+/g, "-")}`;
     const { error } = await supabase.storage
       .from("personalization-uploads")
       .upload(path, file, { upsert: false });

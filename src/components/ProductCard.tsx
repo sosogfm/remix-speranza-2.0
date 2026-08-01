@@ -26,15 +26,11 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!user) {
-      toast({
-        title: "Entre para favoritar",
-        description: "Faça login para salvar suas peças favoritas.",
-      });
-      navigate("/auth");
-      return;
-    }
     toggle(product.id);
+    toast({
+      title: inWishlist ? "Removido dos favoritos" : "Salvo nos favoritos",
+      description: product.name,
+    });
   };
 
   return (

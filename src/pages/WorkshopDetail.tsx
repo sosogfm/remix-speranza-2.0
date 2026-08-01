@@ -17,6 +17,7 @@ import {
   RadioGroupItem,
 } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
+import { saveGuestRegistration } from "@/lib/guestOrders";
 
 const dietOptions = ["Nenhuma", "Vegetariano", "Vegano", "Sem glúten"];
 
@@ -64,10 +65,6 @@ const WorkshopDetail = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) {
-      navigate(`/auth?redirect=${encodeURIComponent(`/oficinas/${workshop.slug}`)}`);
-      return;
-    }
     if (!fullName.trim() || !phone.trim()) {
       toast({
         title: "Preencha nome e telefone",
@@ -78,19 +75,19 @@ const WorkshopDetail = () => {
     }
 
     setSubmitting(true);
-    const { error } = await supabase.from("workshop_registrations").insert({
-      workshop_id: workshop.id,
-      user_id: user.id,
-      full_name: fullName.trim(),
-      instagram: instagram.trim() || null,
-      phone: phone.trim(),
-      dietary_restriction: diet,
-      wants_glazing: glazing,
-      notes: notes.trim() || null,
-      is_waitlist: waitlist,
-      status: waitlist ? "waitlist" : "pending",
-
-    });
+    const { data: registrationId, error } = await supabase.rpc(
+      "register_workshop_guest",
+      {
+        _workshop_id: workshop.id,
+        _full_name: fullName.trim(),
+        _phone: phone.trim(),
+        _instagram: instagram.trim() || null,
+        _dietary_restriction: diet,
+        _wants_glazing: glazing,
+        _notes: notes.trim() || null,
+        _is_waitlist: waitlist,
+      }
+    );
     setSubmitting(false);
 
     if (error) {
@@ -100,6 +97,20 @@ const WorkshopDetail = () => {
         variant: "destructive",
       });
       return;
+    }
+
+    if (!user) {
+      saveGuestRegistration({
+        id: String(registrationId ?? crypto.randomUUID()),
+        workshop_id: workshop.id,
+        workshop_title: workshop.title,
+        workshop_date: workshop.eventDate ?? null,
+        full_name: fullName.trim(),
+        phone: phone.trim(),
+        is_waitlist: waitlist,
+        total_cents: total,
+        created_at: new Date().toISOString(),
+      });
     }
 
     toast({
@@ -196,23 +207,8 @@ const WorkshopDetail = () => {
                 </p>
               )}
 
-              {!user ? (
-                <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    Entre na sua conta para garantir sua vaga.
-                  </p>
-                  <Button
-                    className="w-full rounded-none h-12 text-sm tracking-[0.15em] uppercase"
-                    onClick={() =>
-                      navigate(
-                        `/auth?redirect=${encodeURIComponent(`/oficinas/${workshop.slug}`)}`
-                      )
-                    }
-                  >
-                    Entrar para inscrever
-                  </Button>
-                </div>
-              ) : (
+              {(
+
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="space-y-2">
                     <Label htmlFor="nome">Seu nome *</Label>
