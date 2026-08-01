@@ -18,7 +18,7 @@ export const CollectionCard = ({ collection, index = 0, variant = "default" }: C
       transition={{ duration: 0.8, delay: index * 0.12, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       <Link
-        to={`/products?collection=${collection.slug}`}
+        to={`/produtos?colecao=${collection.slug}`}
         className="group block relative"
       >
         <div
