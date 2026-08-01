@@ -5,6 +5,7 @@ import { Layout } from "@/components/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { formatBRL } from "@/data/products";
 import { Button } from "@/components/ui/button";
+import { getGuestOrder } from "@/lib/guestOrders";
 
 const methodLabels: Record<string, string> = {
   pix: "Pix (QR Code)",
@@ -16,7 +17,9 @@ const methodLabels: Record<string, string> = {
 const OrderConfirmation = () => {
   const { id } = useParams<{ id: string }>();
 
-  const { data, isLoading } = useQuery({
+  const local = getGuestOrder(id);
+
+  const { data: remote, isLoading } = useQuery({
     queryKey: ["order", id],
     enabled: !!id,
     queryFn: async () => {
@@ -30,7 +33,9 @@ const OrderConfirmation = () => {
     },
   });
 
-  if (isLoading) {
+  const data: any = remote ?? local;
+
+  if (isLoading && !local) {
     return (
       <Layout>
         <div className="container-narrow py-28 text-center text-muted-foreground">
