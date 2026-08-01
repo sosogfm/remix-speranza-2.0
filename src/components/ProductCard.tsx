@@ -31,7 +31,7 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
         title: "Entre para favoritar",
         description: "Faça login para salvar suas peças favoritas.",
       });
-      navigate("/entrar");
+      navigate("/auth");
       return;
     }
     toggle(product.id);
