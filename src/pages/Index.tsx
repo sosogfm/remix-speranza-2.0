@@ -1,18 +1,19 @@
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, ArrowDown, Instagram } from "lucide-react";
+import { ArrowRight, Instagram } from "lucide-react";
 import { useRef } from "react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { CollectionCard } from "@/components/CollectionCard";
 import { ReviewsMarquee } from "@/components/ReviewsMarquee";
-import { collections } from "@/data/products";
-import { useProducts } from "@/hooks/useProducts";
+import { useProducts, useCollections } from "@/hooks/useProducts";
+import { siteImages } from "@/data/images";
 import { site } from "@/data/site";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const { data: allProducts = [] } = useProducts();
+  const { data: collections = [] } = useCollections();
   const newProducts = allProducts.filter((p) => p.new);
   const latestProducts = allProducts.slice(0, 4);
   const displayedCollections = collections.slice(0, 6);
@@ -26,15 +27,7 @@ const Index = () => {
   const heroImageY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
-  // Instagram placeholder images
-  const instagramImages = [
-    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=400&q=80",
-    "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400&q=80",
-    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80",
-    "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80",
-    "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&q=80",
-    "https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400&q=80",
-  ];
+  const instagramImages = siteImages.instagramFallback;
 
   return (
     <Layout>
@@ -42,10 +35,11 @@ const Index = () => {
       <section ref={heroRef} className="relative h-[100svh] -mt-16 md:-mt-20 overflow-hidden">
         <motion.div className="absolute inset-0" style={{ y: heroImageY }}>
           <img
-            src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920&q=80"
+            src={siteImages.homeHero}
             alt="Porcelana artesanal Speranza Ateliê"
             className="w-full h-[120%] object-cover animate-ken-burns"
           />
+
           <div className="absolute inset-0 bg-gradient-to-b from-charcoal/30 via-charcoal/10 to-charcoal/50" />
         </motion.div>
 
@@ -98,29 +92,15 @@ const Index = () => {
             </div>
 
           </motion.div>
-
-          {/* Scroll indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.5 }}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-          >
-            <span className="text-[10px] tracking-[0.3em] uppercase text-white/50">Role</span>
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <ArrowDown className="w-4 h-4 text-white/50" />
-            </motion.div>
-          </motion.div>
         </motion.div>
+
       </section>
 
       {/* Featured Collection */}
-      <section className="py-20 md:py-28">
+      <section className={featuredCollection ? "py-20 md:py-28" : "hidden"}>
         <div className="container-full">
           <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
+
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}

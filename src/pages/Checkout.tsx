@@ -54,6 +54,7 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("pix");
   const [installments, setInstallments] = useState("1");
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { data: shipping, isFetching: loadingShipping } = useShippingQuote(
     form.postalCode,
@@ -64,8 +65,26 @@ const Checkout = () => {
   const giftWrapCents = isGift ? GIFT_WRAP_CENTS : 0;
   const totalCents = subtotalCents + shippingCents + giftWrapCents;
 
-  const set = (field: string, value: string) =>
+  const errorKeyOf: Record<string, string> = {
+    postalCode: "cep",
+    addressLine: "address",
+    addressNumber: "number",
+  };
+
+  const set = (field: string, value: string) => {
     setForm((f) => ({ ...f, [field]: value }));
+    const key = errorKeyOf[field] ?? field;
+    setErrors((e) => (e[key] ? { ...e, [key]: "" } : e));
+  };
+
+  const errClass = (key: string) =>
+    errors[key] ? "border-destructive focus-visible:ring-destructive" : "";
+
+  const FieldError = ({ name }: { name: string }) =>
+    errors[name] ? (
+      <p className="text-xs text-destructive">{errors[name]}</p>
+    ) : null;
+
 
   if (items.length === 0) {
     return (
@@ -80,19 +99,51 @@ const Checkout = () => {
     );
   }
 
+  const validate = () => {
+    const e: Record<string, string> = {};
+    const digits = (v: string) => onlyDigits(v);
+
+    if (form.name.trim().length < 3) e.name = "Informe seu nome completo.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim()))
+      e.email = "E-mail inválido. Exemplo: nome@email.com";
+    if (digits(form.phone).length < 10)
+      e.phone = "Telefone inválido. Inclua o DDD, ex.: (49) 99999-9999";
+    const doc = digits(form.document);
+    if (doc.length !== 11 && doc.length !== 14)
+      e.document = "CPF deve ter 11 dígitos e CNPJ, 14.";
+    if (digits(form.postalCode).length !== 8)
+      e.cep = "CEP inválido. Use 8 dígitos, ex.: 89560-000";
+    else if (!shipping)
+      e.cep = "Ainda não conseguimos calcular o frete para este CEP.";
+    if (!form.neighborhood.trim()) e.neighborhood = "Informe o bairro.";
+    if (!form.addressLine.trim()) e.address = "Informe a rua/avenida.";
+    if (!form.addressNumber.trim()) e.number = "Informe o número.";
+    if (!form.city.trim()) e.city = "Informe a cidade.";
+    if (!/^[A-Z]{2}$/.test(form.state.trim())) e.state = "Use a sigla do estado, ex.: SC";
+
+    return e;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (onlyDigits(form.postalCode).length !== 8 || !shipping) {
+    const found = validate();
+    setErrors(found);
+    const firstKey = Object.keys(found)[0];
+    if (firstKey) {
+      const el = document.getElementById(firstKey);
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      el?.focus({ preventScroll: true });
       toast({
-        title: "CEP inválido",
-        description: "Informe um CEP válido para calcularmos o frete.",
+        title: "Confira os dados destacados",
+        description: found[firstKey],
         variant: "destructive",
       });
       return;
     }
 
     setSubmitting(true);
+
     try {
       const { data, error } = await supabase.rpc("place_guest_order", {
         _order: {
@@ -190,26 +241,30 @@ const Checkout = () => {
             Finalizar pedido
           </motion.h1>
 
-          <form onSubmit={handleSubmit} className="grid lg:grid-cols-12 gap-12 lg:gap-16">
+          <form onSubmit={handleSubmit} noValidate className="grid lg:grid-cols-12 gap-12 lg:gap-16">
             <div className="lg:col-span-7 space-y-10">
               <div className="space-y-5">
                 <h2 className="font-serif text-2xl">Seus dados</h2>
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="name">Nome completo</Label>
-                    <Input id="name" required className="rounded-none" value={form.name} onChange={(e) => set("name", e.target.value)} />
+                    <Input id="name" className={`rounded-none ${errClass("name")}`} value={form.name} onChange={(e) => set("name", e.target.value)} />
+                    <FieldError name="name" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">E-mail</Label>
-                    <Input id="email" type="email" required className="rounded-none" value={form.email} onChange={(e) => set("email", e.target.value)} />
+                    <Input id="email" type="email" className={`rounded-none ${errClass("email")}`} value={form.email} onChange={(e) => set("email", e.target.value)} />
+                    <FieldError name="email" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">Telefone / WhatsApp</Label>
-                    <Input id="phone" required className="rounded-none" value={form.phone} onChange={(e) => set("phone", e.target.value)} />
+                    <Input id="phone" className={`rounded-none ${errClass("phone")}`} value={form.phone} onChange={(e) => set("phone", e.target.value)} />
+                    <FieldError name="phone" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="document">CPF ou CNPJ</Label>
-                    <Input id="document" required className="rounded-none" value={form.document} onChange={(e) => set("document", e.target.value)} />
+                    <Input id="document" className={`rounded-none ${errClass("document")}`} value={form.document} onChange={(e) => set("document", e.target.value)} />
+                    <FieldError name="document" />
                   </div>
                 </div>
               </div>
@@ -219,7 +274,8 @@ const Checkout = () => {
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="cep">CEP</Label>
-                    <Input id="cep" required maxLength={9} className="rounded-none" value={form.postalCode} onChange={(e) => set("postalCode", e.target.value)} />
+                    <Input id="cep" maxLength={9} className={`rounded-none ${errClass("cep")}`} value={form.postalCode} onChange={(e) => set("postalCode", e.target.value)} />
+                    <FieldError name="cep" />
                     {loadingShipping && (
                       <p className="text-xs text-muted-foreground">Calculando frete…</p>
                     )}
@@ -231,15 +287,18 @@ const Checkout = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="neighborhood">Bairro</Label>
-                    <Input id="neighborhood" required className="rounded-none" value={form.neighborhood} onChange={(e) => set("neighborhood", e.target.value)} />
+                    <Input id="neighborhood" className={`rounded-none ${errClass("neighborhood")}`} value={form.neighborhood} onChange={(e) => set("neighborhood", e.target.value)} />
+                    <FieldError name="neighborhood" />
                   </div>
                   <div className="space-y-2 sm:col-span-2">
                     <Label htmlFor="address">Endereço</Label>
-                    <Input id="address" required className="rounded-none" value={form.addressLine} onChange={(e) => set("addressLine", e.target.value)} />
+                    <Input id="address" className={`rounded-none ${errClass("address")}`} value={form.addressLine} onChange={(e) => set("addressLine", e.target.value)} />
+                    <FieldError name="address" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="number">Número</Label>
-                    <Input id="number" required className="rounded-none" value={form.addressNumber} onChange={(e) => set("addressNumber", e.target.value)} />
+                    <Input id="number" className={`rounded-none ${errClass("number")}`} value={form.addressNumber} onChange={(e) => set("addressNumber", e.target.value)} />
+                    <FieldError name="number" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="complement">Complemento</Label>
@@ -247,12 +306,15 @@ const Checkout = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="city">Cidade</Label>
-                    <Input id="city" required className="rounded-none" value={form.city} onChange={(e) => set("city", e.target.value)} />
+                    <Input id="city" className={`rounded-none ${errClass("city")}`} value={form.city} onChange={(e) => set("city", e.target.value)} />
+                    <FieldError name="city" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="state">Estado (UF)</Label>
-                    <Input id="state" required maxLength={2} className="rounded-none uppercase" value={form.state} onChange={(e) => set("state", e.target.value.toUpperCase())} />
+                    <Input id="state" maxLength={2} className={`rounded-none uppercase ${errClass("state")}`} value={form.state} onChange={(e) => set("state", e.target.value.toUpperCase())} />
+                    <FieldError name="state" />
                   </div>
+
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="notes">Observações do pedido</Label>

@@ -3,7 +3,6 @@ import { Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   Product,
-  collections,
   formatBRL,
   installmentLabel,
   activeSaleCents,
@@ -28,12 +27,17 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
   const { toast } = useToast();
   const navigate = useNavigate();
   const inWishlist = isInWishlist(product.id);
-  const collection = collections.find((c) => c.id === product.collection);
+  const collectionName = product.collectionName;
   const hasSecondImage = product.images.length > 1;
   const outOfStock = product.stock <= 0;
   const sale = activeSaleCents(product);
   const price = effectivePriceCents(product);
   const lowStock = isLowStock(product);
+  const discountPct =
+    sale != null && product.priceCents
+      ? Math.round((1 - sale / product.priceCents) * 100)
+      : null;
+
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -66,9 +70,9 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
             alt={product.name}
             loading="lazy"
             className={cn(
-              "w-full h-full object-cover transition-all duration-[1s] ease-out",
+              "w-full h-full object-cover transition-transform duration-700 ease-out",
               hasSecondImage
-                ? "group-hover:opacity-0 group-hover:scale-105"
+                ? "group-hover:-translate-x-full"
                 : "group-hover:scale-105"
             )}
           />
@@ -78,18 +82,18 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
               src={product.images[1]}
               alt={`${product.name} — outra vista`}
               loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover opacity-0 scale-105 transition-all duration-[1s] ease-out group-hover:opacity-100 group-hover:scale-100"
+              className="absolute inset-0 w-full h-full object-cover translate-x-full transition-transform duration-700 ease-out group-hover:translate-x-0"
             />
           )}
 
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
           {/* Favoritar */}
           <button
             onClick={handleWishlistToggle}
             aria-label={inWishlist ? "Remover dos favoritos" : "Adicionar aos favoritos"}
             className={cn(
-              "absolute top-5 right-5 p-2.5 rounded-full transition-all duration-500",
+              "absolute right-5 p-2.5 rounded-full transition-all duration-500 z-10",
+              discountPct != null && discountPct > 0 ? "top-16" : "top-5",
               "bg-background/90 backdrop-blur-md hover:bg-background shadow-sm",
               "md:opacity-0 md:translate-y-2 md:group-hover:opacity-100 md:group-hover:translate-y-0",
               inWishlist && "md:opacity-100 md:translate-y-0"
@@ -115,11 +119,6 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
                 Personalizável
               </span>
             )}
-            {sale != null && (
-              <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-primary text-primary-foreground">
-                Oferta
-              </span>
-            )}
             {lowStock && (
               <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-background text-foreground border border-border">
                 Últimas unidades
@@ -132,6 +131,13 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
             )}
           </div>
 
+          {/* Faixa de oferta */}
+          {discountPct != null && discountPct > 0 && (
+            <span className="absolute top-5 right-0 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] uppercase bg-primary text-primary-foreground shadow-sm">
+              -{discountPct}%
+            </span>
+          )}
+
           <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center pb-6 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-100">
             <span className="px-6 py-2.5 text-xs font-medium tracking-[0.15em] uppercase bg-background/95 backdrop-blur-md text-foreground shadow-lg">
               Ver peça
@@ -141,11 +147,12 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
 
         {/* Informações */}
         <div className="space-y-2">
-          {collection && (
+          {collectionName && (
             <p className="text-[11px] font-medium tracking-[0.2em] uppercase text-muted-foreground/70 transition-colors duration-300 group-hover:text-primary">
-              {collection.name}
+              {collectionName}
             </p>
           )}
+
 
           <h3 className="font-serif text-xl text-foreground transition-colors duration-300 group-hover:text-primary leading-snug">
             {product.name}

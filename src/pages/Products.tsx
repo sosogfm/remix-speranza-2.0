@@ -3,8 +3,8 @@ import { useSearchParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
-import { collections, activeSaleCents, effectivePriceCents, isLowStock } from "@/data/products";
-import { useProducts } from "@/hooks/useProducts";
+import { activeSaleCents, effectivePriceCents, isLowStock } from "@/data/products";
+import { useProducts, useCollections } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -27,11 +27,16 @@ const Products = () => {
   const [onlyLowStock, setOnlyLowStock] = useState(false);
 
   const { data: products = [], isLoading } = useProducts();
+  const { data: collections = [] } = useCollections();
 
   const filtered = useMemo(() => {
     let list = [...products];
     if (activeCollection !== "all") {
-      list = list.filter((p) => p.collection === activeCollection);
+      list = list.filter(
+        (p) =>
+          p.collection === activeCollection ||
+          (p.collectionSlugs ?? []).includes(activeCollection)
+      );
     }
     if (onlyPersonalizable) list = list.filter((p) => p.isPersonalizable);
     if (onlyInStock) list = list.filter((p) => p.stock > 0);

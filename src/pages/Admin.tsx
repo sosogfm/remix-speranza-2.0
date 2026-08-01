@@ -40,6 +40,8 @@ import {
 import {
   AdminNewProduct,
   AdminProductImages,
+  AdminProductCategories,
+  AdminCategories,
 } from "@/components/admin/AdminProductsExtras";
 
 
@@ -118,6 +120,7 @@ const AdminProducts = () => {
                 {savingId === p.id && <Loader2 className="w-3 h-3 animate-spin" />}
               </div>
               <AdminProductImages productId={p.id} />
+              <AdminProductCategories productId={p.id} primaryCategoryId={p.category_id} />
               {p.is_personalizable && <AdminPersonalizationEditor productId={p.id} />}
               <AdminProductSale product={p} />
               <details className="mt-3">
@@ -418,6 +421,7 @@ const Admin = () => {
           <Tabs defaultValue="products">
             <TabsList className="rounded-none">
               <TabsTrigger value="products" className="rounded-none">Peças e estoque</TabsTrigger>
+              <TabsTrigger value="categories" className="rounded-none">Categorias</TabsTrigger>
               <TabsTrigger value="orders" className="rounded-none">Pedidos</TabsTrigger>
               <TabsTrigger value="workshops" className="rounded-none">Oficinas</TabsTrigger>
               <TabsTrigger value="events" className="rounded-none">Eventos privativos</TabsTrigger>
@@ -428,6 +432,10 @@ const Admin = () => {
             <TabsContent value="products" className="pt-4">
               <AdminProducts />
             </TabsContent>
+            <TabsContent value="categories" className="pt-4">
+              <AdminCategories />
+            </TabsContent>
+
             <TabsContent value="orders" className="pt-4">
               <AdminOrders />
             </TabsContent>

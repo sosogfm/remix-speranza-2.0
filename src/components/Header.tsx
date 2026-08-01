@@ -6,7 +6,7 @@ import { useWishlistIds } from "@/hooks/useWishlist";
 import { useAuth } from "@/hooks/useAuth";
 
 import { CartIcon } from "@/components/CartIcon";
-import { collections } from "@/data/products";
+import { useCollections } from "@/hooks/useProducts";
 import { site } from "@/data/site";
 import {
   NavigationMenu,
@@ -25,6 +25,7 @@ export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { data: wishlistIds = [] } = useWishlistIds();
+  const { data: collections = [] } = useCollections();
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

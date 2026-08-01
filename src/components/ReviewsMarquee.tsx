@@ -27,7 +27,7 @@ export const ReviewsMarquee = () => {
             return (
               <figure
                 key={`${r.id}-${i}`}
-                className="w-48 md:w-56 shrink-0 border border-border bg-background rounded-lg overflow-hidden"
+                className="shrink-0 border border-border bg-background rounded-xl overflow-hidden"
               >
                 <img
                   src={url}
@@ -37,8 +37,9 @@ export const ReviewsMarquee = () => {
                       : "Avaliação de cliente do Speranza Ateliê"
                   }
                   loading="lazy"
-                  className="w-full h-auto object-contain"
+                  className="h-56 md:h-64 w-auto object-contain"
                 />
+
                 {r.authorName && (
                   <figcaption className="px-4 py-3 text-xs text-muted-foreground">
                     {r.authorName}

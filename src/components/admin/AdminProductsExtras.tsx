@@ -180,7 +180,7 @@ export const AdminNewProduct = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [form, setForm] = useState({
     name: "",
-    categoryId: "",
+    categoryIds: [] as string[],
     price: "",
     stock: "1",
     description: "",
@@ -206,7 +206,7 @@ export const AdminNewProduct = () => {
         .insert({
           name: form.name.trim(),
           slug: `${slugify(form.name)}-${Date.now().toString().slice(-4)}`,
-          category_id: form.categoryId || null,
+          category_id: form.categoryIds[0] || null,
           price_cents: Math.round(Number(form.price.replace(",", ".") || 0) * 100),
           stock_quantity: Number(form.stock) || 0,
           description: form.description.trim() || null,
@@ -232,9 +232,16 @@ export const AdminNewProduct = () => {
         if (imgError) throw imgError;
       }
 
+      if (form.categoryIds.length) {
+        const { error: catError } = await supabase.from("product_categories").insert(
+          form.categoryIds.map((id) => ({ product_id: data.id, category_id: id }))
+        );
+        if (catError) throw catError;
+      }
+
       setForm({
         name: "",
-        categoryId: "",
+        categoryIds: [],
         price: "",
         stock: "1",
         description: "",
@@ -286,23 +293,28 @@ export const AdminNewProduct = () => {
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs">Categoria</Label>
-              <Select
-                value={form.categoryId}
-                onValueChange={(v) => set("categoryId", v)}
-              >
-                <SelectTrigger className="rounded-none h-9">
-                  <SelectValue placeholder="Escolha" />
-                </SelectTrigger>
-                <SelectContent className="rounded-none">
-                  {categories.map((c: any) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label className="text-xs">Categorias</Label>
+              <div className="border border-border p-3 max-h-40 overflow-auto space-y-1.5">
+                {categories.map((c: any) => (
+                  <label key={c.id} className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={form.categoryIds.includes(c.id)}
+                      onChange={(e) =>
+                        set(
+                          "categoryIds",
+                          e.target.checked
+                            ? [...form.categoryIds, c.id]
+                            : form.categoryIds.filter((id: string) => id !== c.id)
+                        )
+                      }
+                    />
+                    {c.name}
+                  </label>
+                ))}
+              </div>
             </div>
+
             <div className="space-y-1">
               <Label className="text-xs">Preço (R$)</Label>
               <Input
@@ -403,6 +415,206 @@ export const AdminNewProduct = () => {
           </Button>
         </div>
       )}
+    </div>
+  );
+};
+
+/* ------------------------------------- Categorias de uma peça existente */
+
+export const AdminProductCategories = ({
+  productId,
+  primaryCategoryId,
+}: {
+  productId: string;
+  primaryCategoryId?: string | null;
+}) => {
+  const { toast } = useToast();
+  const qc = useQueryClient();
+  const { data: categories = [] } = useCategories();
+
+  const { data: links = [] } = useQuery({
+    queryKey: ["admin-product-categories", productId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("product_categories")
+        .select("category_id")
+        .eq("product_id", productId);
+      if (error) throw error;
+      return data as any[];
+    },
+  });
+
+  const selected = new Set<string>([
+    ...(primaryCategoryId ? [primaryCategoryId] : []),
+    ...links.map((l: any) => l.category_id),
+  ]);
+
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["admin-product-categories", productId] });
+    qc.invalidateQueries({ queryKey: ["admin-products"] });
+    qc.invalidateQueries({ queryKey: ["products"] });
+  };
+
+  const toggle = async (categoryId: string, checked: boolean) => {
+    if (checked) {
+      const { error } = await supabase
+        .from("product_categories")
+        .insert({ product_id: productId, category_id: categoryId });
+      if (error && !error.message.includes("duplicate")) {
+        toast({ title: "Erro", description: error.message, variant: "destructive" });
+        return;
+      }
+      if (!primaryCategoryId) {
+        await supabase.from("products").update({ category_id: categoryId }).eq("id", productId);
+      }
+    } else {
+      const { error } = await supabase
+        .from("product_categories")
+        .delete()
+        .eq("product_id", productId)
+        .eq("category_id", categoryId);
+      if (error) {
+        toast({ title: "Erro", description: error.message, variant: "destructive" });
+        return;
+      }
+      if (primaryCategoryId === categoryId) {
+        await supabase.from("products").update({ category_id: null }).eq("id", productId);
+      }
+    }
+    invalidate();
+  };
+
+  return (
+    <div className="mt-3 space-y-2">
+      <Label className="text-[11px] uppercase tracking-[0.15em]">Categorias</Label>
+      <div className="flex flex-wrap gap-x-6 gap-y-2">
+        {categories.map((c: any) => (
+          <label key={c.id} className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={selected.has(c.id)}
+              onChange={(e) => toggle(c.id, e.target.checked)}
+            />
+            {c.name}
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ------------------------------------------------- Gerenciar categorias */
+
+export const AdminCategories = () => {
+  const { toast } = useToast();
+  const qc = useQueryClient();
+  const [name, setName] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["admin-categories-full"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("id,name,slug,description")
+        .order("name");
+      if (error) throw error;
+      return data as any[];
+    },
+  });
+
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["admin-categories-full"] });
+    qc.invalidateQueries({ queryKey: ["admin-categories"] });
+    qc.invalidateQueries({ queryKey: ["categories"] });
+    qc.invalidateQueries({ queryKey: ["products"] });
+  };
+
+  const create = async () => {
+    if (!name.trim()) return;
+    setSaving(true);
+    const { error } = await supabase.from("categories").insert({
+      name: name.trim(),
+      slug: slugify(name),
+      display_order: 0,
+    });
+    setSaving(false);
+    if (error) {
+      toast({ title: "Erro ao criar", description: error.message, variant: "destructive" });
+      return;
+    }
+    setName("");
+    invalidate();
+    toast({ title: "Categoria criada" });
+  };
+
+  const rename = async (id: string, value: string) => {
+    if (!value.trim()) return;
+    const { error } = await supabase
+      .from("categories")
+      .update({ name: value.trim() })
+      .eq("id", id);
+    if (error) {
+      toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
+      return;
+    }
+    invalidate();
+  };
+
+  const remove = async (id: string) => {
+    const { error } = await supabase.from("categories").delete().eq("id", id);
+    if (error) {
+      toast({ title: "Erro ao excluir", description: error.message, variant: "destructive" });
+      return;
+    }
+    invalidate();
+  };
+
+  return (
+    <div className="border border-border p-6 space-y-5">
+      <div>
+        <p className="font-serif text-xl">Categorias</p>
+        <p className="text-sm text-muted-foreground">
+          Aparecem em ordem alfabética no site. Uma peça pode estar em mais de uma.
+        </p>
+      </div>
+
+      <div className="flex gap-2">
+        <Input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Nova categoria"
+          className="rounded-none h-10 max-w-xs"
+        />
+        <Button
+          onClick={create}
+          disabled={saving}
+          className="rounded-none h-10 text-xs tracking-[0.15em] uppercase"
+        >
+          {saving && <Loader2 className="w-3 h-3 mr-2 animate-spin" />}
+          Adicionar
+        </Button>
+      </div>
+
+      <div className="space-y-2">
+        {categories.map((c: any) => (
+          <div key={c.id} className="flex items-center gap-3">
+            <Input
+              defaultValue={c.name}
+              onBlur={(e) => rename(c.id, e.target.value)}
+              className="rounded-none h-10 max-w-sm"
+            />
+            <button
+              type="button"
+              onClick={() => remove(c.id)}
+              className="p-2 text-muted-foreground hover:text-destructive"
+              aria-label={`Excluir ${c.name}`}
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
