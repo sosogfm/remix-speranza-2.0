@@ -3,7 +3,6 @@ import { Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   Product,
-  collections,
   formatBRL,
   installmentLabel,
   activeSaleCents,
@@ -28,12 +27,17 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
   const { toast } = useToast();
   const navigate = useNavigate();
   const inWishlist = isInWishlist(product.id);
-  const collection = collections.find((c) => c.id === product.collection);
+  const collectionName = product.collectionName;
   const hasSecondImage = product.images.length > 1;
   const outOfStock = product.stock <= 0;
   const sale = activeSaleCents(product);
   const price = effectivePriceCents(product);
   const lowStock = isLowStock(product);
+  const discountPct =
+    sale != null && product.priceCents
+      ? Math.round((1 - sale / product.priceCents) * 100)
+      : null;
+
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
