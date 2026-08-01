@@ -30,6 +30,7 @@ import {
   AdminPersonalizationEditor,
   AdminWorkshops,
 } from "@/components/admin/AdminPanels";
+import { AdminPrivateEvents } from "@/components/admin/AdminWorkshopExtras";
 
 
 const orderStatuses = [
@@ -371,6 +372,7 @@ const Admin = () => {
               <TabsTrigger value="products" className="rounded-none">Peças e estoque</TabsTrigger>
               <TabsTrigger value="orders" className="rounded-none">Pedidos</TabsTrigger>
               <TabsTrigger value="workshops" className="rounded-none">Oficinas</TabsTrigger>
+              <TabsTrigger value="events" className="rounded-none">Eventos privativos</TabsTrigger>
               <TabsTrigger value="shipping" className="rounded-none">Frete</TabsTrigger>
             </TabsList>
             <TabsContent value="products" className="pt-8">
@@ -381,6 +383,9 @@ const Admin = () => {
             </TabsContent>
             <TabsContent value="workshops" className="pt-8">
               <AdminWorkshops />
+            </TabsContent>
+            <TabsContent value="events" className="pt-8">
+              <AdminPrivateEvents />
             </TabsContent>
             <TabsContent value="shipping" className="pt-8">
               <AdminShipping />

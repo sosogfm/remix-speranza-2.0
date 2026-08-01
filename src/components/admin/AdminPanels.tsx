@@ -20,6 +20,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import {
+  AdminQuestionBlocks,
+  WorkshopBlockPicker,
+} from "@/components/admin/AdminWorkshopExtras";
 
 /** Editor dos campos de personalização de uma peça */
 export const AdminPersonalizationEditor = ({ productId }: { productId: string }) => {
@@ -230,13 +234,15 @@ export const AdminWorkshops = () => {
 
   return (
     <div className="space-y-6">
+      <AdminQuestionBlocks />
       {(workshops as any[]).map((w) => (
         <div key={w.id} className="border border-border p-6 space-y-4">
           <div className="flex flex-wrap justify-between gap-4">
             <div>
               <p className="font-serif text-xl">{w.title}</p>
               <p className="text-sm text-muted-foreground">
-                {w.event_date} · {w.location} · {formatBRL(w.price_cents)}
+                {w.event_date} · {w.location} · {formatBRL(w.price_cents)} ·{" "}
+                {w.spots_taken} de {w.total_spots} vagas ocupadas
               </p>
             </div>
             <div className="flex items-center gap-6">
@@ -295,6 +301,9 @@ export const AdminWorkshops = () => {
             </div>
           </div>
 
+          <WorkshopBlockPicker workshopId={w.id} />
+
+
           <div>
             <p className="text-xs tracking-[0.15em] uppercase text-muted-foreground mb-2">
               Inscrições ({w.workshop_registrations?.length ?? 0})
@@ -307,8 +316,19 @@ export const AdminWorkshops = () => {
                     {r.instagram && ` — ${r.instagram}`} — {r.dietary_restriction}
                     {r.wants_glazing && " — com esmaltação"}
                     {r.is_waitlist && " — lista de espera"}
+                    {r.answers &&
+                      Object.values(r.answers as Record<string, any>).map(
+                        (a: any, i: number) => (
+                          <span key={i}>
+                            {" "}
+                            — {a?.question ?? ""}:{" "}
+                            {Array.isArray(a?.value) ? a.value.join(", ") : a?.value}
+                          </span>
+                        )
+                      )}
                   </li>
                 ))}
+
               </ul>
             ) : (
               <p className="text-sm text-muted-foreground">Nenhuma inscrição ainda.</p>

@@ -72,8 +72,8 @@ const Index = () => {
               <span className="italic font-normal">afetivas</span>
             </h1>
             <p className="text-base md:text-lg text-white/80 mb-10 leading-relaxed max-w-lg">
-              Peças pintadas à mão, uma a uma, no ateliê da Júlia Brandalise —
-              feitas para acompanhar os momentos mais bonitos da sua casa.
+              Pinto cada peça à mão, uma a uma, no meu ateliê em Videira — para
+              acompanhar os momentos mais bonitos da sua casa.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
@@ -295,13 +295,13 @@ const Index = () => {
               Sobre o ateliê
             </p>
             <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground leading-[1.3] mb-8">
-              Acreditamos na beleza do feito à mão — em peças que carregam
+              Acredito na beleza do feito à mão — em peças que carregam
               tempo, cuidado e <span className="italic">afeto</span>.
             </h2>
             <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10">
-              Cada porcelana é pintada à mão por Júlia Brandalise, em Videira (SC),
-              e enviada para todo o Brasil. Também promovemos oficinas e aulas de
-              arte para quem quer viver o processo de perto.
+              Pinto cada porcelana à mão aqui em Videira (SC) e envio para todo
+              o Brasil. Também promovo oficinas e aulas de arte para quem quer
+              viver o processo de perto.
             </p>
             <Button
               asChild
