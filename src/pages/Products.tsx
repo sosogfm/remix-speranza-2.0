@@ -32,7 +32,11 @@ const Products = () => {
   const filtered = useMemo(() => {
     let list = [...products];
     if (activeCollection !== "all") {
-      list = list.filter((p) => p.collection === activeCollection);
+      list = list.filter(
+        (p) =>
+          p.collection === activeCollection ||
+          (p.collectionSlugs ?? []).includes(activeCollection)
+      );
     }
     if (onlyPersonalizable) list = list.filter((p) => p.isPersonalizable);
     if (onlyInStock) list = list.filter((p) => p.stock > 0);
