@@ -27,6 +27,7 @@ const Products = () => {
   const [onlyLowStock, setOnlyLowStock] = useState(false);
 
   const { data: products = [], isLoading } = useProducts();
+  const { data: collections = [] } = useCollections();
 
   const filtered = useMemo(() => {
     let list = [...products];
