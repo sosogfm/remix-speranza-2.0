@@ -5,7 +5,6 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { useCart } from "@/hooks/useCart";
 import { useShippingQuote, onlyDigits } from "@/hooks/useShipping";
-import { useAuth } from "@/hooks/useAuth";
 import { formatBRL, installmentLabel } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -20,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { saveGuestOrder } from "@/lib/guestOrders";
 
 const paymentMethods = [
   { value: "pix", label: "Pix (QR Code)" },
@@ -31,7 +31,6 @@ const paymentMethods = [
 const Checkout = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user } = useAuth();
   const { items, getSubtotalCents, clearCart, isGift, giftMessage } = useCart();
   const subtotalCents = getSubtotalCents();
 
@@ -92,10 +91,8 @@ const Checkout = () => {
 
     setSubmitting(true);
     try {
-      const { data: order, error } = await supabase
-        .from("orders")
-        .insert({
-          user_id: user?.id ?? null,
+      const { data, error } = await supabase.rpc("place_guest_order", {
+        _order: {
           customer_name: form.name,
           customer_email: form.email,
           customer_phone: form.phone,
@@ -115,24 +112,44 @@ const Checkout = () => {
           payment_method: paymentMethod,
           is_gift: isGift,
           gift_message: isGift ? giftMessage || null : null,
-        })
-        .select("id, order_number")
-        .single();
-
-      if (error) throw error;
-
-      const { error: itemsError } = await supabase.from("order_items").insert(
-        items.map((i) => ({
-          order_id: order.id,
+        },
+        _items: items.map((i) => ({
           product_id: i.product.id,
           product_name: i.product.name,
           unit_price_cents: i.product.priceCents + (i.extraCents || 0),
           quantity: i.quantity,
           personalization_text: i.personalization ?? null,
-        }))
+        })),
+      });
 
-      );
-      if (itemsError) throw itemsError;
+      if (error) throw error;
+      const order = Array.isArray(data) ? data[0] : (data as any);
+      if (!order?.id) throw new Error("Pedido não criado");
+
+      // Guarda uma cópia no aparelho para quem comprou sem conta
+      saveGuestOrder({
+        id: order.id,
+        order_number: order.order_number,
+        created_at: new Date().toISOString(),
+        customer_name: form.name,
+        address_line: form.addressLine,
+        address_number: form.addressNumber,
+        neighborhood: form.neighborhood,
+        city: form.city,
+        state: form.state,
+        subtotal_cents: subtotalCents,
+        shipping_cents: shippingCents,
+        total_cents: totalCents,
+        installments: Number(installments),
+        payment_method: paymentMethod,
+        order_items: items.map((i, idx) => ({
+          id: `${order.id}-${idx}`,
+          product_name: i.product.name,
+          unit_price_cents: i.product.priceCents + (i.extraCents || 0),
+          quantity: i.quantity,
+          personalization_text: i.personalization ?? null,
+        })),
+      });
 
       clearCart();
       navigate(`/pedido/${order.id}`);
