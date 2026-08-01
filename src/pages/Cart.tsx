@@ -154,22 +154,22 @@ const Cart = () => {
               className="lg:col-span-5"
             >
               <div className="bg-linen p-8 lg:sticky lg:top-28">
-                <h2 className="font-serif text-2xl mb-8">Order Summary</h2>
+                <h2 className="font-serif text-2xl mb-8">Resumo do pedido</h2>
 
                 <div className="space-y-4 mb-8">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span>${subtotal.toLocaleString()}</span>
+                    <span>{formatBRL(subtotalCents)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Shipping</span>
+                    <span className="text-muted-foreground">Frete (estimado)</span>
                     <span>
-                      {shipping === 0 ? "Complimentary" : `$${shipping}`}
+                      {shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}
                     </span>
                   </div>
-                  {subtotal < 500 && (
+                  {subtotalCents < 50000 && (
                     <p className="text-xs text-muted-foreground">
-                      Free shipping on orders over $500
+                      Frete grátis em pedidos acima de {formatBRL(50000)}
                     </p>
                   )}
                 </div>
@@ -177,9 +177,10 @@ const Cart = () => {
                 <div className="border-t border-border pt-4 mb-8">
                   <div className="flex justify-between font-serif text-xl">
                     <span>Total</span>
-                    <span>${total.toLocaleString()}</span>
+                    <span>{formatBRL(totalCents)}</span>
                   </div>
                 </div>
+
 
                 <Button
                   asChild
