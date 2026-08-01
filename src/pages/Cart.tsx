@@ -5,12 +5,14 @@ import { Layout } from "@/components/Layout";
 import { QuantitySelector } from "@/components/QuantitySelector";
 import { useCart } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
+import { formatBRL } from "@/data/products";
 
 const Cart = () => {
-  const { items, updateQuantity, removeItem, getSubtotal } = useCart();
-  const subtotal = getSubtotal();
-  const shipping = subtotal > 500 ? 0 : 25;
-  const total = subtotal + shipping;
+  const { items, updateQuantity, removeItem, getSubtotalCents } = useCart();
+  const subtotalCents = getSubtotalCents();
+  const shippingCents = subtotalCents > 50000 ? 0 : 2500;
+  const totalCents = subtotalCents + shippingCents;
+
 
   if (items.length === 0) {
     return (
