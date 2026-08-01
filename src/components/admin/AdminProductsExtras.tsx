@@ -180,7 +180,7 @@ export const AdminNewProduct = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [form, setForm] = useState({
     name: "",
-    categoryId: "",
+    categoryIds: [] as string[],
     price: "",
     stock: "1",
     description: "",
@@ -206,7 +206,7 @@ export const AdminNewProduct = () => {
         .insert({
           name: form.name.trim(),
           slug: `${slugify(form.name)}-${Date.now().toString().slice(-4)}`,
-          category_id: form.categoryId || null,
+          category_id: form.categoryIds[0] || null,
           price_cents: Math.round(Number(form.price.replace(",", ".") || 0) * 100),
           stock_quantity: Number(form.stock) || 0,
           description: form.description.trim() || null,
@@ -232,9 +232,16 @@ export const AdminNewProduct = () => {
         if (imgError) throw imgError;
       }
 
+      if (form.categoryIds.length) {
+        const { error: catError } = await supabase.from("product_categories").insert(
+          form.categoryIds.map((id) => ({ product_id: data.id, category_id: id }))
+        );
+        if (catError) throw catError;
+      }
+
       setForm({
         name: "",
-        categoryId: "",
+        categoryIds: [],
         price: "",
         stock: "1",
         description: "",
