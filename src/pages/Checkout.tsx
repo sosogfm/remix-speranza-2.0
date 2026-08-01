@@ -300,8 +300,12 @@ const Checkout = () => {
                         <p className="text-muted-foreground">Qtd: {item.quantity}</p>
                       </div>
                       <p className="text-sm">
-                        {formatBRL(item.product.priceCents * item.quantity)}
+                        {formatBRL(
+                          (item.product.priceCents + (item.extraCents || 0)) *
+                            item.quantity
+                        )}
                       </p>
+
                     </div>
                   ))}
                 </div>
