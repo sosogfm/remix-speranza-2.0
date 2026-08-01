@@ -82,14 +82,14 @@ const WorkshopDetail = () => {
       workshop_id: workshop.id,
       user_id: user.id,
       full_name: fullName.trim(),
-      email: user.email,
       instagram: instagram.trim() || null,
       phone: phone.trim(),
       dietary_restriction: diet,
       wants_glazing: glazing,
       notes: notes.trim() || null,
+      is_waitlist: waitlist,
       status: waitlist ? "waitlist" : "pending",
-      total_cents: total,
+
     });
     setSubmitting(false);
 
