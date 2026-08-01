@@ -21,7 +21,6 @@ import { getStripeEnvironment } from "@/lib/stripe";
 
 
 const Checkout = () => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const { items, getSubtotalCents, clearCart, isGift, giftMessage } = useCart();
   const subtotalCents = getSubtotalCents();
@@ -41,10 +40,10 @@ const Checkout = () => {
     state: "",
     notes: "",
   });
-  const [paymentMethod, setPaymentMethod] = useState("pix");
-  const [installments, setInstallments] = useState("1");
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+
 
   const { data: shipping, isFetching: loadingShipping } = useShippingQuote(
     form.postalCode,
@@ -135,46 +134,43 @@ const Checkout = () => {
     setSubmitting(true);
 
     try {
-      const { data, error } = await supabase.rpc("place_guest_order", {
-        _order: {
-          customer_name: form.name,
-          customer_email: form.email,
-          customer_phone: form.phone,
-          customer_document: onlyDigits(form.document),
-          address_line: form.addressLine,
-          address_number: form.addressNumber,
-          address_complement: form.complement || null,
-          neighborhood: form.neighborhood,
-          city: form.city,
-          state: form.state,
-          postal_code: onlyDigits(form.postalCode),
-          notes: form.notes || null,
-          subtotal_cents: subtotalCents,
-          shipping_cents: shippingCents,
-          total_cents: totalCents,
-          installments: Number(installments),
-          payment_method: paymentMethod,
-          is_gift: isGift,
-          gift_message: isGift ? giftMessage || null : null,
-          gift_wrap_cents: giftWrapCents,
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: {
+          environment: getStripeEnvironment(),
+          origin: window.location.origin,
+          customer: {
+            name: form.name,
+            email: form.email,
+            phone: form.phone,
+            document: onlyDigits(form.document),
+            postalCode: onlyDigits(form.postalCode),
+            addressLine: form.addressLine,
+            addressNumber: form.addressNumber,
+            complement: form.complement || null,
+            neighborhood: form.neighborhood,
+            city: form.city,
+            state: form.state,
+            notes: form.notes || null,
+          },
+          isGift,
+          giftMessage: isGift ? giftMessage || null : null,
+          items: items.map((i) => ({
+            productId: i.product.id,
+            quantity: i.quantity,
+            values: Object.fromEntries(
+              (i.personalizationValues ?? []).map((v) => [v.fieldId, v.value])
+            ),
+          })),
         },
-        _items: items.map((i) => ({
-          product_id: i.product.id,
-          product_name: i.product.name,
-          unit_price_cents: unitPriceCents(i),
-          quantity: i.quantity,
-          personalization_text: i.personalization ?? null,
-        })),
       });
 
       if (error) throw error;
-      const order = Array.isArray(data) ? data[0] : (data as any);
-      if (!order?.id) throw new Error("Pedido não criado");
+      if (!data?.clientSecret) throw new Error(data?.error ?? "Pagamento indisponível");
 
       // Guarda uma cópia no aparelho para quem comprou sem conta
       saveGuestOrder({
-        id: order.id,
-        order_number: order.order_number,
+        id: data.orderId,
+        order_number: data.orderNumber,
         created_at: new Date().toISOString(),
         customer_name: form.name,
         address_line: form.addressLine,
@@ -182,13 +178,13 @@ const Checkout = () => {
         neighborhood: form.neighborhood,
         city: form.city,
         state: form.state,
-        subtotal_cents: subtotalCents,
-        shipping_cents: shippingCents,
-        total_cents: totalCents,
-        installments: Number(installments),
-        payment_method: paymentMethod,
+        subtotal_cents: data.subtotalCents,
+        shipping_cents: data.shippingCents,
+        total_cents: data.totalCents,
+        installments: 1,
+        payment_method: "card",
         order_items: items.map((i, idx) => ({
-          id: `${order.id}-${idx}`,
+          id: `${data.orderId}-${idx}`,
           product_name: i.product.name,
           unit_price_cents: unitPriceCents(i),
           quantity: i.quantity,
@@ -197,7 +193,8 @@ const Checkout = () => {
       });
 
       clearCart();
-      navigate(`/pedido/${order.id}`);
+      setClientSecret(data.clientSecret);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.error(err);
       toast({
@@ -209,6 +206,21 @@ const Checkout = () => {
       setSubmitting(false);
     }
   };
+
+  if (clientSecret) {
+    return (
+      <Layout>
+        <PaymentTestModeBanner />
+        <section className="py-12 md:py-16">
+          <div className="container-narrow space-y-8">
+            <h1 className="font-serif text-4xl md:text-5xl">Pagamento</h1>
+            <StripeEmbeddedCheckout clientSecret={clientSecret} />
+          </div>
+        </section>
+      </Layout>
+    );
+  }
+
 
   return (
     <Layout>
