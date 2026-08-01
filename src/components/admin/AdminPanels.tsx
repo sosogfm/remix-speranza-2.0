@@ -316,8 +316,19 @@ export const AdminWorkshops = () => {
                     {r.instagram && ` — ${r.instagram}`} — {r.dietary_restriction}
                     {r.wants_glazing && " — com esmaltação"}
                     {r.is_waitlist && " — lista de espera"}
+                    {r.answers &&
+                      Object.values(r.answers as Record<string, any>).map(
+                        (a: any, i: number) => (
+                          <span key={i}>
+                            {" "}
+                            — {a?.question ?? ""}:{" "}
+                            {Array.isArray(a?.value) ? a.value.join(", ") : a?.value}
+                          </span>
+                        )
+                      )}
                   </li>
                 ))}
+
               </ul>
             ) : (
               <p className="text-sm text-muted-foreground">Nenhuma inscrição ainda.</p>
