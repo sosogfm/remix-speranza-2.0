@@ -671,7 +671,7 @@ export const AdminProductSale = ({ product }: { product: any }) => {
     qc.invalidateQueries({ queryKey: ["products"] });
   };
 
-  const toLocal = (iso: string | null) => (iso ? iso.slice(0, 16) : "");
+  const toDate = (iso: string | null) => (iso ? iso.slice(0, 10) : "");
 
   const currentPct =
     product.sale_price_cents != null && product.price_cents
@@ -679,7 +679,7 @@ export const AdminProductSale = ({ product }: { product: any }) => {
       : "";
 
   return (
-    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-3 border-t border-border pt-4">
+    <div className="grid sm:grid-cols-2 gap-5 mt-3 border-t border-border pt-4">
       <div className="space-y-1">
         <Label className="text-[11px] uppercase tracking-[0.15em]">Desconto (%)</Label>
         <Input
@@ -688,7 +688,7 @@ export const AdminProductSale = ({ product }: { product: any }) => {
           max={95}
           defaultValue={currentPct}
           placeholder="ex.: 20"
-          className="rounded-none h-11 text-base"
+          className="rounded-none h-12 text-base w-full"
           onBlur={(e) => {
             const pct = Number(e.target.value);
             update({
@@ -703,12 +703,14 @@ export const AdminProductSale = ({ product }: { product: any }) => {
       <div className="space-y-1">
         <Label className="text-[11px] uppercase tracking-[0.15em]">Começa em</Label>
         <Input
-          type="datetime-local"
-          defaultValue={toLocal(product.sale_starts_at)}
-          className="rounded-none h-11 text-base"
+          type="date"
+          defaultValue={toDate(product.sale_starts_at)}
+          className="rounded-none h-12 text-base w-full"
           onBlur={(e) =>
             update({
-              sale_starts_at: e.target.value ? new Date(e.target.value).toISOString() : null,
+              sale_starts_at: e.target.value
+                ? new Date(`${e.target.value}T00:00:00`).toISOString()
+                : null,
             })
           }
         />
@@ -716,16 +718,19 @@ export const AdminProductSale = ({ product }: { product: any }) => {
       <div className="space-y-1">
         <Label className="text-[11px] uppercase tracking-[0.15em]">Termina em</Label>
         <Input
-          type="datetime-local"
-          defaultValue={toLocal(product.sale_ends_at)}
-          className="rounded-none h-11 text-base"
+          type="date"
+          defaultValue={toDate(product.sale_ends_at)}
+          className="rounded-none h-12 text-base w-full"
           onBlur={(e) =>
             update({
-              sale_ends_at: e.target.value ? new Date(e.target.value).toISOString() : null,
+              sale_ends_at: e.target.value
+                ? new Date(`${e.target.value}T23:59:59`).toISOString()
+                : null,
             })
           }
         />
       </div>
+
       <div className="space-y-1">
         <Label className="text-[11px] uppercase tracking-[0.15em]">
           Alerta de estoque baixo
