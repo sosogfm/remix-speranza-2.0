@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { GIFT_WRAP_CENTS } from "@/data/site";
@@ -7,28 +7,18 @@ import { SmartImage } from "@/components/SmartImage";
 import { Layout } from "@/components/Layout";
 import { useCart, unitPriceCents } from "@/hooks/useCart";
 import { useShippingQuote, onlyDigits } from "@/hooks/useShipping";
-import { formatBRL, installmentLabel } from "@/data/products";
+import { formatBRL } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { saveGuestOrder } from "@/lib/guestOrders";
+import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { getStripeEnvironment } from "@/lib/stripe";
 
-const paymentMethods = [
-  { value: "pix", label: "Pix (QR Code)" },
-  { value: "credit_card", label: "Cartão de crédito" },
-  { value: "debit_card", label: "Cartão de débito" },
-  { value: "boleto", label: "Boleto bancário" },
-];
 
 const Checkout = () => {
   const navigate = useNavigate();
