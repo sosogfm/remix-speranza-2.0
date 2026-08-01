@@ -25,6 +25,7 @@ export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { data: wishlistIds = [] } = useWishlistIds();
+  const { data: collections = [] } = useCollections();
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
