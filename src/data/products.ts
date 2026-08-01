@@ -13,6 +13,8 @@ export interface Product {
   slug: string;
   collection: string; // category slug
   collectionName?: string;
+  /** todas as categorias da peça (pode estar em mais de uma) */
+  collectionSlugs?: string[];
   price: number; // BRL, in reais
   priceCents: number;
   description: string;
