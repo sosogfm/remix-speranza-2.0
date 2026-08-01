@@ -36,4 +36,5 @@ Em vez de um aviso genérico, cada campo com problema fica **marcado em vermelho
 - Banco: tabela de ligação `product_categories` (produto ↔ categoria) com migração dos vínculos atuais de `products.category_id`; `useProducts` traz a lista de categorias e o filtro de `Products.tsx` considera qualquer uma; `collections` deixa de ser lista fixa e vem do banco ordenada por nome.
 - `ProductCard`: badge calculado de `sale_price_cents` vs `price_cents`; segunda imagem em `translate-x` no hover, removendo o overlay em gradiente e o fade.
 - Instagram: edge function `instagram-feed` chamando a Graph API com token guardado como segredo, cache no cliente via React Query.
+- Checkout: validação com Zod por campo, mensagens em português mapeadas por campo, foco/scroll no primeiro erro e tradução dos códigos de recusa retornados pelo pagamento.
 - `AdminProductSale`: inputs `type="date"` (sem hora) e largura maior.
