@@ -123,18 +123,19 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
                 Últimas unidades
               </span>
             )}
-
-            {lowStock && (
-              <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-background text-foreground border border-border">
-                Últimas unidades
-              </span>
-            )}
             {outOfStock && (
               <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-muted text-muted-foreground">
                 Esgotada
               </span>
             )}
           </div>
+
+          {/* Faixa de oferta */}
+          {discountPct != null && discountPct > 0 && (
+            <span className="absolute top-5 right-0 px-4 py-1.5 text-[11px] font-semibold tracking-[0.15em] uppercase bg-primary text-primary-foreground shadow-sm">
+              -{discountPct}%
+            </span>
+          )}
 
           <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center pb-6 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-100">
             <span className="px-6 py-2.5 text-xs font-medium tracking-[0.15em] uppercase bg-background/95 backdrop-blur-md text-foreground shadow-lg">
@@ -145,11 +146,12 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
 
         {/* Informações */}
         <div className="space-y-2">
-          {collection && (
+          {collectionName && (
             <p className="text-[11px] font-medium tracking-[0.2em] uppercase text-muted-foreground/70 transition-colors duration-300 group-hover:text-primary">
-              {collection.name}
+              {collectionName}
             </p>
           )}
+
 
           <h3 className="font-serif text-xl text-foreground transition-colors duration-300 group-hover:text-primary leading-snug">
             {product.name}
