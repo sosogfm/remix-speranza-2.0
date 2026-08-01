@@ -27,7 +27,7 @@ export const site = {
   /** Versão enxuta para o rodapé */
   hoursCompact: [
     { day: "Seg – Sex", time: "13:30 – 18:00" },
-    { day: "Sábado", time: "09:00 – 12:00" },
+    { day: "Sáb", time: "09:00 – 12:00" },
     { day: "Domingo", time: "Fechado" },
   ],
 };
