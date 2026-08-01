@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { GIFT_WRAP_CENTS } from "@/data/site";
 import { Layout } from "@/components/Layout";
-import { useCart } from "@/hooks/useCart";
+import { useCart, unitPriceCents } from "@/hooks/useCart";
 import { useShippingQuote, onlyDigits } from "@/hooks/useShipping";
 import { formatBRL, installmentLabel } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
@@ -119,7 +119,7 @@ const Checkout = () => {
         _items: items.map((i) => ({
           product_id: i.product.id,
           product_name: i.product.name,
-          unit_price_cents: i.product.priceCents + (i.extraCents || 0),
+          unit_price_cents: unitPriceCents(i),
           quantity: i.quantity,
           personalization_text: i.personalization ?? null,
         })),
@@ -148,7 +148,7 @@ const Checkout = () => {
         order_items: items.map((i, idx) => ({
           id: `${order.id}-${idx}`,
           product_name: i.product.name,
-          unit_price_cents: i.product.priceCents + (i.extraCents || 0),
+          unit_price_cents: unitPriceCents(i),
           quantity: i.quantity,
           personalization_text: i.personalization ?? null,
         })),
@@ -321,7 +321,7 @@ const Checkout = () => {
                       </div>
                       <p className="text-sm">
                         {formatBRL(
-                          (item.product.priceCents + (item.extraCents || 0)) *
+                          unitPriceCents(item) *
                             item.quantity
                         )}
                       </p>

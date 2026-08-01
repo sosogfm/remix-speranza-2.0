@@ -20,12 +20,16 @@ type Row = {
   is_featured: boolean;
   is_new: boolean;
   is_quote_only: boolean;
+  sale_price_cents: number | null;
+  sale_starts_at: string | null;
+  sale_ends_at: string | null;
+  low_stock_threshold: number | null;
   categories: { slug: string; name: string } | null;
   product_images: { image_url: string; position: number }[] | null;
 };
 
 const SELECT =
-  "id,name,slug,description,long_description,materials,dimensions,price_cents,stock_quantity,is_personalizable,personalization_label,personalization_max_length,max_installments,is_active,is_featured,is_new,is_quote_only,categories(slug,name),product_images(image_url,position)";
+  "id,name,slug,description,long_description,materials,dimensions,price_cents,stock_quantity,is_personalizable,personalization_label,personalization_max_length,max_installments,is_active,is_featured,is_new,is_quote_only,sale_price_cents,sale_starts_at,sale_ends_at,low_stock_threshold,categories(slug,name),product_images(image_url,position)";
 
 export const mapProduct = (row: Row): Product => {
   const images = (row.product_images ?? [])
@@ -54,6 +58,10 @@ export const mapProduct = (row: Row): Product => {
     personalizationMaxLength: row.personalization_max_length ?? 20,
     maxInstallments: row.max_installments ?? 1,
     isQuoteOnly: row.is_quote_only ?? false,
+    salePriceCents: row.sale_price_cents,
+    saleStartsAt: row.sale_starts_at,
+    saleEndsAt: row.sale_ends_at,
+    lowStockThreshold: row.low_stock_threshold ?? 3,
   };
 };
 

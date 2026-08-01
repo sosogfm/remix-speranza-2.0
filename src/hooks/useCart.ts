@@ -19,6 +19,8 @@ export interface CartItem {
   personalizationValues?: PersonalizationValue[];
   /** acréscimo unitário vindo das opções de personalização */
   extraCents: number;
+  /** preço unitário final já com promoção, tamanho e extras */
+  unitCents?: number;
   key: string;
 }
 
@@ -27,6 +29,10 @@ export const summarizePersonalization = (values: PersonalizationValue[]) =>
     .filter((v) => v.value)
     .map((v) => `${v.label}: ${v.value}`)
     .join(" · ");
+
+/** preço unitário do item já com promoção/tamanho/extras */
+export const unitPriceCents = (i: CartItem) =>
+  i.unitCents ?? i.product.priceCents + (i.extraCents || 0);
 
 const itemKey = (productId: string, personalization?: string) =>
   `${productId}::${personalization ?? ""}`;
@@ -38,7 +44,8 @@ interface CartState {
   addItem: (
     product: Product,
     quantity?: number,
-    values?: PersonalizationValue[]
+    values?: PersonalizationValue[],
+    unitCents?: number
   ) => void;
   updateQuantity: (key: string, quantity: number) => void;
   removeItem: (key: string) => void;
@@ -56,7 +63,7 @@ export const useCart = create<CartState>()(
       isGift: false,
       giftMessage: "",
 
-      addItem: (product, quantity = 1, values) => {
+      addItem: (product, quantity = 1, values, unitCents) => {
         const summary = values?.length ? summarizePersonalization(values) : undefined;
         const extraCents = (values ?? []).reduce((t, v) => t + (v.extraCents || 0), 0);
         const key = itemKey(product.id, summary);
@@ -81,6 +88,7 @@ export const useCart = create<CartState>()(
                 personalization: summary,
                 personalizationValues: values,
                 extraCents,
+                unitCents,
                 key,
               },
             ],
@@ -112,12 +120,12 @@ export const useCart = create<CartState>()(
 
       getSubtotalCents: () =>
         get().items.reduce(
-          (t, i) => t + (i.product.priceCents + (i.extraCents || 0)) * i.quantity,
+          (t, i) => t + unitPriceCents(i) * i.quantity,
           0
         ),
 
       getItemCount: () => get().items.reduce((c, i) => c + i.quantity, 0),
     }),
-    { name: "speranza-cart", version: 2 }
+    { name: "speranza-cart", version: 3 }
   )
 );

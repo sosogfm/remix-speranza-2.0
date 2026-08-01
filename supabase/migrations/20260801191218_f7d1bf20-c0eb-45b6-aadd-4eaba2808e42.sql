@@ -1,0 +1,1 @@
+ALTER TABLE public.private_event_experiences ADD COLUMN IF NOT EXISTS price_cents integer;

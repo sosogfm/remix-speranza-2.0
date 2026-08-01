@@ -10,11 +10,22 @@ import {
   buildPersonalizationValues,
   missingRequiredField,
 } from "@/components/PersonalizationFields";
-import { collections, formatBRL, installmentLabel } from "@/data/products";
+import {
+  collections,
+  formatBRL,
+  installmentLabel,
+  activeSaleCents,
+  effectivePriceCents,
+  isLowStock,
+} from "@/data/products";
+import { useProductInfoBlocks } from "@/hooks/useSiteContent";
+import { useSignedUrls } from "@/lib/storage";
 import { useProduct, useProducts } from "@/hooks/useProducts";
 import {
   usePersonalizationFields,
   totalExtraCents,
+  sizeBaseCents,
+  selectedOptionImage,
 } from "@/hooks/usePersonalization";
 import { site } from "@/data/site";
 
@@ -30,6 +41,9 @@ const ProductDetail = () => {
   const { data: product, isLoading } = useProduct(slug);
   const { data: allProducts = [] } = useProducts();
   const { data: fields = [] } = usePersonalizationFields(product?.id);
+  const { data: infoBlocks = [] } = useProductInfoBlocks(product?.id);
+  const optionImagePaths = fields.flatMap((f) => Object.values(f.optionImages ?? {}));
+  const { data: signedImages = {} } = useSignedUrls(optionImagePaths);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [values, setValues] = useState<Record<string, string>>({});
@@ -67,9 +81,16 @@ const ProductDetail = () => {
     .filter((p) => p.collection === product.collection && p.id !== product.id)
     .slice(0, 3);
   const outOfStock = product.stock <= 0;
-  const parcelas = installmentLabel(product.priceCents, product.maxInstallments);
+  const sale = activeSaleCents(product);
+  const basePrice = effectivePriceCents(product);
+  const sizePrice = sizeBaseCents(fields, values);
   const extraCents = totalExtraCents(fields, values);
-  const unitCents = product.priceCents + extraCents;
+  const unitCents = (sizePrice ?? basePrice) + extraCents;
+  const compareAtCents =
+    sizePrice != null ? null : sale != null ? product.priceCents : null;
+  const parcelas = installmentLabel(unitCents, product.maxInstallments);
+  const optionImagePath = selectedOptionImage(fields, values);
+  const optionImageUrl = optionImagePath ? signedImages[optionImagePath] ?? "" : "";
   const quoteUrl = `${site.whatsapp}?text=${encodeURIComponent(
     `Oi Júlia! Gostaria de um orçamento para: ${product.name}`
   )}`;
@@ -85,7 +106,7 @@ const ProductDetail = () => {
       });
       return;
     }
-    addToCart(product, quantity, buildPersonalizationValues(fields, values));
+    addToCart(product, quantity, buildPersonalizationValues(fields, values), unitCents);
     toast({ title: "Adicionado à sacola", description: `${quantity} × ${product.name}` });
     setQuantity(1);
     setValues({});
@@ -130,8 +151,8 @@ const ProductDetail = () => {
               <div className="relative aspect-[4/5] overflow-hidden bg-muted/30 group">
                 <AnimatePresence mode="wait">
                   <motion.img
-                    key={currentImageIndex}
-                    src={product.images[currentImageIndex]}
+                    key={optionImageUrl || currentImageIndex}
+                    src={optionImageUrl || product.images[currentImageIndex]}
                     alt={`${product.name} — porcelana artesanal Speranza Ateliê`}
                     initial={{ opacity: 0, scale: 1.02 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -164,6 +185,16 @@ const ProductDetail = () => {
                   {product.new && (
                     <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-foreground text-background">
                       Novo
+                    </span>
+                  )}
+                  {sale != null && (
+                    <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-primary text-primary-foreground">
+                      Oferta
+                    </span>
+                  )}
+                  {isLowStock(product) && (
+                    <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-background text-foreground border border-border">
+                      Últimas unidades
                     </span>
                   )}
                   {outOfStock && (
@@ -206,13 +237,18 @@ const ProductDetail = () => {
                 {product.name}
               </h1>
 
-              <p className="text-2xl font-serif mb-1">
+              <p className="text-2xl font-serif mb-1 flex items-baseline gap-3">
                 {product.isQuoteOnly && (
-                  <span className="text-sm text-muted-foreground mr-2">A partir de</span>
+                  <span className="text-sm text-muted-foreground">A partir de</span>
                 )}
-                {formatBRL(unitCents)}
+                <span>{formatBRL(unitCents)}</span>
+                {compareAtCents && (
+                  <span className="text-base text-muted-foreground line-through">
+                    {formatBRL(compareAtCents)}
+                  </span>
+                )}
               </p>
-              {extraCents > 0 && (
+              {sizePrice == null && extraCents > 0 && (
                 <p className="text-xs text-muted-foreground mb-1">
                   Inclui {formatBRL(extraCents)} de personalização
                 </p>
@@ -300,32 +336,16 @@ const ProductDetail = () => {
                 </Button>
               </div>
 
-              <div className="mt-10 border-t border-border pt-6 space-y-3 text-xs text-muted-foreground leading-relaxed">
-                <p>
-                  <span className="font-semibold text-foreground">Prazo:</span> após a
-                  confirmação do pagamento, o prazo de produção é de 20 dias úteis.
-                </p>
-                <p>
-                  <span className="font-semibold text-foreground">Envios:</span> envio para
-                  todo o Brasil, via Correios ou Jadlog. O frete é calculado conforme o
-                  endereço e o peso da encomenda.
-                </p>
-                <p>
-                  <span className="font-semibold text-foreground">Retirada:</span> você pode
-                  retirar seu pedido no meu ateliê em Videira-SC, de segunda a sexta das
-                  13:30 às 18:00 e sábado das 9:00 ao meio-dia.
-                </p>
-                <p>
-                  <span className="font-semibold text-foreground">Queima:</span> todas as
-                  peças passam pela queima a 780°, o que funde a tinta na porcelana e torna a
-                  fixação duradoura. Antes disso, envio uma foto da arte para a sua aprovação.
-                </p>
-                <p>
-                  <span className="font-semibold text-foreground">Cuidados:</span> lave com o
-                  lado macio da esponja, não use lava-louças e não leve ao micro-ondas se a
-                  peça tiver ouro.
-                </p>
-              </div>
+              {infoBlocks.length > 0 && (
+                <div className="mt-10 border-t border-border pt-6 space-y-3 text-xs text-muted-foreground leading-relaxed">
+                  {infoBlocks.map((b) => (
+                    <p key={b.id}>
+                      <span className="font-semibold text-foreground">{b.title}:</span>{" "}
+                      {b.body}
+                    </p>
+                  ))}
+                </div>
+              )}
 
             </div>
           </div>

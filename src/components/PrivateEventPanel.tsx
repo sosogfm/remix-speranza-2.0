@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { usePrivateEventExperiences } from "@/hooks/useSiteContent";
 
 export const PrivateEventPanel = () => {
   const { toast } = useToast();
@@ -24,6 +25,14 @@ export const PrivateEventPanel = () => {
   const [email, setEmail] = useState("");
   const [date, setDate] = useState("");
   const [groupSize, setGroupSize] = useState("");
+  const { data: experiences = [] } = usePrivateEventExperiences();
+  const options = experiences.length
+    ? experiences.map((e) => ({
+        value: e.value,
+        label: e.label,
+        priceCents: e.priceCents ?? 0,
+      }))
+    : privateEvent.options;
   const [type, setType] = useState(privateEvent.options[0].value);
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -92,7 +101,7 @@ export const PrivateEventPanel = () => {
 
         <div className="space-y-6">
           <ul className="space-y-3">
-            {privateEvent.options.map((o) => (
+            {options.map((o) => (
               <li
                 key={o.value}
                 className="flex items-baseline justify-between gap-6 border-b border-border pb-3"
@@ -186,7 +195,7 @@ export const PrivateEventPanel = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {privateEvent.options.map((o) => (
+                      {options.map((o) => (
                         <SelectItem key={o.value} value={o.value}>
                           {o.label}
                         </SelectItem>

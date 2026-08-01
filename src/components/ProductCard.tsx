@@ -1,7 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Heart } from "lucide-react";
 import { motion } from "framer-motion";
-import { Product, collections, formatBRL, installmentLabel } from "@/data/products";
+import {
+  Product,
+  collections,
+  formatBRL,
+  installmentLabel,
+  activeSaleCents,
+  effectivePriceCents,
+  isLowStock,
+} from "@/data/products";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -22,6 +30,9 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
   const collection = collections.find((c) => c.id === product.collection);
   const hasSecondImage = product.images.length > 1;
   const outOfStock = product.stock <= 0;
+  const sale = activeSaleCents(product);
+  const price = effectivePriceCents(product);
+  const lowStock = isLowStock(product);
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -103,6 +114,16 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
                 Personalizável
               </span>
             )}
+            {sale != null && (
+              <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-primary text-primary-foreground">
+                Oferta
+              </span>
+            )}
+            {lowStock && (
+              <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-background text-foreground border border-border">
+                Últimas unidades
+              </span>
+            )}
             {outOfStock && (
               <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-muted text-muted-foreground">
                 Esgotada
@@ -134,12 +155,19 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
           </p>
 
           <div className="pt-1">
-            <p className="text-base font-medium text-foreground tracking-wide">
-              {formatBRL(product.priceCents)}
+            <p className="text-base font-medium text-foreground tracking-wide flex items-baseline gap-2">
+              <span className={sale != null ? "text-primary" : undefined}>
+                {formatBRL(price)}
+              </span>
+              {sale != null && (
+                <span className="text-sm text-muted-foreground line-through">
+                  {formatBRL(product.priceCents)}
+                </span>
+              )}
             </p>
-            {installmentLabel(product.priceCents, product.maxInstallments) && (
+            {installmentLabel(price, product.maxInstallments) && (
               <p className="text-xs text-muted-foreground/70 tracking-wide mt-0.5">
-                {installmentLabel(product.priceCents, product.maxInstallments)}
+                {installmentLabel(price, product.maxInstallments)}
               </p>
             )}
           </div>

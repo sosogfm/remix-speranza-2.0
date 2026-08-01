@@ -3,7 +3,7 @@ import { useSearchParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
-import { collections } from "@/data/products";
+import { collections, activeSaleCents, effectivePriceCents, isLowStock } from "@/data/products";
 import { useProducts } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +23,8 @@ const Products = () => {
   const [sort, setSort] = useState("featured");
   const [onlyPersonalizable, setOnlyPersonalizable] = useState(false);
   const [onlyInStock, setOnlyInStock] = useState(false);
+  const [onlySale, setOnlySale] = useState(false);
+  const [onlyLowStock, setOnlyLowStock] = useState(false);
 
   const { data: products = [], isLoading } = useProducts();
 
@@ -33,13 +35,15 @@ const Products = () => {
     }
     if (onlyPersonalizable) list = list.filter((p) => p.isPersonalizable);
     if (onlyInStock) list = list.filter((p) => p.stock > 0);
+    if (onlySale) list = list.filter((p) => activeSaleCents(p) != null);
+    if (onlyLowStock) list = list.filter((p) => isLowStock(p));
 
     switch (sort) {
       case "price-asc":
-        list.sort((a, b) => a.priceCents - b.priceCents);
+        list.sort((a, b) => effectivePriceCents(a) - effectivePriceCents(b));
         break;
       case "price-desc":
-        list.sort((a, b) => b.priceCents - a.priceCents);
+        list.sort((a, b) => effectivePriceCents(b) - effectivePriceCents(a));
         break;
       case "name":
         list.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
@@ -51,7 +55,7 @@ const Products = () => {
         list.sort((a, b) => Number(b.featured) - Number(a.featured));
     }
     return list;
-  }, [products, activeCollection, sort, onlyPersonalizable, onlyInStock]);
+  }, [products, activeCollection, sort, onlyPersonalizable, onlyInStock, onlySale, onlyLowStock]);
 
   const setCollection = (slug: string) => {
     if (slug === "all") setSearchParams({});
@@ -131,6 +135,22 @@ const Products = () => {
               <Switch id="stock" checked={onlyInStock} onCheckedChange={setOnlyInStock} />
               <Label htmlFor="stock" className="text-sm">
                 Somente disponíveis
+              </Label>
+            </div>
+            <div className="flex items-center gap-3">
+              <Switch id="sale" checked={onlySale} onCheckedChange={setOnlySale} />
+              <Label htmlFor="sale" className="text-sm">
+                Com desconto
+              </Label>
+            </div>
+            <div className="flex items-center gap-3">
+              <Switch
+                id="low-stock"
+                checked={onlyLowStock}
+                onCheckedChange={setOnlyLowStock}
+              />
+              <Label htmlFor="low-stock" className="text-sm">
+                Últimas unidades
               </Label>
             </div>
             <div className="ml-auto flex items-center gap-3">

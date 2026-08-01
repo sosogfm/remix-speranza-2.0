@@ -197,6 +197,42 @@ export type Database = {
         }
         Relationships: []
       }
+      private_event_experiences: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          label: string
+          position: number
+          price_cents: number | null
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          label: string
+          position?: number
+          price_cents?: number | null
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          label?: string
+          position?: number
+          price_cents?: number | null
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
+      }
       private_event_requests: {
         Row: {
           created_at: string
@@ -274,6 +310,47 @@ export type Database = {
           },
         ]
       }
+      product_info_blocks: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          is_active: boolean
+          position: number
+          product_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          position?: number
+          product_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          position?: number
+          product_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_info_blocks_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_personalization_fields: {
         Row: {
           created_at: string
@@ -284,6 +361,7 @@ export type Database = {
           is_required: boolean
           label: string
           max_length: number
+          option_images: Json
           option_prices: Json
           options: string[]
           position: number
@@ -299,6 +377,7 @@ export type Database = {
           is_required?: boolean
           label: string
           max_length?: number
+          option_images?: Json
           option_prices?: Json
           options?: string[]
           position?: number
@@ -314,6 +393,7 @@ export type Database = {
           is_required?: boolean
           label?: string
           max_length?: number
+          option_images?: Json
           option_prices?: Json
           options?: string[]
           position?: number
@@ -343,12 +423,16 @@ export type Database = {
           is_personalizable: boolean
           is_quote_only: boolean
           long_description: string | null
+          low_stock_threshold: number
           materials: string | null
           max_installments: number
           name: string
           personalization_label: string | null
           personalization_max_length: number
           price_cents: number
+          sale_ends_at: string | null
+          sale_price_cents: number | null
+          sale_starts_at: string | null
           slug: string
           stock_quantity: number
           updated_at: string
@@ -366,12 +450,16 @@ export type Database = {
           is_personalizable?: boolean
           is_quote_only?: boolean
           long_description?: string | null
+          low_stock_threshold?: number
           materials?: string | null
           max_installments?: number
           name: string
           personalization_label?: string | null
           personalization_max_length?: number
           price_cents: number
+          sale_ends_at?: string | null
+          sale_price_cents?: number | null
+          sale_starts_at?: string | null
           slug: string
           stock_quantity?: number
           updated_at?: string
@@ -389,12 +477,16 @@ export type Database = {
           is_personalizable?: boolean
           is_quote_only?: boolean
           long_description?: string | null
+          low_stock_threshold?: number
           materials?: string | null
           max_installments?: number
           name?: string
           personalization_label?: string | null
           personalization_max_length?: number
           price_cents?: number
+          sale_ends_at?: string | null
+          sale_price_cents?: number | null
+          sale_starts_at?: string | null
           slug?: string
           stock_quantity?: number
           updated_at?: string
@@ -433,6 +525,36 @@ export type Database = {
           full_name?: string | null
           id?: string
           phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          author_name: string | null
+          created_at: string
+          id: string
+          image_url: string
+          is_active: boolean
+          position: number
+          updated_at: string
+        }
+        Insert: {
+          author_name?: string | null
+          created_at?: string
+          id?: string
+          image_url: string
+          is_active?: boolean
+          position?: number
+          updated_at?: string
+        }
+        Update: {
+          author_name?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          position?: number
           updated_at?: string
         }
         Relationships: []
@@ -753,6 +875,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_past_workshops: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
