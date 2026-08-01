@@ -325,7 +325,16 @@ const Checkout = () => {
                         : formatBRL(shippingCents)}
                     </span>
                   </div>
+                  {isGift && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        Embalagem para presente
+                      </span>
+                      <span>Cortesia</span>
+                    </div>
+                  )}
                 </div>
+
 
                 <div className="border-t border-border pt-5">
                   <div className="flex justify-between font-serif text-xl">
