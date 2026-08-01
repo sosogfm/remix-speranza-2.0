@@ -43,6 +43,8 @@ import {
   AdminProductCategories,
   AdminCategories,
 } from "@/components/admin/AdminProductsExtras";
+import { AdminAccess } from "@/components/admin/AdminAccess";
+
 
 
 const orderStatuses = [
@@ -428,7 +430,9 @@ const Admin = () => {
               <TabsTrigger value="reviews" className="rounded-none">Avaliações</TabsTrigger>
               <TabsTrigger value="site" className="rounded-none">Informações</TabsTrigger>
               <TabsTrigger value="shipping" className="rounded-none">Frete</TabsTrigger>
+              <TabsTrigger value="access" className="rounded-none">Acessos</TabsTrigger>
             </TabsList>
+
             <TabsContent value="products" className="pt-4">
               <AdminProducts />
             </TabsContent>
@@ -455,6 +459,10 @@ const Admin = () => {
             <TabsContent value="shipping" className="pt-4">
               <AdminShipping />
             </TabsContent>
+            <TabsContent value="access" className="pt-4">
+              <AdminAccess />
+            </TabsContent>
+
           </Tabs>
 
         </div>
