@@ -12,6 +12,7 @@ export interface Workshop {
   eventDate: string;
   startTime: string | null;
   endTime: string | null;
+  durationMinutes: number | null;
   location: string;
   teacher: string | null;
   priceCents: number;
@@ -35,6 +36,7 @@ export const mapWorkshop = (r: any): Workshop => ({
   eventDate: r.event_date,
   startTime: r.start_time,
   endTime: r.end_time,
+  durationMinutes: r.duration_minutes ?? null,
   location: r.location,
   teacher: r.teacher,
   priceCents: r.price_cents,

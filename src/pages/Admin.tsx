@@ -37,6 +37,10 @@ import {
   AdminExperiences,
   AdminProductSale,
 } from "@/components/admin/AdminCatalog";
+import {
+  AdminNewProduct,
+  AdminProductImages,
+} from "@/components/admin/AdminProductsExtras";
 
 
 const orderStatuses = [
@@ -85,6 +89,8 @@ const AdminProducts = () => {
   if (isLoading) return <p className="text-muted-foreground py-10">Carregando…</p>;
 
   return (
+    <>
+    <AdminNewProduct />
     <Table>
       <TableHeader>
         <TableRow>
@@ -111,6 +117,7 @@ const AdminProducts = () => {
                 />
                 {savingId === p.id && <Loader2 className="w-3 h-3 animate-spin" />}
               </div>
+              <AdminProductImages productId={p.id} />
               {p.is_personalizable && <AdminPersonalizationEditor productId={p.id} />}
               <AdminProductSale product={p} />
               <details className="mt-3">
@@ -168,6 +175,7 @@ const AdminProducts = () => {
         ))}
       </TableBody>
     </Table>
+    </>
   );
 };
 
