@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, ShoppingBag, Trash2, Gift } from "lucide-react";
+import { GIFT_WRAP_CENTS } from "@/data/site";
 import { Layout } from "@/components/Layout";
 import { QuantitySelector } from "@/components/QuantitySelector";
 import { useCart } from "@/hooks/useCart";
@@ -183,7 +184,8 @@ const Cart = () => {
                         É um presente
                       </span>
                       <span className="text-muted-foreground">
-                        Embalamos com carinho, sem mostrar o valor.
+                        Caixa cartonada com as cores da marca + fita de cetim
+                        {" "}(+{formatBRL(GIFT_WRAP_CENTS)}), sem mostrar o valor.
                       </span>
                     </span>
                   </label>
@@ -202,7 +204,9 @@ const Cart = () => {
                 <div className="border-t border-border pt-4">
                   <div className="flex justify-between font-serif text-xl">
                     <span>Total parcial</span>
-                    <span>{formatBRL(subtotalCents)}</span>
+                    <span>
+                      {formatBRL(subtotalCents + (isGift ? GIFT_WRAP_CENTS : 0))}
+                    </span>
                   </div>
                 </div>
 

@@ -1,7 +1,7 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, ShoppingBag, Heart } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShoppingBag, Heart, MessageCircle } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { QuantitySelector } from "@/components/QuantitySelector";
@@ -12,7 +12,12 @@ import {
 } from "@/components/PersonalizationFields";
 import { collections, formatBRL, installmentLabel } from "@/data/products";
 import { useProduct, useProducts } from "@/hooks/useProducts";
-import { usePersonalizationFields } from "@/hooks/usePersonalization";
+import {
+  usePersonalizationFields,
+  totalExtraCents,
+} from "@/hooks/usePersonalization";
+import { site } from "@/data/site";
+
 import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useAuth } from "@/hooks/useAuth";
@@ -63,11 +68,12 @@ const ProductDetail = () => {
     .slice(0, 3);
   const outOfStock = product.stock <= 0;
   const parcelas = installmentLabel(product.priceCents, product.maxInstallments);
-  const extraCents = fields.reduce(
-    (t, f) => t + ((values[f.id] ?? "").trim() ? f.extraPriceCents : 0),
-    0
-  );
+  const extraCents = totalExtraCents(fields, values);
   const unitCents = product.priceCents + extraCents;
+  const quoteUrl = `${site.whatsapp}?text=${encodeURIComponent(
+    `Oi Júlia! Gostaria de um orçamento para: ${product.name}`
+  )}`;
+
   const handleAddToCart = () => {
     if (outOfStock) return;
     const missing = missingRequiredField(fields, values);
@@ -200,13 +206,27 @@ const ProductDetail = () => {
                 {product.name}
               </h1>
 
-              <p className="text-2xl font-serif mb-1">{formatBRL(unitCents)}</p>
+              <p className="text-2xl font-serif mb-1">
+                {product.isQuoteOnly && (
+                  <span className="text-sm text-muted-foreground mr-2">A partir de</span>
+                )}
+                {formatBRL(unitCents)}
+              </p>
               {extraCents > 0 && (
                 <p className="text-xs text-muted-foreground mb-1">
                   Inclui {formatBRL(extraCents)} de personalização
                 </p>
               )}
-              {parcelas && <p className="text-sm text-muted-foreground mb-8">{parcelas}</p>}
+              {parcelas && !product.isQuoteOnly && (
+                <p className="text-sm text-muted-foreground mb-8">{parcelas}</p>
+              )}
+              {product.isQuoteOnly && (
+                <p className="text-sm text-muted-foreground mb-8">
+                  O valor final depende da arte escolhida. Me chame no WhatsApp para
+                  fazermos juntas o seu orçamento.
+                </p>
+              )}
+
 
               <p className="text-muted-foreground leading-relaxed mb-8">
                 {product.longDescription}
@@ -229,7 +249,7 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              {!outOfStock && (
+              {!outOfStock && !product.isQuoteOnly && (
                 <PersonalizationFields
                   fields={fields}
                   values={values}
@@ -238,19 +258,33 @@ const ProductDetail = () => {
               )}
 
               <div className="flex items-center gap-4">
-                <QuantitySelector
-                  quantity={quantity}
-                  onQuantityChange={setQuantity}
-                  max={Math.max(product.stock, 1)}
-                />
-                <Button
-                  onClick={handleAddToCart}
-                  disabled={outOfStock}
-                  className="flex-1 rounded-none h-12 text-sm tracking-[0.15em] uppercase"
-                >
-                  <ShoppingBag className="w-4 h-4 mr-2" />
-                  {outOfStock ? "Esgotado" : "Adicionar à sacola"}
-                </Button>
+                {product.isQuoteOnly ? (
+                  <Button
+                    asChild
+                    className="flex-1 rounded-none h-12 text-sm tracking-[0.15em] uppercase"
+                  >
+                    <a href={quoteUrl} target="_blank" rel="noreferrer">
+                      <MessageCircle className="w-4 h-4 mr-2" />
+                      Pedir orçamento
+                    </a>
+                  </Button>
+                ) : (
+                  <>
+                    <QuantitySelector
+                      quantity={quantity}
+                      onQuantityChange={setQuantity}
+                      max={Math.max(product.stock, 1)}
+                    />
+                    <Button
+                      onClick={handleAddToCart}
+                      disabled={outOfStock}
+                      className="flex-1 rounded-none h-12 text-sm tracking-[0.15em] uppercase"
+                    >
+                      <ShoppingBag className="w-4 h-4 mr-2" />
+                      {outOfStock ? "Esgotado" : "Adicionar à sacola"}
+                    </Button>
+                  </>
+                )}
                 <Button
                   variant="outline"
                   onClick={handleWishlist}
@@ -265,6 +299,34 @@ const ProductDetail = () => {
                   />
                 </Button>
               </div>
+
+              <div className="mt-10 border-t border-border pt-6 space-y-3 text-xs text-muted-foreground leading-relaxed">
+                <p>
+                  <span className="font-semibold text-foreground">Prazo:</span> após a
+                  confirmação do pagamento, o prazo de produção é de 20 dias úteis.
+                </p>
+                <p>
+                  <span className="font-semibold text-foreground">Envios:</span> envio para
+                  todo o Brasil, via Correios ou Jadlog. O frete é calculado conforme o
+                  endereço e o peso da encomenda.
+                </p>
+                <p>
+                  <span className="font-semibold text-foreground">Retirada:</span> você pode
+                  retirar seu pedido no meu ateliê em Videira-SC, de segunda a sexta das
+                  13:30 às 18:00 e sábado das 9:00 ao meio-dia.
+                </p>
+                <p>
+                  <span className="font-semibold text-foreground">Queima:</span> todas as
+                  peças passam pela queima a 780°, o que funde a tinta na porcelana e torna a
+                  fixação duradoura. Antes disso, envio uma foto da arte para a sua aprovação.
+                </p>
+                <p>
+                  <span className="font-semibold text-foreground">Cuidados:</span> lave com o
+                  lado macio da esponja, não use lava-louças e não leve ao micro-ondas se a
+                  peça tiver ouro.
+                </p>
+              </div>
+
             </div>
           </div>
         </div>

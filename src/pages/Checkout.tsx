@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Loader2 } from "lucide-react";
+import { GIFT_WRAP_CENTS } from "@/data/site";
 import { Layout } from "@/components/Layout";
 import { useCart } from "@/hooks/useCart";
 import { useShippingQuote, onlyDigits } from "@/hooks/useShipping";
@@ -59,7 +60,8 @@ const Checkout = () => {
   );
 
   const shippingCents = shipping?.priceCents ?? 0;
-  const totalCents = subtotalCents + shippingCents;
+  const giftWrapCents = isGift ? GIFT_WRAP_CENTS : 0;
+  const totalCents = subtotalCents + shippingCents + giftWrapCents;
 
   const set = (field: string, value: string) =>
     setForm((f) => ({ ...f, [field]: value }));
@@ -112,6 +114,7 @@ const Checkout = () => {
           payment_method: paymentMethod,
           is_gift: isGift,
           gift_message: isGift ? giftMessage || null : null,
+          gift_wrap_cents: giftWrapCents,
         },
         _items: items.map((i) => ({
           product_id: i.product.id,
@@ -345,9 +348,11 @@ const Checkout = () => {
                   {isGift && (
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">
-                        Embalagem para presente
+                        Caixa para presente
                       </span>
-                      <span>Cortesia</span>
+                      <span>
+                        {giftWrapCents > 0 ? formatBRL(giftWrapCents) : "Cortesia"}
+                      </span>
                     </div>
                   )}
                 </div>

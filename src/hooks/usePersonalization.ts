@@ -6,7 +6,9 @@ export type PersonalizationFieldType =
   | "text"
   | "color"
   | "image"
-  | "choice";
+  | "choice"
+  | "addon"
+  | "size";
 
 export interface PersonalizationField {
   id: string;
@@ -15,6 +17,8 @@ export interface PersonalizationField {
   helpText: string | null;
   fieldType: PersonalizationFieldType;
   options: string[];
+  /** preço adicional por opção, em centavos (usado em "addon" e "size") */
+  optionPrices: Record<string, number>;
   maxLength: number;
   isRequired: boolean;
   extraPriceCents: number;
@@ -27,7 +31,43 @@ export const fieldTypeLabels: Record<PersonalizationFieldType, string> = {
   color: "Cor",
   image: "Imagem / desenho",
   choice: "Escolha",
+  addon: "Extras (marcar vários, com preço)",
+  size: "Tamanho (escolher um, com preço)",
 };
+
+/** tipos em que cada opção tem o seu próprio preço */
+export const isPricedOptionType = (t: PersonalizationFieldType) =>
+  t === "addon" || t === "size";
+
+/** separador usado para guardar várias opções marcadas em um só campo */
+export const ADDON_SEPARATOR = " + ";
+
+export const splitAddonValue = (value: string) =>
+  value
+    .split(ADDON_SEPARATOR)
+    .map((v) => v.trim())
+    .filter(Boolean);
+
+/** acréscimo em centavos de um campo, conforme o que foi preenchido/escolhido */
+export const fieldExtraCents = (
+  field: PersonalizationField,
+  value: string
+): number => {
+  const filled = (value ?? "").trim();
+  if (!filled) return 0;
+  if (isPricedOptionType(field.fieldType)) {
+    return splitAddonValue(filled).reduce(
+      (t, opt) => t + (field.optionPrices[opt] ?? 0),
+      0
+    );
+  }
+  return field.extraPriceCents;
+};
+
+export const totalExtraCents = (
+  fields: PersonalizationField[],
+  values: Record<string, string>
+) => fields.reduce((t, f) => t + fieldExtraCents(f, values[f.id] ?? ""), 0);
 
 const map = (r: any): PersonalizationField => ({
   id: r.id,
@@ -36,6 +76,7 @@ const map = (r: any): PersonalizationField => ({
   helpText: r.help_text,
   fieldType: r.field_type,
   options: r.options ?? [],
+  optionPrices: (r.option_prices ?? {}) as Record<string, number>,
   maxLength: r.max_length,
   isRequired: r.is_required,
   extraPriceCents: r.extra_price_cents,

@@ -284,6 +284,7 @@ export type Database = {
           is_required: boolean
           label: string
           max_length: number
+          option_prices: Json
           options: string[]
           position: number
           product_id: string
@@ -298,6 +299,7 @@ export type Database = {
           is_required?: boolean
           label: string
           max_length?: number
+          option_prices?: Json
           options?: string[]
           position?: number
           product_id: string
@@ -312,6 +314,7 @@ export type Database = {
           is_required?: boolean
           label?: string
           max_length?: number
+          option_prices?: Json
           options?: string[]
           position?: number
           product_id?: string
@@ -338,6 +341,7 @@ export type Database = {
           is_featured: boolean
           is_new: boolean
           is_personalizable: boolean
+          is_quote_only: boolean
           long_description: string | null
           materials: string | null
           max_installments: number
@@ -360,6 +364,7 @@ export type Database = {
           is_featured?: boolean
           is_new?: boolean
           is_personalizable?: boolean
+          is_quote_only?: boolean
           long_description?: string | null
           materials?: string | null
           max_installments?: number
@@ -382,6 +387,7 @@ export type Database = {
           is_featured?: boolean
           is_new?: boolean
           is_personalizable?: boolean
+          is_quote_only?: boolean
           long_description?: string | null
           materials?: string | null
           max_installments?: number
@@ -785,6 +791,8 @@ export type Database = {
         | "color"
         | "image"
         | "choice"
+        | "addon"
+        | "size"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -919,6 +927,8 @@ export const Constants = {
         "color",
         "image",
         "choice",
+        "addon",
+        "size",
       ],
     },
   },

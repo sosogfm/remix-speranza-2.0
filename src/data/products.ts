@@ -27,6 +27,8 @@ export interface Product {
   personalizationLabel: string;
   personalizationMaxLength: number;
   maxInstallments: number;
+  /** peça sob orçamento: mostra "a partir de" e leva para o WhatsApp */
+  isQuoteOnly?: boolean;
 }
 
 const PLACEHOLDER =
