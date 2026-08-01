@@ -27,7 +27,7 @@ export const site = {
   /** Versão enxuta para o rodapé */
   hoursCompact: [
     { day: "Seg – Sex", time: "13:30 – 18:00" },
-    { day: "Sáb", time: "09:00 – 12:00" },
+    { day: "Sáb", time: "\u00a0 \u00a0 \u00a0 \u00a009:00 –\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a012:00" },
     { day: "Dom", time: "Fechado" },
   ],
 };
