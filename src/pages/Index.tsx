@@ -179,17 +179,18 @@ const Index = () => {
               transition={{ duration: 0.6 }}
             >
               <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-3">
-                Just Arrived
+                Acabou de chegar
               </p>
               <h2 className="font-serif text-4xl md:text-5xl text-foreground">
-                Latest Products
+                Novidades do ateliê
               </h2>
             </motion.div>
             <Link
               to="/produtos"
               className="hidden md:flex items-center gap-3 text-sm font-medium tracking-[0.1em] uppercase text-muted-foreground hover:text-foreground transition-colors group"
             >
-              View All
+              Ver todas
+
               <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" />
             </Link>
           </div>
