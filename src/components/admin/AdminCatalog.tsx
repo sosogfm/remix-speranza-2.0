@@ -738,12 +738,12 @@ export const AdminProductSale = ({ product }: { product: any }) => {
         <Input
           type="number"
           defaultValue={product.low_stock_threshold ?? 3}
-          className="rounded-none h-11 text-base"
+          className="rounded-none h-12 text-base w-full"
           onBlur={(e) => update({ low_stock_threshold: Number(e.target.value) || 0 })}
         />
       </div>
       {product.sale_price_cents != null && (
-        <p className="text-sm text-muted-foreground sm:col-span-2 lg:col-span-4">
+        <p className="text-sm text-muted-foreground sm:col-span-2">
           De {formatBRL(product.price_cents)} por {formatBRL(product.sale_price_cents)} (
           {currentPct}% off)
         </p>
