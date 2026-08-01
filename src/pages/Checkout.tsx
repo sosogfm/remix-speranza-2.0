@@ -32,8 +32,9 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
-  const { items, getSubtotalCents, clearCart } = useCart();
+  const { items, getSubtotalCents, clearCart, isGift, giftMessage } = useCart();
   const subtotalCents = getSubtotalCents();
+
 
   const [form, setForm] = useState({
     name: "",
