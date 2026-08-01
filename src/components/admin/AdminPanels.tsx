@@ -465,37 +465,17 @@ export const AdminWorkshops = () => {
               <Input
                 defaultValue={w.start_time ?? ""}
                 placeholder="14:00"
-                className="rounded-none h-9"
-                onBlur={(e) =>
-                  update(w.id, {
-                    start_time: e.target.value || null,
-                    end_time: e.target.value
-                      ? addMinutes(e.target.value, w.duration_minutes ?? 0)
-                      : null,
-                  })
-                }
+                className="rounded-none h-10"
+                onBlur={(e) => update(w.id, { start_time: e.target.value || null })}
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs">
-                Duração (min){" "}
-                {w.end_time && (
-                  <span className="text-muted-foreground">· termina {w.end_time}</span>
-                )}
-              </Label>
+              <Label className="text-xs">Término</Label>
               <Input
-                type="number"
-                defaultValue={w.duration_minutes ?? ""}
-                placeholder="180"
-                className="rounded-none h-9"
-                onBlur={(e) => {
-                  const mins = Number(e.target.value) || null;
-                  update(w.id, {
-                    duration_minutes: mins,
-                    end_time:
-                      w.start_time && mins ? addMinutes(w.start_time, mins) : null,
-                  });
-                }}
+                defaultValue={w.end_time ?? ""}
+                placeholder="17:00"
+                className="rounded-none h-10"
+                onBlur={(e) => update(w.id, { end_time: e.target.value || null })}
               />
             </div>
             <div className="space-y-1">
