@@ -30,6 +30,7 @@ import {
   AdminPersonalizationEditor,
   AdminWorkshops,
 } from "@/components/admin/AdminPanels";
+import { AdminPrivateEvents } from "@/components/admin/AdminWorkshopExtras";
 
 
 const orderStatuses = [
