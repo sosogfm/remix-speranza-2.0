@@ -84,7 +84,7 @@ const Workshops = () => {
           <p className="text-sm text-muted-foreground mt-6">
             {site.address} · Dúvidas pelo{" "}
             <a
-              href={site.social.whatsapp}
+              href={site.whatsapp}
               target="_blank"
               rel="noreferrer"
               className="text-primary hover:underline"
@@ -108,7 +108,7 @@ const Workshops = () => {
                 breve.
               </p>
               <Button asChild variant="outline" className="rounded-none">
-                <a href={site.social.instagram} target="_blank" rel="noreferrer">
+                <a href={site.instagram} target="_blank" rel="noreferrer">
                   Acompanhar no Instagram
                 </a>
               </Button>
