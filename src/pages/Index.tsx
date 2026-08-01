@@ -7,6 +7,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { CollectionCard } from "@/components/CollectionCard";
 import { collections } from "@/data/products";
 import { useProducts } from "@/hooks/useProducts";
+import { site } from "@/data/site";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
@@ -41,7 +42,7 @@ const Index = () => {
         <motion.div className="absolute inset-0" style={{ y: heroImageY }}>
           <img
             src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920&q=80"
-            alt="Curated home lifestyle"
+            alt="Porcelana artesanal Speranza Ateliê"
             className="w-full h-[120%] object-cover animate-ken-burns"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-charcoal/30 via-charcoal/10 to-charcoal/50" />
@@ -344,7 +345,7 @@ const Index = () => {
             {instagramImages.map((image, index) => (
               <motion.a
                 key={index}
-                href="https://instagram.com"
+                href={site.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -355,7 +356,7 @@ const Index = () => {
               >
                 <img
                   src={image}
-                  alt="Instagram post"
+                  alt="Publicação do Speranza Ateliê no Instagram"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/40 transition-colors duration-300 flex items-center justify-center">
