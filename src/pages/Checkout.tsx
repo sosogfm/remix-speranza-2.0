@@ -241,26 +241,30 @@ const Checkout = () => {
             Finalizar pedido
           </motion.h1>
 
-          <form onSubmit={handleSubmit} className="grid lg:grid-cols-12 gap-12 lg:gap-16">
+          <form onSubmit={handleSubmit} noValidate className="grid lg:grid-cols-12 gap-12 lg:gap-16">
             <div className="lg:col-span-7 space-y-10">
               <div className="space-y-5">
                 <h2 className="font-serif text-2xl">Seus dados</h2>
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="name">Nome completo</Label>
-                    <Input id="name" required className="rounded-none" value={form.name} onChange={(e) => set("name", e.target.value)} />
+                    <Input id="name" className={`rounded-none ${errClass("name")}`} value={form.name} onChange={(e) => set("name", e.target.value)} />
+                    <FieldError name="name" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="email">E-mail</Label>
-                    <Input id="email" type="email" required className="rounded-none" value={form.email} onChange={(e) => set("email", e.target.value)} />
+                    <Input id="email" type="email" className={`rounded-none ${errClass("email")}`} value={form.email} onChange={(e) => set("email", e.target.value)} />
+                    <FieldError name="email" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">Telefone / WhatsApp</Label>
-                    <Input id="phone" required className="rounded-none" value={form.phone} onChange={(e) => set("phone", e.target.value)} />
+                    <Input id="phone" className={`rounded-none ${errClass("phone")}`} value={form.phone} onChange={(e) => set("phone", e.target.value)} />
+                    <FieldError name="phone" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="document">CPF ou CNPJ</Label>
-                    <Input id="document" required className="rounded-none" value={form.document} onChange={(e) => set("document", e.target.value)} />
+                    <Input id="document" className={`rounded-none ${errClass("document")}`} value={form.document} onChange={(e) => set("document", e.target.value)} />
+                    <FieldError name="document" />
                   </div>
                 </div>
               </div>
@@ -270,7 +274,8 @@ const Checkout = () => {
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="cep">CEP</Label>
-                    <Input id="cep" required maxLength={9} className="rounded-none" value={form.postalCode} onChange={(e) => set("postalCode", e.target.value)} />
+                    <Input id="cep" maxLength={9} className={`rounded-none ${errClass("cep")}`} value={form.postalCode} onChange={(e) => set("postalCode", e.target.value)} />
+                    <FieldError name="cep" />
                     {loadingShipping && (
                       <p className="text-xs text-muted-foreground">Calculando frete…</p>
                     )}
@@ -282,15 +287,18 @@ const Checkout = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="neighborhood">Bairro</Label>
-                    <Input id="neighborhood" required className="rounded-none" value={form.neighborhood} onChange={(e) => set("neighborhood", e.target.value)} />
+                    <Input id="neighborhood" className={`rounded-none ${errClass("neighborhood")}`} value={form.neighborhood} onChange={(e) => set("neighborhood", e.target.value)} />
+                    <FieldError name="neighborhood" />
                   </div>
                   <div className="space-y-2 sm:col-span-2">
                     <Label htmlFor="address">Endereço</Label>
-                    <Input id="address" required className="rounded-none" value={form.addressLine} onChange={(e) => set("addressLine", e.target.value)} />
+                    <Input id="address" className={`rounded-none ${errClass("address")}`} value={form.addressLine} onChange={(e) => set("addressLine", e.target.value)} />
+                    <FieldError name="address" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="number">Número</Label>
-                    <Input id="number" required className="rounded-none" value={form.addressNumber} onChange={(e) => set("addressNumber", e.target.value)} />
+                    <Input id="number" className={`rounded-none ${errClass("number")}`} value={form.addressNumber} onChange={(e) => set("addressNumber", e.target.value)} />
+                    <FieldError name="number" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="complement">Complemento</Label>
@@ -298,12 +306,15 @@ const Checkout = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="city">Cidade</Label>
-                    <Input id="city" required className="rounded-none" value={form.city} onChange={(e) => set("city", e.target.value)} />
+                    <Input id="city" className={`rounded-none ${errClass("city")}`} value={form.city} onChange={(e) => set("city", e.target.value)} />
+                    <FieldError name="city" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="state">Estado (UF)</Label>
-                    <Input id="state" required maxLength={2} className="rounded-none uppercase" value={form.state} onChange={(e) => set("state", e.target.value.toUpperCase())} />
+                    <Input id="state" maxLength={2} className={`rounded-none uppercase ${errClass("state")}`} value={form.state} onChange={(e) => set("state", e.target.value.toUpperCase())} />
+                    <FieldError name="state" />
                   </div>
+
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="notes">Observações do pedido</Label>
