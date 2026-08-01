@@ -20,6 +20,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import {
+  AdminQuestionBlocks,
+  WorkshopBlockPicker,
+} from "@/components/admin/AdminWorkshopExtras";
 
 /** Editor dos campos de personalização de uma peça */
 export const AdminPersonalizationEditor = ({ productId }: { productId: string }) => {
