@@ -214,6 +214,9 @@ export const PrivateEventPanel = () => {
                   maxLength={800}
                 />
               </div>
+              <p className="text-xs text-muted-foreground">
+                Entendo que precisarei acertar o valor adiantado*
+              </p>
               <Button
                 type="submit"
                 disabled={sending}
