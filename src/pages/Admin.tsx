@@ -383,6 +383,9 @@ const Admin = () => {
             <TabsContent value="workshops" className="pt-8">
               <AdminWorkshops />
             </TabsContent>
+            <TabsContent value="events" className="pt-8">
+              <AdminPrivateEvents />
+            </TabsContent>
             <TabsContent value="shipping" className="pt-8">
               <AdminShipping />
             </TabsContent>
