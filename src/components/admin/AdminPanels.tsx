@@ -26,6 +26,8 @@ import {
   AdminQuestionBlocks,
   WorkshopBlockPicker,
 } from "@/components/admin/AdminWorkshopExtras";
+import { AdminNewWorkshop } from "@/components/admin/AdminCatalog";
+import { uploadSiteImage } from "@/lib/storage";
 
 /** Editor dos campos de personalização de uma peça */
 export const AdminPersonalizationEditor = ({ productId }: { productId: string }) => {
@@ -164,6 +166,23 @@ export const AdminPersonalizationEditor = ({ productId }: { productId: string })
     invalidate();
   };
 
+  /** imagem por opção (ex.: foto do urso no tamanho P) */
+  const setOptionImage = async (field: any, option: string, file: File) => {
+    try {
+      const path = await uploadSiteImage(file, `options/${productId}`);
+      const images = { ...(field.option_images ?? {}), [option]: path };
+      const { error } = await supabase
+        .from("product_personalization_fields")
+        .update({ option_images: images })
+        .eq("id", field.id);
+      if (error) throw error;
+      toast({ title: "Imagem da opção salva" });
+      invalidate();
+    } catch (e: any) {
+      toast({ title: "Erro ao enviar", description: e.message, variant: "destructive" });
+    }
+  };
+
   return (
     <div className="mt-3">
       <button
@@ -202,6 +221,27 @@ export const AdminPersonalizationEditor = ({ productId }: { productId: string })
                         .join(", ")})`}
                     {f.extra_price_cents > 0 && ` · +${formatBRL(f.extra_price_cents)}`}
                     {f.is_required ? " · obrigatório" : " · opcional"}
+                    {isPricedOptionType(f.field_type) && f.options?.length > 0 && (
+                      <span className="mt-2 flex flex-wrap gap-2">
+                        {f.options.map((o: string) => (
+                          <label
+                            key={o}
+                            className="inline-flex items-center gap-1 border border-border px-2 py-1 text-[11px] cursor-pointer"
+                          >
+                            {f.option_images?.[o] ? "Trocar" : "Imagem"} · {o}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) setOptionImage(f, o, file);
+                              }}
+                            />
+                          </label>
+                        ))}
+                      </span>
+                    )}
                   </span>
                   <button
                     onClick={() => remove(f.id)}
@@ -355,19 +395,38 @@ export const AdminWorkshops = () => {
     qc.invalidateQueries({ queryKey: ["workshops"] });
   };
 
+  const remove = async (id: string) => {
+    const { error } = await supabase.from("workshops").delete().eq("id", id);
+    if (error) {
+      toast({ title: "Erro ao excluir", description: error.message, variant: "destructive" });
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ["admin-workshops"] });
+    qc.invalidateQueries({ queryKey: ["workshops"] });
+  };
+
   if (isLoading) return <p className="text-muted-foreground py-10">Carregando…</p>;
 
   return (
     <div className="space-y-6">
+      <AdminNewWorkshop />
       <AdminQuestionBlocks />
       {(workshops as any[]).map((w) => (
         <div key={w.id} className="border border-border p-6 space-y-4">
           <div className="flex flex-wrap justify-between gap-4">
-            <div>
-              <p className="font-serif text-xl">{w.title}</p>
+            <div className="space-y-2 flex-1 min-w-72">
+              <Input
+                defaultValue={w.title}
+                className="rounded-none h-10 font-serif text-lg"
+                onBlur={(e) =>
+                  e.target.value.trim() &&
+                  e.target.value !== w.title &&
+                  update(w.id, { title: e.target.value.trim() })
+                }
+              />
               <p className="text-sm text-muted-foreground">
-                {w.event_date} · {w.location} · {formatBRL(w.price_cents)} ·{" "}
-                {w.spots_taken} de {w.total_spots} vagas ocupadas
+                {w.spots_taken} de {w.total_spots} vagas ocupadas ·{" "}
+                {formatBRL(w.price_cents)}
               </p>
             </div>
             <div className="flex items-center gap-6">
@@ -389,6 +448,59 @@ export const AdminWorkshops = () => {
           </div>
 
           <div className="grid sm:grid-cols-3 gap-4">
+            <div className="space-y-1">
+              <Label className="text-xs">Data</Label>
+              <Input
+                type="date"
+                defaultValue={w.event_date}
+                className="rounded-none h-9"
+                onBlur={(e) =>
+                  e.target.value && update(w.id, { event_date: e.target.value })
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Início</Label>
+              <Input
+                defaultValue={w.start_time ?? ""}
+                className="rounded-none h-9"
+                onBlur={(e) => update(w.id, { start_time: e.target.value || null })}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Término</Label>
+              <Input
+                defaultValue={w.end_time ?? ""}
+                className="rounded-none h-9"
+                onBlur={(e) => update(w.id, { end_time: e.target.value || null })}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Local</Label>
+              <Input
+                defaultValue={w.location ?? ""}
+                className="rounded-none h-9"
+                onBlur={(e) =>
+                  e.target.value.trim() && update(w.id, { location: e.target.value.trim() })
+                }
+              />
+            </div>
+            <div className="space-y-1 sm:col-span-2">
+              <Label className="text-xs">Resumo</Label>
+              <Input
+                defaultValue={w.summary ?? ""}
+                className="rounded-none h-9"
+                onBlur={(e) => update(w.id, { summary: e.target.value || null })}
+              />
+            </div>
+            <div className="space-y-1 sm:col-span-3">
+              <Label className="text-xs">Descrição</Label>
+              <Textarea
+                defaultValue={w.description ?? ""}
+                className="rounded-none min-h-24"
+                onBlur={(e) => update(w.id, { description: e.target.value || null })}
+              />
+            </div>
             <div className="space-y-1">
               <Label className="text-xs">Vagas totais</Label>
               <Input
@@ -427,6 +539,15 @@ export const AdminWorkshops = () => {
           </div>
 
           <WorkshopBlockPicker workshopId={w.id} />
+
+          <Button
+            variant="outline"
+            onClick={() => remove(w.id)}
+            className="rounded-none h-9 text-xs tracking-[0.15em] uppercase"
+          >
+            <Trash2 className="w-3.5 h-3.5 mr-2" />
+            Excluir oficina
+          </Button>
 
 
           <div>
