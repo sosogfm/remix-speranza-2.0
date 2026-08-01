@@ -7,7 +7,8 @@ import {
   Workshop,
 } from "@/hooks/useWorkshops";
 import { formatBRL } from "@/data/products";
-import { site } from "@/data/site";
+import { site, workshopsAbout, firingInfo } from "@/data/site";
+import { PrivateEventPanel } from "@/components/PrivateEventPanel";
 import { Button } from "@/components/ui/button";
 
 const WorkshopCard = ({ w, index }: { w: Workshop; index: number }) => (
@@ -76,10 +77,11 @@ const Workshops = () => {
             Oficinas
           </h1>
           <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-            Um convite para desacelerar e se reconectar com o que é simples e
-            essencial. Em um ambiente acolhedor, você aprende as bases da arte em
-            porcelana e cerâmica — sem precisar de experiência. Vagas limitadas,
-            materiais, queima das peças e café da tarde inclusos.
+            Faço um convite para você desacelerar e se reconectar com o que é
+            simples e essencial. No meu ateliê, em um ambiente acolhedor, te
+            ensino as bases da arte em porcelana e cerâmica — sem precisar de
+            experiência. Vagas limitadas, com materiais, queima das peças e café
+            da tarde inclusos.
           </p>
           <p className="text-sm text-muted-foreground mt-6">
             {site.address} · Dúvidas pelo{" "}
@@ -95,8 +97,17 @@ const Workshops = () => {
         </div>
       </section>
 
+      <section className="pt-14 md:pt-20">
+        <div className="container-full">
+          <PrivateEventPanel />
+        </div>
+      </section>
+
       <section className="py-16 md:py-20">
         <div className="container-full">
+          <h2 className="font-serif text-2xl md:text-3xl mb-10">
+            Próximas turmas
+          </h2>
           {isLoading ? (
             <p className="text-center text-muted-foreground py-16">
               Carregando oficinas…
@@ -104,8 +115,8 @@ const Workshops = () => {
           ) : published.length === 0 ? (
             <div className="text-center py-16 space-y-5">
               <p className="text-muted-foreground">
-                Nenhuma turma aberta no momento. Novas datas são anunciadas em
-                breve.
+                Ainda não tenho turma aberta no momento. Anuncio as novas datas
+                em breve.
               </p>
               <Button asChild variant="outline" className="rounded-none">
                 <a href={site.instagram} target="_blank" rel="noreferrer">
@@ -122,8 +133,24 @@ const Workshops = () => {
           )}
         </div>
       </section>
+
+      <section className="pb-20 md:pb-28">
+        <div className="container-narrow grid md:grid-cols-2 gap-12">
+          {[workshopsAbout, firingInfo].map((block) => (
+            <div key={block.title} className="space-y-4">
+              <h2 className="font-serif text-2xl">{block.title}</h2>
+              {block.paragraphs.map((p) => (
+                <p key={p} className="text-muted-foreground leading-relaxed text-sm">
+                  {p}
+                </p>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
     </Layout>
   );
 };
+
 
 export default Workshops;

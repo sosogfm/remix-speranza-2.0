@@ -17,8 +17,8 @@ export const Footer = () => {
                 {site.name}
               </Link>
               <p className="mt-3 text-sm text-background/50 leading-relaxed max-w-sm">
-                {site.tagline}. Oficinas e aulas de arte. De {site.city} para
-                todo o Brasil.
+                {site.tagline}. Promovo oficinas e aulas de arte. De {site.city}{" "}
+                para todo o Brasil.
               </p>
             </div>
 
@@ -56,13 +56,13 @@ export const Footer = () => {
       </div>
 
       <div className="container-full py-12 md:py-16">
-        <div className="grid gap-10 md:grid-cols-4">
-          <div>
+        <div className="grid gap-10 md:grid-cols-5">
+          <div className="md:col-span-2">
             <h4 className="text-[11px] font-semibold tracking-[0.25em] uppercase text-background/40 mb-5">
               Categorias
             </h4>
-            <ul className="space-y-3">
-              {collections.slice(0, 6).map((collection) => (
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-3">
+              {collections.map((collection) => (
                 <li key={collection.id}>
                   <Link
                     to={`/produtos?colecao=${collection.slug}`}
@@ -104,7 +104,7 @@ export const Footer = () => {
               Atendimento
             </h4>
             <ul className="space-y-2">
-              {site.hours.map((h) => (
+              {site.hoursCompact.map((h) => (
                 <li
                   key={h.day}
                   className="text-sm text-background/60 flex justify-between gap-4"
@@ -136,13 +136,11 @@ export const Footer = () => {
                   {site.phone}
                 </a>
               </li>
-              <li className="text-sm text-background/40 leading-relaxed">
-                Peças feitas à mão por {site.artist}.
-              </li>
             </ul>
           </div>
         </div>
       </div>
+
 
       <div className="border-t border-background/10">
         <div className="container-full py-6 flex flex-col md:flex-row justify-between items-center gap-4">

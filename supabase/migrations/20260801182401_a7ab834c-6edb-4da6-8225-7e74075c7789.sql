@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS public.register_workshop_guest(uuid, text, text, text, text, boolean, text, boolean);

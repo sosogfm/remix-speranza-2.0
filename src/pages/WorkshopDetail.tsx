@@ -18,12 +18,19 @@ import {
 } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { saveGuestRegistration } from "@/lib/guestOrders";
+import {
+  useWorkshopQuestionBlocks,
+  answerExtraCents,
+  BlockAnswer,
+} from "@/hooks/useQuestionBlocks";
+import { WorkshopQuestionFields } from "@/components/WorkshopQuestionFields";
 
 const dietOptions = ["Nenhuma", "Vegetariano", "Vegano", "Sem glúten"];
 
 const WorkshopDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: workshop, isLoading } = useWorkshop(slug);
+  const { data: blocks = [] } = useWorkshopQuestionBlocks(workshop?.id);
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -34,6 +41,7 @@ const WorkshopDetail = () => {
   const [diet, setDiet] = useState("Nenhuma");
   const [glazing, setGlazing] = useState(false);
   const [notes, setNotes] = useState("");
+  const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [submitting, setSubmitting] = useState(false);
 
   if (isLoading) {
@@ -59,16 +67,40 @@ const WorkshopDetail = () => {
     );
   }
 
-  const total =
-    workshop.priceCents + (glazing ? workshop.glazingPriceCents : 0);
-  const waitlist = workshop.isSoldOut;
+  const blockAnswers: BlockAnswer[] = blocks
+    .filter((b) => (answers[b.id] ?? []).filter(Boolean).length > 0)
+    .map((b) => ({
+      block_id: b.id,
+      question: b.question,
+      answer: (answers[b.id] ?? []).filter(Boolean),
+      extra_cents: answerExtraCents(b, answers[b.id] ?? []),
+    }));
+
+  const blocksExtra = blockAnswers.reduce((s, a) => s + a.extra_cents, 0);
+  const glazingExtra = glazing ? workshop.glazingPriceCents : 0;
+  const extraCents = glazingExtra + blocksExtra;
+  const total = workshop.priceCents + extraCents;
+  const spotsLeft = Math.max(workshop.totalSpots - workshop.spotsTaken, 0);
+  const waitlist = workshop.isSoldOut || spotsLeft === 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName.trim() || !phone.trim()) {
       toast({
         title: "Preencha nome e telefone",
-        description: "É por telefone que a Júlia entra em contato.",
+        description: "É por telefone que eu entro em contato com você.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const missing = blocks.find(
+      (b) => b.is_required && !(answers[b.id] ?? []).filter(Boolean).length
+    );
+    if (missing) {
+      toast({
+        title: "Falta responder uma pergunta",
+        description: missing.question,
         variant: "destructive",
       });
       return;
@@ -86,6 +118,8 @@ const WorkshopDetail = () => {
         _wants_glazing: glazing,
         _notes: notes.trim() || null,
         _is_waitlist: waitlist,
+        _answers: blockAnswers as any,
+        _extra_cents: extraCents,
       }
     );
     setSubmitting(false);
@@ -115,7 +149,7 @@ const WorkshopDetail = () => {
 
     toast({
       title: waitlist ? "Você entrou na lista de espera" : "Inscrição enviada",
-      description: "A Júlia entra em contato pelo WhatsApp para confirmar sua vaga.",
+      description: "Eu te chamo no WhatsApp para confirmar sua vaga.",
     });
     navigate("/minha-conta");
   };
@@ -201,11 +235,17 @@ const WorkshopDetail = () => {
                 </p>
               </div>
 
-              {waitlist && (
+              {waitlist ? (
                 <p className="text-sm text-destructive">
                   Turma esgotada — preencha para entrar na lista de espera.
                 </p>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {spotsLeft} {spotsLeft === 1 ? "vaga disponível" : "vagas disponíveis"} de{" "}
+                  {workshop.totalSpots}
+                </p>
               )}
+
 
               {(
 
@@ -259,6 +299,15 @@ const WorkshopDetail = () => {
                     </RadioGroup>
                   </div>
 
+                  <WorkshopQuestionFields
+                    blocks={blocks}
+                    values={answers}
+                    onChange={(id, v) =>
+                      setAnswers((prev) => ({ ...prev, [id]: v }))
+                    }
+                  />
+
+
                   {workshop.glazingAvailable && (
                     <label className="flex items-start gap-3 cursor-pointer">
                       <Checkbox
@@ -299,7 +348,7 @@ const WorkshopDetail = () => {
               )}
 
               <p className="text-xs text-muted-foreground">
-                Dúvidas? Fale com a Júlia pelo{" "}
+                Dúvidas? Me chame no{" "}
                 <a
                   href={site.whatsapp}
                   target="_blank"

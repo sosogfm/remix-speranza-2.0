@@ -197,6 +197,48 @@ export type Database = {
         }
         Relationships: []
       }
+      private_event_requests: {
+        Row: {
+          created_at: string
+          desired_date: string | null
+          email: string | null
+          experience_type: string
+          full_name: string
+          group_size: number | null
+          id: string
+          message: string | null
+          phone: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          desired_date?: string | null
+          email?: string | null
+          experience_type?: string
+          full_name: string
+          group_size?: number | null
+          id?: string
+          message?: string | null
+          phone: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          desired_date?: string | null
+          email?: string | null
+          experience_type?: string
+          full_name?: string
+          group_size?: number | null
+          id?: string
+          message?: string | null
+          phone?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       product_images: {
         Row: {
           alt_text: string | null
@@ -478,10 +520,87 @@ export type Database = {
           },
         ]
       }
-      workshop_registrations: {
+      workshop_question_block_links: {
+        Row: {
+          block_id: string
+          created_at: string
+          id: string
+          position: number
+          workshop_id: string
+        }
+        Insert: {
+          block_id: string
+          created_at?: string
+          id?: string
+          position?: number
+          workshop_id: string
+        }
+        Update: {
+          block_id?: string
+          created_at?: string
+          id?: string
+          position?: number
+          workshop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workshop_question_block_links_block_id_fkey"
+            columns: ["block_id"]
+            isOneToOne: false
+            referencedRelation: "workshop_question_blocks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workshop_question_block_links_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workshop_question_blocks: {
         Row: {
           created_at: string
+          field_type: string
+          help_text: string | null
+          id: string
+          is_required: boolean
+          name: string
+          options: Json
+          question: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          field_type?: string
+          help_text?: string | null
+          id?: string
+          is_required?: boolean
+          name: string
+          options?: Json
+          question: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          field_type?: string
+          help_text?: string | null
+          id?: string
+          is_required?: boolean
+          name?: string
+          options?: Json
+          question?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      workshop_registrations: {
+        Row: {
+          answers: Json
+          created_at: string
           dietary_restriction: string
+          extra_cents: number
           full_name: string
           id: string
           instagram: string | null
@@ -496,8 +615,10 @@ export type Database = {
           workshop_id: string
         }
         Insert: {
+          answers?: Json
           created_at?: string
           dietary_restriction?: string
+          extra_cents?: number
           full_name: string
           id?: string
           instagram?: string | null
@@ -512,8 +633,10 @@ export type Database = {
           workshop_id: string
         }
         Update: {
+          answers?: Json
           created_at?: string
           dietary_restriction?: string
+          extra_cents?: number
           full_name?: string
           id?: string
           instagram?: string | null
@@ -640,7 +763,9 @@ export type Database = {
       }
       register_workshop_guest: {
         Args: {
+          _answers?: Json
           _dietary_restriction?: string
+          _extra_cents?: number
           _full_name: string
           _instagram?: string
           _is_waitlist?: boolean

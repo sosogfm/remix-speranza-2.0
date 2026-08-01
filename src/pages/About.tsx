@@ -41,8 +41,8 @@ const About = () => {
               <span className="italic font-normal">pintadas à mão</span>
             </h1>
             <p className="text-base md:text-lg text-white/70 max-w-lg leading-relaxed">
-              De Videira, Santa Catarina, para todo o Brasil — peças feitas com
-              tempo, cuidado e afeto por Júlia Brandalise.
+              De Videira, Santa Catarina, para todo o Brasil — peças que faço
+              com tempo, cuidado e afeto.
             </p>
           </motion.div>
         </div>
