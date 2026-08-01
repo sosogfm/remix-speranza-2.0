@@ -32,8 +32,9 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user } = useAuth();
-  const { items, getSubtotalCents, clearCart } = useCart();
+  const { items, getSubtotalCents, clearCart, isGift, giftMessage } = useCart();
   const subtotalCents = getSubtotalCents();
+
 
   const [form, setForm] = useState({
     name: "",
@@ -70,7 +71,7 @@ const Checkout = () => {
         <div className="container-narrow py-28 text-center space-y-6">
           <h1 className="font-serif text-4xl">Sua sacola está vazia</h1>
           <Button asChild className="rounded-none px-8 text-sm tracking-[0.1em] uppercase">
-            <Link to="/products">Ver peças</Link>
+            <Link to="/produtos">Ver peças</Link>
           </Button>
         </div>
       </Layout>
@@ -112,6 +113,8 @@ const Checkout = () => {
           total_cents: totalCents,
           installments: Number(installments),
           payment_method: paymentMethod,
+          is_gift: isGift,
+          gift_message: isGift ? giftMessage || null : null,
         })
         .select("id, order_number")
         .single();
@@ -123,10 +126,11 @@ const Checkout = () => {
           order_id: order.id,
           product_id: i.product.id,
           product_name: i.product.name,
-          unit_price_cents: i.product.priceCents,
+          unit_price_cents: i.product.priceCents + (i.extraCents || 0),
           quantity: i.quantity,
           personalization_text: i.personalization ?? null,
         }))
+
       );
       if (itemsError) throw itemsError;
 
@@ -148,7 +152,7 @@ const Checkout = () => {
     <Layout>
       <div className="container-full py-6 border-b border-border">
         <Link
-          to="/cart"
+          to="/sacola"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="w-4 h-4" /> Voltar para a sacola
@@ -296,8 +300,12 @@ const Checkout = () => {
                         <p className="text-muted-foreground">Qtd: {item.quantity}</p>
                       </div>
                       <p className="text-sm">
-                        {formatBRL(item.product.priceCents * item.quantity)}
+                        {formatBRL(
+                          (item.product.priceCents + (item.extraCents || 0)) *
+                            item.quantity
+                        )}
                       </p>
+
                     </div>
                   ))}
                 </div>
@@ -317,7 +325,16 @@ const Checkout = () => {
                         : formatBRL(shippingCents)}
                     </span>
                   </div>
+                  {isGift && (
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">
+                        Embalagem para presente
+                      </span>
+                      <span>Cortesia</span>
+                    </div>
+                  )}
                 </div>
+
 
                 <div className="border-t border-border pt-5">
                   <div className="flex justify-between font-serif text-xl">

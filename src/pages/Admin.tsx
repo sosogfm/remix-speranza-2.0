@@ -26,6 +26,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import {
+  AdminPersonalizationEditor,
+  AdminWorkshops,
+} from "@/components/admin/AdminPanels";
+
 
 const orderStatuses = [
   { value: "pending", label: "Aguardando pagamento" },
@@ -86,22 +91,23 @@ const AdminProducts = () => {
       <TableBody>
         {products.map((p: any) => (
           <TableRow key={p.id}>
-            <TableCell className="font-serif text-base">
+            <TableCell className="font-serif text-base align-top">
               {p.name}
               {savingId === p.id && (
                 <Loader2 className="inline w-3 h-3 ml-2 animate-spin" />
               )}
+              {p.is_personalizable && <AdminPersonalizationEditor productId={p.id} />}
             </TableCell>
             <TableCell>{formatBRL(p.price_cents)}</TableCell>
             <TableCell>
               <Input
                 type="number"
                 min={0}
-                defaultValue={p.stock}
+                defaultValue={p.stock_quantity}
                 className="rounded-none h-9 w-24"
                 onBlur={(e) => {
                   const v = Number(e.target.value);
-                  if (v !== p.stock) update(p.id, { stock: v });
+                  if (v !== p.stock_quantity) update(p.id, { stock_quantity: v });
                 }}
               />
             </TableCell>
@@ -123,6 +129,7 @@ const AdminProducts = () => {
     </Table>
   );
 };
+
 
 const AdminOrders = () => {
   const { toast } = useToast();
@@ -363,6 +370,7 @@ const Admin = () => {
             <TabsList className="rounded-none">
               <TabsTrigger value="products" className="rounded-none">Peças e estoque</TabsTrigger>
               <TabsTrigger value="orders" className="rounded-none">Pedidos</TabsTrigger>
+              <TabsTrigger value="workshops" className="rounded-none">Oficinas</TabsTrigger>
               <TabsTrigger value="shipping" className="rounded-none">Frete</TabsTrigger>
             </TabsList>
             <TabsContent value="products" className="pt-8">
@@ -371,10 +379,14 @@ const Admin = () => {
             <TabsContent value="orders" className="pt-8">
               <AdminOrders />
             </TabsContent>
+            <TabsContent value="workshops" className="pt-8">
+              <AdminWorkshops />
+            </TabsContent>
             <TabsContent value="shipping" className="pt-8">
               <AdminShipping />
             </TabsContent>
           </Tabs>
+
         </div>
       </section>
     </Layout>

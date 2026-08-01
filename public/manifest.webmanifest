@@ -1,0 +1,30 @@
+{
+  "name": "Speranza Ateliê — Porcelanas pintadas à mão",
+  "short_name": "Speranza",
+  "description": "Loja e oficinas do Speranza Ateliê: porcelanas afetivas pintadas à mão em Videira, SC.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf8f5",
+  "theme_color": "#8c6f52",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

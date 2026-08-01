@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeCollection = searchParams.get("collection") ?? "all";
+  const activeCollection = searchParams.get("colecao") ?? "all";
   const [sort, setSort] = useState("featured");
   const [onlyPersonalizable, setOnlyPersonalizable] = useState(false);
   const [onlyInStock, setOnlyInStock] = useState(false);
@@ -55,7 +55,7 @@ const Products = () => {
 
   const setCollection = (slug: string) => {
     if (slug === "all") setSearchParams({});
-    else setSearchParams({ collection: slug });
+    else setSearchParams({ colecao: slug });
   };
 
   const current = collections.find((c) => c.slug === activeCollection);
@@ -158,7 +158,7 @@ const Products = () => {
                 Nenhuma peça encontrada com esses filtros.
               </p>
               <Button asChild variant="outline" className="rounded-none">
-                <Link to="/products">Ver todas as peças</Link>
+                <Link to="/produtos">Ver todas as peças</Link>
               </Button>
             </div>
           ) : (

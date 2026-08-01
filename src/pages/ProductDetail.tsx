@@ -1,16 +1,22 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShoppingBag, Heart } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { QuantitySelector } from "@/components/QuantitySelector";
+import {
+  PersonalizationFields,
+  buildPersonalizationValues,
+  missingRequiredField,
+} from "@/components/PersonalizationFields";
 import { collections, formatBRL, installmentLabel } from "@/data/products";
 import { useProduct, useProducts } from "@/hooks/useProducts";
+import { usePersonalizationFields } from "@/hooks/usePersonalization";
 import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -18,10 +24,14 @@ const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: product, isLoading } = useProduct(slug);
   const { data: allProducts = [] } = useProducts();
+  const { data: fields = [] } = usePersonalizationFields(product?.id);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [personalization, setPersonalization] = useState("");
+  const [values, setValues] = useState<Record<string, string>>({});
   const { addItem: addToCart } = useCart();
+  const { toggle, isInWishlist } = useWishlist();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   if (isLoading) {
@@ -40,7 +50,7 @@ const ProductDetail = () => {
         <div className="container-wide py-28 text-center">
           <h1 className="font-serif text-4xl mb-4">Peça não encontrada</h1>
           <Button asChild className="rounded-none px-8 text-sm tracking-[0.1em] uppercase">
-            <Link to="/products">Ver todas as peças</Link>
+            <Link to="/produtos">Ver todas as peças</Link>
           </Button>
         </div>
       </Layout>
@@ -53,24 +63,46 @@ const ProductDetail = () => {
     .slice(0, 3);
   const outOfStock = product.stock <= 0;
   const parcelas = installmentLabel(product.priceCents, product.maxInstallments);
+  const extraCents = fields.reduce(
+    (t, f) => t + ((values[f.id] ?? "").trim() ? f.extraPriceCents : 0),
+    0
+  );
+  const unitCents = product.priceCents + extraCents;
+  const requireLogin = (redirect: string) => {
+    navigate(`/auth?redirect=${encodeURIComponent(redirect)}`);
+  };
 
   const handleAddToCart = () => {
     if (outOfStock) return;
-    if (product.isPersonalizable && !personalization.trim()) {
+    if (!user) {
+      toast({
+        title: "Entre para comprar",
+        description: "Faça login para adicionar peças à sacola.",
+      });
+      requireLogin(`/produto/${product.slug}`);
+      return;
+    }
+    const missing = missingRequiredField(fields, values);
+    if (missing) {
       toast({
         title: "Personalização obrigatória",
-        description: `Preencha o campo "${product.personalizationLabel}" para continuar.`,
+        description: `Preencha o campo "${missing.label}" para continuar.`,
         variant: "destructive",
       });
       return;
     }
-    addToCart(product, quantity, product.isPersonalizable ? personalization.trim() : undefined);
-    toast({
-      title: "Adicionado à sacola",
-      description: `${quantity} × ${product.name}`,
-    });
+    addToCart(product, quantity, buildPersonalizationValues(fields, values));
+    toast({ title: "Adicionado à sacola", description: `${quantity} × ${product.name}` });
     setQuantity(1);
-    setPersonalization("");
+    setValues({});
+  };
+
+  const handleWishlist = async () => {
+    if (!user) {
+      requireLogin(`/produto/${product.slug}`);
+      return;
+    }
+    await toggle(product.id);
   };
 
   const nextImage = () =>
@@ -82,14 +114,14 @@ const ProductDetail = () => {
     <Layout>
       <div className="container-full py-6 border-b border-border">
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
-          <Link to="/products" className="hover:text-foreground transition-colors">
+          <Link to="/produtos" className="hover:text-foreground transition-colors">
             Loja
           </Link>
           <span className="text-border">/</span>
           {collection && (
             <>
               <Link
-                to={`/products?collection=${collection.slug}`}
+                to={`/produtos?colecao=${collection.slug}`}
                 className="hover:text-foreground transition-colors"
               >
                 {collection.name}
@@ -173,7 +205,7 @@ const ProductDetail = () => {
             <div className="lg:col-span-5 lg:sticky lg:top-28 lg:self-start">
               {collection && (
                 <Link
-                  to={`/products?collection=${collection.slug}`}
+                  to={`/produtos?colecao=${collection.slug}`}
                   className="inline-block text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-5"
                 >
                   {collection.name}
@@ -184,10 +216,13 @@ const ProductDetail = () => {
                 {product.name}
               </h1>
 
-              <p className="text-2xl font-serif mb-1">{formatBRL(product.priceCents)}</p>
-              {parcelas && (
-                <p className="text-sm text-muted-foreground mb-8">{parcelas}</p>
+              <p className="text-2xl font-serif mb-1">{formatBRL(unitCents)}</p>
+              {extraCents > 0 && (
+                <p className="text-xs text-muted-foreground mb-1">
+                  Inclui {formatBRL(extraCents)} de personalização
+                </p>
               )}
+              {parcelas && <p className="text-sm text-muted-foreground mb-8">{parcelas}</p>}
 
               <p className="text-muted-foreground leading-relaxed mb-8">
                 {product.longDescription}
@@ -206,29 +241,16 @@ const ProductDetail = () => {
                 )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Estoque</span>
-                  <span>
-                    {outOfStock ? "Esgotado" : `${product.stock} disponível(is)`}
-                  </span>
+                  <span>{outOfStock ? "Esgotado" : `${product.stock} disponível(is)`}</span>
                 </div>
               </div>
 
-              {product.isPersonalizable && !outOfStock && (
-                <div className="mb-8 space-y-2">
-                  <Label htmlFor="personalization" className="text-sm">
-                    {product.personalizationLabel} (peça personalizável)
-                  </Label>
-                  <Input
-                    id="personalization"
-                    value={personalization}
-                    maxLength={product.personalizationMaxLength}
-                    onChange={(e) => setPersonalization(e.target.value)}
-                    placeholder={`Até ${product.personalizationMaxLength} caracteres`}
-                    className="rounded-none"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Peças personalizadas são feitas sob encomenda e não têm troca.
-                  </p>
-                </div>
+              {!outOfStock && (
+                <PersonalizationFields
+                  fields={fields}
+                  values={values}
+                  onChange={(id, v) => setValues((s) => ({ ...s, [id]: v }))}
+                />
               )}
 
               <div className="flex items-center gap-4">
@@ -244,6 +266,19 @@ const ProductDetail = () => {
                 >
                   <ShoppingBag className="w-4 h-4 mr-2" />
                   {outOfStock ? "Esgotado" : "Adicionar à sacola"}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleWishlist}
+                  aria-label="Favoritar peça"
+                  className="rounded-none h-12 w-12 p-0"
+                >
+                  <Heart
+                    className={cn(
+                      "w-4 h-4",
+                      isInWishlist(product.id) && "fill-primary text-primary"
+                    )}
+                  />
                 </Button>
               </div>
             </div>

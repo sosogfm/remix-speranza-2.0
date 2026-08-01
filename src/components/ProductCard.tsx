@@ -1,8 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { Product, collections, formatBRL, installmentLabel } from "@/data/products";
 import { useWishlist } from "@/hooks/useWishlist";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 interface ProductCardProps {
@@ -12,19 +14,27 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ product, index = 0, variant = "default" }: ProductCardProps) => {
-  const { addItem, removeItem, isInWishlist } = useWishlist();
+  const { toggle, isInWishlist } = useWishlist();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const inWishlist = isInWishlist(product.id);
   const collection = collections.find((c) => c.id === product.collection);
   const hasSecondImage = product.images.length > 1;
+  const outOfStock = product.stock <= 0;
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (inWishlist) {
-      removeItem(product.id);
-    } else {
-      addItem(product);
+    if (!user) {
+      toast({
+        title: "Entre para favoritar",
+        description: "Faça login para salvar suas peças favoritas.",
+      });
+      navigate("/auth");
+      return;
     }
+    toggle(product.id);
   };
 
   return (
@@ -35,18 +45,18 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
       transition={{ duration: 0.7, delay: index * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="group"
     >
-      <Link to={`/product/${product.slug}`} className="block">
-        {/* Image Container */}
+      <Link to={`/produto/${product.slug}`} className="block">
+        {/* Imagem */}
         <div
           className={cn(
             "relative overflow-hidden bg-muted/50 mb-5",
             variant === "large" ? "aspect-[3/4]" : "aspect-[4/5]"
           )}
         >
-          {/* Primary Image */}
           <img
             src={product.images[0]}
             alt={product.name}
+            loading="lazy"
             className={cn(
               "w-full h-full object-cover transition-all duration-[1s] ease-out",
               hasSecondImage
@@ -55,26 +65,26 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
             )}
           />
 
-          {/* Secondary Image (hover) */}
           {hasSecondImage && (
             <img
               src={product.images[1]}
-              alt={`${product.name} - alternate view`}
+              alt={`${product.name} — outra vista`}
+              loading="lazy"
               className="absolute inset-0 w-full h-full object-cover opacity-0 scale-105 transition-all duration-[1s] ease-out group-hover:opacity-100 group-hover:scale-100"
             />
           )}
 
-          {/* Gradient Overlay on Hover */}
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
-          {/* Wishlist button */}
+          {/* Favoritar */}
           <button
             onClick={handleWishlistToggle}
+            aria-label={inWishlist ? "Remover dos favoritos" : "Adicionar aos favoritos"}
             className={cn(
               "absolute top-5 right-5 p-2.5 rounded-full transition-all duration-500",
               "bg-background/90 backdrop-blur-md hover:bg-background shadow-sm",
-              "opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0",
-              inWishlist && "opacity-100 translate-y-0"
+              "md:opacity-0 md:translate-y-2 md:group-hover:opacity-100 md:group-hover:translate-y-0",
+              inWishlist && "md:opacity-100 md:translate-y-0"
             )}
           >
             <Heart
@@ -85,41 +95,34 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
             />
           </button>
 
-          {/* Badges */}
+          {/* Selos */}
           <div className="absolute top-5 left-5 flex flex-col gap-2">
             {product.new && (
-              <motion.span
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-                className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-foreground text-background"
-              >
-                New
-              </motion.span>
+              <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-foreground text-background">
+                Novidade
+              </span>
             )}
-            {product.featured && (
-              <motion.span
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
-                className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-primary text-primary-foreground"
-              >
-                Featured
-              </motion.span>
+            {product.isPersonalizable && (
+              <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-primary text-primary-foreground">
+                Personalizável
+              </span>
+            )}
+            {outOfStock && (
+              <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-muted text-muted-foreground">
+                Esgotada
+              </span>
             )}
           </div>
 
-          {/* Quick View Indicator */}
           <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center pb-6 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-100">
             <span className="px-6 py-2.5 text-xs font-medium tracking-[0.15em] uppercase bg-background/95 backdrop-blur-md text-foreground shadow-lg">
-              View Details
+              Ver peça
             </span>
           </div>
         </div>
 
-        {/* Product Info */}
+        {/* Informações */}
         <div className="space-y-2">
-          {/* Collection label */}
           {collection && (
             <p className="text-[11px] font-medium tracking-[0.2em] uppercase text-muted-foreground/70 transition-colors duration-300 group-hover:text-primary">
               {collection.name}
@@ -143,13 +146,7 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
                 {installmentLabel(product.priceCents, product.maxInstallments)}
               </p>
             )}
-            {product.isPersonalizable && (
-              <p className="text-[11px] tracking-[0.15em] uppercase text-primary mt-1.5">
-                Personalizável
-              </p>
-            )}
           </div>
-
         </div>
       </Link>
     </motion.article>
