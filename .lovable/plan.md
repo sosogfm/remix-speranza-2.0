@@ -27,9 +27,14 @@ Continuam com data **e** horários, como estão. O que muda é o admin de **desc
 - Selo de oferta vira uma faixa **horizontal no canto superior direito** com a porcentagem (ex.: "-20%").
 - Peças com mais de uma foto mantêm a **troca no hover**, mas com a segunda imagem **deslizando para o lado**, sem gradiente nem fade.
 
+## 8. Erros na etapa de pagamento
+Em vez de um aviso genérico, cada campo com problema fica **marcado em vermelho com a mensagem embaixo** (ex.: "CEP inválido", "CPF incompleto", "E-mail inválido", "Número do cartão inválido"), a página rola até o primeiro erro e aparece um resumo no topo listando o que falta corrigir. Se a recusa vier do meio de pagamento, mostramos o motivo traduzido (ex.: "Cartão recusado pelo banco", "Dados do cartão não conferem").
+
+
 ## Detalhes técnicos
 - `src/data/images.ts` centraliza as URLs de fundo; `Index.tsx`/`About.tsx`/demais páginas passam a importar de lá.
 - Banco: tabela de ligação `product_categories` (produto ↔ categoria) com migração dos vínculos atuais de `products.category_id`; `useProducts` traz a lista de categorias e o filtro de `Products.tsx` considera qualquer uma; `collections` deixa de ser lista fixa e vem do banco ordenada por nome.
 - `ProductCard`: badge calculado de `sale_price_cents` vs `price_cents`; segunda imagem em `translate-x` no hover, removendo o overlay em gradiente e o fade.
 - Instagram: edge function `instagram-feed` chamando a Graph API com token guardado como segredo, cache no cliente via React Query.
+- Checkout: validação com Zod por campo, mensagens em português mapeadas por campo, foco/scroll no primeiro erro e tradução dos códigos de recusa retornados pelo pagamento.
 - `AdminProductSale`: inputs `type="date"` (sem hora) e largura maior.
