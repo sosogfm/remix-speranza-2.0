@@ -29,7 +29,29 @@ export interface Product {
   maxInstallments: number;
   /** peça sob orçamento: mostra "a partir de" e leva para o WhatsApp */
   isQuoteOnly?: boolean;
+  /** promoção */
+  salePriceCents?: number | null;
+  saleStartsAt?: string | null;
+  saleEndsAt?: string | null;
+  lowStockThreshold?: number;
 }
+
+/** Preço promocional válido agora (ou null quando não há promoção ativa) */
+export const activeSaleCents = (p: Product): number | null => {
+  if (p.salePriceCents == null || p.salePriceCents <= 0) return null;
+  if (p.salePriceCents >= p.priceCents) return null;
+  const now = Date.now();
+  if (p.saleStartsAt && new Date(p.saleStartsAt).getTime() > now) return null;
+  if (p.saleEndsAt && new Date(p.saleEndsAt).getTime() < now) return null;
+  return p.salePriceCents;
+};
+
+/** Preço que a cliente realmente paga pela peça (sem personalização) */
+export const effectivePriceCents = (p: Product) => activeSaleCents(p) ?? p.priceCents;
+
+export const isLowStock = (p: Product) =>
+  p.stock > 0 && p.stock <= (p.lowStockThreshold ?? 3);
+
 
 const PLACEHOLDER =
   "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=800&q=80";

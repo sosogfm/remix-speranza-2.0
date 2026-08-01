@@ -84,10 +84,9 @@ export const PersonalizationFields = ({ fields, values, onChange }: Props) => {
                     (+{formatBRL(field.extraPriceCents)})
                   </span>
                 )}
-              {(field.fieldType === "addon" || field.fieldType === "size") &&
-                extra > 0 && (
-                  <span className="text-muted-foreground"> (+{formatBRL(extra)})</span>
-                )}
+              {field.fieldType === "addon" && extra > 0 && (
+                <span className="text-muted-foreground"> (+{formatBRL(extra)})</span>
+              )}
             </Label>
 
             {field.fieldType === "initial" && (
@@ -157,7 +156,7 @@ export const PersonalizationFields = ({ fields, values, onChange }: Props) => {
                     >
                       {o}
                       {price > 0 && (
-                        <span className="ml-2 opacity-70">+ {formatBRL(price)}</span>
+                        <span className="ml-2 opacity-70">{formatBRL(price)}</span>
                       )}
                     </button>
                   );

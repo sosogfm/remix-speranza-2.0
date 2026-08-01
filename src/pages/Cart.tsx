@@ -4,7 +4,7 @@ import { ArrowRight, ShoppingBag, Trash2, Gift } from "lucide-react";
 import { GIFT_WRAP_CENTS } from "@/data/site";
 import { Layout } from "@/components/Layout";
 import { QuantitySelector } from "@/components/QuantitySelector";
-import { useCart } from "@/hooks/useCart";
+import { useCart, unitPriceCents } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
@@ -119,7 +119,7 @@ const Cart = () => {
                           </p>
                         )}
                         <p className="font-serif text-lg mt-3">
-                          {formatBRL(item.product.priceCents + (item.extraCents || 0))}
+                          {formatBRL(unitPriceCents(item))}
                         </p>
                       </div>
 

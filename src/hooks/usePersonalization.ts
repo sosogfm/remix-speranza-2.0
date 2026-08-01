@@ -19,6 +19,8 @@ export interface PersonalizationField {
   options: string[];
   /** preço adicional por opção, em centavos (usado em "addon" e "size") */
   optionPrices: Record<string, number>;
+  /** imagem por opção (caminho no bucket site-images) */
+  optionImages: Record<string, string>;
   maxLength: number;
   isRequired: boolean;
   extraPriceCents: number;
@@ -55,6 +57,8 @@ export const fieldExtraCents = (
 ): number => {
   const filled = (value ?? "").trim();
   if (!filled) return 0;
+  // "size" define o preço total da peça, não um acréscimo
+  if (field.fieldType === "size") return 0;
   if (isPricedOptionType(field.fieldType)) {
     return splitAddonValue(filled).reduce(
       (t, opt) => t + (field.optionPrices[opt] ?? 0),
@@ -69,6 +73,31 @@ export const totalExtraCents = (
   values: Record<string, string>
 ) => fields.reduce((t, f) => t + fieldExtraCents(f, values[f.id] ?? ""), 0);
 
+/** Preço total definido pelo tamanho escolhido (substitui o preço da peça) */
+export const sizeBaseCents = (
+  fields: PersonalizationField[],
+  values: Record<string, string>
+): number | null => {
+  for (const f of fields) {
+    if (f.fieldType !== "size") continue;
+    const v = (values[f.id] ?? "").trim();
+    if (v && f.optionPrices[v] != null) return f.optionPrices[v];
+  }
+  return null;
+};
+
+/** Imagem associada à opção escolhida (primeira encontrada) */
+export const selectedOptionImage = (
+  fields: PersonalizationField[],
+  values: Record<string, string>
+): string | null => {
+  for (const f of fields) {
+    const v = (values[f.id] ?? "").trim();
+    if (v && f.optionImages?.[v]) return f.optionImages[v];
+  }
+  return null;
+};
+
 const map = (r: any): PersonalizationField => ({
   id: r.id,
   productId: r.product_id,
@@ -77,6 +106,7 @@ const map = (r: any): PersonalizationField => ({
   fieldType: r.field_type,
   options: r.options ?? [],
   optionPrices: (r.option_prices ?? {}) as Record<string, number>,
+  optionImages: (r.option_images ?? {}) as Record<string, string>,
   maxLength: r.max_length,
   isRequired: r.is_required,
   extraPriceCents: r.extra_price_cents,
