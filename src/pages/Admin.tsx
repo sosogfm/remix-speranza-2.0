@@ -86,6 +86,7 @@ const AdminProducts = () => {
           <TableHead>Preço</TableHead>
           <TableHead className="w-28">Estoque</TableHead>
           <TableHead className="w-36">Personalizável</TableHead>
+          <TableHead className="w-32">Sob orçamento</TableHead>
           <TableHead className="w-24">Ativa</TableHead>
         </TableRow>
       </TableHeader>
@@ -116,6 +117,12 @@ const AdminProducts = () => {
               <Switch
                 checked={p.is_personalizable}
                 onCheckedChange={(v) => update(p.id, { is_personalizable: v })}
+              />
+            </TableCell>
+            <TableCell>
+              <Switch
+                checked={p.is_quote_only}
+                onCheckedChange={(v) => update(p.id, { is_quote_only: v })}
               />
             </TableCell>
             <TableCell>
