@@ -27,7 +27,6 @@ import {
   WorkshopBlockPicker,
 } from "@/components/admin/AdminWorkshopExtras";
 import { AdminNewWorkshop } from "@/components/admin/AdminCatalog";
-import { addMinutes } from "@/lib/time";
 import { uploadSiteImage } from "@/lib/storage";
 
 /** Editor dos campos de personalização de uma peça */
