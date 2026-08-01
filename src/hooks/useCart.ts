@@ -5,15 +5,21 @@ import { Product } from "@/data/products";
 export interface CartItem {
   product: Product;
   quantity: number;
+  personalization?: string;
+  key: string;
 }
+
+const itemKey = (productId: string, personalization?: string) =>
+  `${productId}::${personalization ?? ""}`;
 
 interface CartState {
   items: CartItem[];
-  addItem: (product: Product, quantity?: number) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  removeItem: (productId: string) => void;
+  addItem: (product: Product, quantity?: number, personalization?: string) => void;
+  updateQuantity: (key: string, quantity: number) => void;
+  removeItem: (key: string) => void;
   clearCart: () => void;
   getSubtotal: () => number;
+  getSubtotalCents: () => number;
   getItemCount: () => number;
 }
 
@@ -22,66 +28,57 @@ export const useCart = create<CartState>()(
     (set, get) => ({
       items: [],
 
-      addItem: (product: Product, quantity = 1) => {
+      addItem: (product, quantity = 1, personalization) => {
+        const key = itemKey(product.id, personalization);
         set((state) => {
-          const existingItem = state.items.find(
-            (item) => item.product.id === product.id
-          );
-
-          if (existingItem) {
+          const existing = state.items.find((i) => i.key === key);
+          const max = Math.max(product.stock, 0);
+          if (existing) {
             return {
-              items: state.items.map((item) =>
-                item.product.id === product.id
-                  ? { ...item, quantity: Math.min(item.quantity + quantity, 10) }
-                  : item
+              items: state.items.map((i) =>
+                i.key === key
+                  ? { ...i, quantity: Math.min(i.quantity + quantity, max || 1) }
+                  : i
               ),
             };
           }
-
           return {
-            items: [...state.items, { product, quantity }],
+            items: [
+              ...state.items,
+              { product, quantity: Math.min(quantity, max || 1), personalization, key },
+            ],
           };
         });
       },
 
-      updateQuantity: (productId: string, quantity: number) => {
+      updateQuantity: (key, quantity) => {
         if (quantity < 1) {
-          get().removeItem(productId);
+          get().removeItem(key);
           return;
         }
-
         set((state) => ({
-          items: state.items.map((item) =>
-            item.product.id === productId
-              ? { ...item, quantity: Math.min(quantity, 10) }
-              : item
+          items: state.items.map((i) =>
+            i.key === key
+              ? { ...i, quantity: Math.min(quantity, Math.max(i.product.stock, 1)) }
+              : i
           ),
         }));
       },
 
-      removeItem: (productId: string) => {
-        set((state) => ({
-          items: state.items.filter((item) => item.product.id !== productId),
-        }));
+      removeItem: (key) => {
+        set((state) => ({ items: state.items.filter((i) => i.key !== key) }));
       },
 
-      clearCart: () => {
-        set({ items: [] });
-      },
+      clearCart: () => set({ items: [] }),
 
-      getSubtotal: () => {
-        return get().items.reduce(
-          (total, item) => total + item.product.price * item.quantity,
-          0
-        );
-      },
+      getSubtotalCents: () =>
+        get().items.reduce((t, i) => t + i.product.priceCents * i.quantity, 0),
 
-      getItemCount: () => {
-        return get().items.reduce((count, item) => count + item.quantity, 0);
-      },
+      getSubtotal: () =>
+        get().items.reduce((t, i) => t + i.product.price * i.quantity, 0),
+
+      getItemCount: () => get().items.reduce((c, i) => c + i.quantity, 0),
     }),
-    {
-      name: "maison-cart",
-    }
+    { name: "speranza-cart" }
   )
 );
