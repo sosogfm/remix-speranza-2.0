@@ -407,7 +407,8 @@ const Checkout = () => {
                   className="w-full rounded-none h-12 text-sm tracking-[0.15em] uppercase"
                 >
                   {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                  Finalizar pedido
+                  Ir para o pagamento
+
                 </Button>
               </div>
             </div>
