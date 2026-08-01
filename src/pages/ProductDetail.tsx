@@ -234,7 +234,7 @@ const ProductDetail = () => {
               <div className="flex items-center gap-4">
                 <QuantitySelector
                   quantity={quantity}
-                  onChange={setQuantity}
+                  onQuantityChange={setQuantity}
                   max={Math.max(product.stock, 1)}
                 />
                 <Button
