@@ -73,7 +73,7 @@ const Cart = () => {
               <div className="space-y-0">
                 {items.map((item, index) => (
                   <motion.div
-                    key={item.product.id}
+                    key={item.key}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
@@ -103,8 +103,16 @@ const Cart = () => {
                         <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                           {item.product.description}
                         </p>
+                        {item.personalization && (
+                          <p className="text-sm mt-2">
+                            <span className="text-muted-foreground">
+                              Personalização:{" "}
+                            </span>
+                            {item.personalization}
+                          </p>
+                        )}
                         <p className="font-serif text-lg mt-3">
-                          ${item.product.price.toLocaleString()}
+                          {formatBRL(item.product.priceCents)}
                         </p>
                       </div>
 
@@ -112,17 +120,20 @@ const Cart = () => {
                       <div className="flex items-center justify-between mt-4">
                         <QuantitySelector
                           quantity={item.quantity}
-                          onQuantityChange={(qty) =>
-                            updateQuantity(item.product.id, qty)
-                          }
+                          max={Math.max(item.product.stock, 1)}
+                          onQuantityChange={(qty) => updateQuantity(item.key, qty)}
                         />
                         <button
-                          onClick={() => removeItem(item.product.id)}
+                          onClick={() => removeItem(item.key)}
                           className="p-2 text-muted-foreground hover:text-destructive transition-colors"
                         >
                           <Trash2 className="w-5 h-5" />
                         </button>
                       </div>
+                    </div>
+                  </motion.div>
+                ))}
+
                     </div>
                   </motion.div>
                 ))}
