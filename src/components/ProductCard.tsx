@@ -16,13 +16,14 @@ interface ProductCardProps {
 export const ProductCard = ({ product, index = 0, variant = "default" }: ProductCardProps) => {
   const { toggle, isInWishlist } = useWishlist();
   const { user } = useAuth();
-  const navigate = useNavigate();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const inWishlist = isInWishlist(product.id);
   const collection = collections.find((c) => c.id === product.collection);
   const hasSecondImage = product.images.length > 1;
+  const outOfStock = product.stock <= 0;
 
-  const handleWishlistToggle = async (e: React.MouseEvent) => {
+  const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!user) {
@@ -30,10 +31,10 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
         title: "Entre para favoritar",
         description: "Faça login para salvar suas peças favoritas.",
       });
-      navigate(`/auth?redirect=${encodeURIComponent(`/produto/${product.slug}`)}`);
+      navigate("/entrar");
       return;
     }
-    await toggle(product.id);
+    toggle(product.id);
   };
 
   return (
@@ -45,6 +46,7 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
       className="group"
     >
       <Link to={`/produto/${product.slug}`} className="block">
+        {/* Imagem */}
         <div
           className={cn(
             "relative overflow-hidden bg-muted/50 mb-5",
@@ -53,7 +55,7 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
         >
           <img
             src={product.images[0]}
-            alt={`${product.name} — porcelana pintada à mão`}
+            alt={product.name}
             loading="lazy"
             className={cn(
               "w-full h-full object-cover transition-all duration-[1s] ease-out",
@@ -74,9 +76,10 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
 
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
+          {/* Favoritar */}
           <button
             onClick={handleWishlistToggle}
-            aria-label={inWishlist ? "Remover dos favoritos" : "Favoritar peça"}
+            aria-label={inWishlist ? "Remover dos favoritos" : "Adicionar aos favoritos"}
             className={cn(
               "absolute top-5 right-5 p-2.5 rounded-full transition-all duration-500",
               "bg-background/90 backdrop-blur-md hover:bg-background shadow-sm",
@@ -92,20 +95,21 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
             />
           </button>
 
+          {/* Selos */}
           <div className="absolute top-5 left-5 flex flex-col gap-2">
             {product.new && (
               <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-foreground text-background">
-                Novo
+                Novidade
               </span>
             )}
-            {product.featured && (
+            {product.isPersonalizable && (
               <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-primary text-primary-foreground">
-                Destaque
+                Personalizável
               </span>
             )}
-            {product.stock <= 0 && (
-              <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-destructive text-destructive-foreground">
-                Esgotado
+            {outOfStock && (
+              <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-muted text-muted-foreground">
+                Esgotada
               </span>
             )}
           </div>
@@ -117,6 +121,7 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
           </div>
         </div>
 
+        {/* Informações */}
         <div className="space-y-2">
           {collection && (
             <p className="text-[11px] font-medium tracking-[0.2em] uppercase text-muted-foreground/70 transition-colors duration-300 group-hover:text-primary">
@@ -139,11 +144,6 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
             {installmentLabel(product.priceCents, product.maxInstallments) && (
               <p className="text-xs text-muted-foreground/70 tracking-wide mt-0.5">
                 {installmentLabel(product.priceCents, product.maxInstallments)}
-              </p>
-            )}
-            {product.isPersonalizable && (
-              <p className="text-[11px] tracking-[0.15em] uppercase text-primary mt-1.5">
-                Personalizável
               </p>
             )}
           </div>
