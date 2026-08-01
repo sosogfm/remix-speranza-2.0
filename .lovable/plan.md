@@ -5,13 +5,15 @@ Nada de painel no admin. As fotos de fundo hoje estão espalhadas pelo código; 
 
 ## 2. Home
 - Remover o "Role" e a setinha do topo.
-- Subir a faixa de avaliações na página (menos espaço acima).
+- Avaliações ficam **no meio da página** (não no topo), como estão hoje em termos de posição geral.
 
 ## 3. Avaliações
 - Altura fixa para todos os cards (a largura se ajusta à proporção de cada imagem), com cantos arredondados.
 
 ## 4. Instagram automático
-A grade de fotos abaixo de "Bastidores do ateliê" hoje é fixa. Vou fazê-la puxar os posts reais do Instagram da Júlia e atualizar sozinha (cache de algumas horas). Isso exige uma conexão com o Instagram: preciso de um **token de acesso da conta profissional** (Instagram/Facebook). Vou montar a função no servidor e, na hora, peço o token pelo formulário seguro — se não houver token, a grade continua com as fotos atuais.
+Mesmo com o perfil público, o Instagram **não permite** ler os posts sem autenticação: as páginas públicas são bloqueadas para acesso automático (login wall / bloqueio de robôs) e qualquer raspagem quebra em poucos dias e pode gerar bloqueio da conta. O caminho oficial e estável é a API do Instagram, que exige um **token da conta profissional** (Instagram Business/Creator ligado a uma página do Facebook) — o token é gerado uma vez e a função no servidor renova sozinha.
+
+Então: monto a função `instagram-feed` (busca os últimos posts, cache de algumas horas, atualização automática) e, no momento da implementação, peço o token pelo formulário seguro. Enquanto o token não existir, a grade mostra as fotos atuais como está.
 
 ## 5. Oficinas
 Continuam com data **e** horários, como estão. O que muda é o admin de **descontos das peças**: as datas de início/fim do desconto passam a ser **só data, sem horário** (e o campo fica mais largo para dar para ler).
