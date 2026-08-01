@@ -915,12 +915,21 @@ export type Database = {
     }
     Functions: {
       cleanup_past_workshops: { Args: never; Returns: undefined }
+      grant_admin_by_email: { Args: { _email: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      list_admins: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          user_id: string
+        }[]
       }
       place_guest_order: {
         Args: { _items: Json; _order: Json }
@@ -944,6 +953,7 @@ export type Database = {
         }
         Returns: string
       }
+      revoke_admin: { Args: { _user_id: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "customer"
