@@ -134,19 +134,22 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
             {product.description}
           </p>
 
-          <div className="flex items-center gap-3 pt-1">
+          <div className="pt-1">
             <p className="text-base font-medium text-foreground tracking-wide">
-              ${product.price.toLocaleString()}
+              {formatBRL(product.priceCents)}
             </p>
-            {product.materials && (
-              <>
-                <span className="w-px h-3 bg-border" />
-                <p className="text-xs text-muted-foreground/60 tracking-wide">
-                  {product.materials.split(",")[0]}
-                </p>
-              </>
+            {installmentLabel(product.priceCents, product.maxInstallments) && (
+              <p className="text-xs text-muted-foreground/70 tracking-wide mt-0.5">
+                {installmentLabel(product.priceCents, product.maxInstallments)}
+              </p>
+            )}
+            {product.isPersonalizable && (
+              <p className="text-[11px] tracking-[0.15em] uppercase text-primary mt-1.5">
+                Personalizável
+              </p>
             )}
           </div>
+
         </div>
       </Link>
     </motion.article>
