@@ -40,6 +40,8 @@ import {
 import {
   AdminNewProduct,
   AdminProductImages,
+  AdminProductCategories,
+  AdminCategories,
 } from "@/components/admin/AdminProductsExtras";
 
 
@@ -118,6 +120,7 @@ const AdminProducts = () => {
                 {savingId === p.id && <Loader2 className="w-3 h-3 animate-spin" />}
               </div>
               <AdminProductImages productId={p.id} />
+              <AdminProductCategories productId={p.id} primaryCategoryId={p.category_id} />
               {p.is_personalizable && <AdminPersonalizationEditor productId={p.id} />}
               <AdminProductSale product={p} />
               <details className="mt-3">
