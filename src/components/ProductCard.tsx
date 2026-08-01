@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Heart } from "lucide-react";
 import { motion } from "framer-motion";
-import { Product, collections } from "@/data/products";
+import { Product, collections, formatBRL, installmentLabel } from "@/data/products";
 import { useWishlist } from "@/hooks/useWishlist";
 import { cn } from "@/lib/utils";
 
