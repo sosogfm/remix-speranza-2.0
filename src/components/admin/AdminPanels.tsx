@@ -230,13 +230,15 @@ export const AdminWorkshops = () => {
 
   return (
     <div className="space-y-6">
+      <AdminQuestionBlocks />
       {(workshops as any[]).map((w) => (
         <div key={w.id} className="border border-border p-6 space-y-4">
           <div className="flex flex-wrap justify-between gap-4">
             <div>
               <p className="font-serif text-xl">{w.title}</p>
               <p className="text-sm text-muted-foreground">
-                {w.event_date} · {w.location} · {formatBRL(w.price_cents)}
+                {w.event_date} · {w.location} · {formatBRL(w.price_cents)} ·{" "}
+                {w.spots_taken} de {w.total_spots} vagas ocupadas
               </p>
             </div>
             <div className="flex items-center gap-6">
