@@ -86,22 +86,23 @@ const AdminProducts = () => {
       <TableBody>
         {products.map((p: any) => (
           <TableRow key={p.id}>
-            <TableCell className="font-serif text-base">
+            <TableCell className="font-serif text-base align-top">
               {p.name}
               {savingId === p.id && (
                 <Loader2 className="inline w-3 h-3 ml-2 animate-spin" />
               )}
+              {p.is_personalizable && <AdminPersonalizationEditor productId={p.id} />}
             </TableCell>
             <TableCell>{formatBRL(p.price_cents)}</TableCell>
             <TableCell>
               <Input
                 type="number"
                 min={0}
-                defaultValue={p.stock}
+                defaultValue={p.stock_quantity}
                 className="rounded-none h-9 w-24"
                 onBlur={(e) => {
                   const v = Number(e.target.value);
-                  if (v !== p.stock) update(p.id, { stock: v });
+                  if (v !== p.stock_quantity) update(p.id, { stock_quantity: v });
                 }}
               />
             </TableCell>
@@ -123,6 +124,7 @@ const AdminProducts = () => {
     </Table>
   );
 };
+
 
 const AdminOrders = () => {
   const { toast } = useToast();
