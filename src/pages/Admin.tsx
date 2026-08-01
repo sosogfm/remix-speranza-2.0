@@ -370,6 +370,7 @@ const Admin = () => {
             <TabsList className="rounded-none">
               <TabsTrigger value="products" className="rounded-none">Peças e estoque</TabsTrigger>
               <TabsTrigger value="orders" className="rounded-none">Pedidos</TabsTrigger>
+              <TabsTrigger value="workshops" className="rounded-none">Oficinas</TabsTrigger>
               <TabsTrigger value="shipping" className="rounded-none">Frete</TabsTrigger>
             </TabsList>
             <TabsContent value="products" className="pt-8">
@@ -378,10 +379,14 @@ const Admin = () => {
             <TabsContent value="orders" className="pt-8">
               <AdminOrders />
             </TabsContent>
+            <TabsContent value="workshops" className="pt-8">
+              <AdminWorkshops />
+            </TabsContent>
             <TabsContent value="shipping" className="pt-8">
               <AdminShipping />
             </TabsContent>
           </Tabs>
+
         </div>
       </section>
     </Layout>
