@@ -68,20 +68,8 @@ const ProductDetail = () => {
     0
   );
   const unitCents = product.priceCents + extraCents;
-  const requireLogin = (redirect: string) => {
-    navigate(`/auth?redirect=${encodeURIComponent(redirect)}`);
-  };
-
   const handleAddToCart = () => {
     if (outOfStock) return;
-    if (!user) {
-      toast({
-        title: "Entre para comprar",
-        description: "Faça login para adicionar peças à sacola.",
-      });
-      requireLogin(`/produto/${product.slug}`);
-      return;
-    }
     const missing = missingRequiredField(fields, values);
     if (missing) {
       toast({
@@ -98,10 +86,6 @@ const ProductDetail = () => {
   };
 
   const handleWishlist = async () => {
-    if (!user) {
-      requireLogin(`/produto/${product.slug}`);
-      return;
-    }
     await toggle(product.id);
   };
 

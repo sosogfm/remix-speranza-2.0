@@ -36,10 +36,6 @@ export const Header = () => {
   }, []);
 
   const goToFavorites = () => {
-    if (!user) {
-      navigate(`/auth?redirect=${encodeURIComponent("/minha-conta")}`);
-      return;
-    }
     navigate("/minha-conta");
   };
 

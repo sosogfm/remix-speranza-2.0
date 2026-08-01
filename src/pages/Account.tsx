@@ -1,4 +1,4 @@
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Heart, Package, CalendarDays, LogOut } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Layout } from "@/components/Layout";
@@ -9,6 +9,7 @@ import { useMyRegistrations, formatWorkshopDateLong } from "@/hooks/useWorkshops
 import { formatBRL, productPlaceholderImage } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getGuestOrders, getGuestRegistrations } from "@/lib/guestOrders";
 
 const statusLabels: Record<string, string> = {
   pending: "Aguardando pagamento",
@@ -70,6 +71,7 @@ const Favoritos = () => {
 
 const Pedidos = () => {
   const { user } = useAuth();
+  const guestOrders = getGuestOrders();
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["my-orders", user?.id],
     enabled: !!user,
@@ -83,13 +85,16 @@ const Pedidos = () => {
     },
   });
 
-  if (isLoading) return <p className="text-muted-foreground py-10">Carregando…</p>;
-  if (orders.length === 0)
+  const allOrders: any[] = user ? orders : guestOrders;
+
+  if (user && isLoading)
+    return <p className="text-muted-foreground py-10">Carregando…</p>;
+  if (allOrders.length === 0)
     return <p className="text-muted-foreground py-10">Você ainda não fez pedidos.</p>;
 
   return (
     <div className="space-y-5">
-      {orders.map((o: any) => (
+      {allOrders.map((o: any) => (
         <Link
           key={o.id}
           to={`/pedido/${o.id}`}
@@ -100,7 +105,7 @@ const Pedidos = () => {
               <p className="font-serif text-xl">{o.order_number}</p>
               <p className="text-sm text-muted-foreground">
                 {new Date(o.created_at).toLocaleDateString("pt-BR")} ·{" "}
-                {statusLabels[o.payment_status] ?? o.payment_status}
+                {statusLabels[o.payment_status ?? "pending"] ?? o.payment_status}
               </p>
             </div>
             <p className="font-serif text-xl">{formatBRL(o.total_cents)}</p>
@@ -120,9 +125,18 @@ const Pedidos = () => {
 };
 
 const Inscricoes = () => {
-  const { data: regs = [], isLoading } = useMyRegistrations();
+  const { user } = useAuth();
+  const { data: remoteRegs = [], isLoading } = useMyRegistrations();
+  const guestRegs = getGuestRegistrations().map((r) => ({
+    id: r.id,
+    status: r.is_waitlist ? "waitlist" : "pending",
+    wants_glazing: false,
+    dietary_restriction: "—",
+    workshops: { title: r.workshop_title, event_date: r.workshop_date },
+  }));
+  const regs: any[] = user ? remoteRegs : guestRegs;
 
-  if (isLoading) return <p className="text-muted-foreground py-10">Carregando…</p>;
+  if (user && isLoading) return <p className="text-muted-foreground py-10">Carregando…</p>;
   if (regs.length === 0)
     return (
       <div className="py-10 space-y-4">
@@ -166,8 +180,6 @@ const Account = () => {
       </Layout>
     );
 
-  if (!user) return <Navigate to="/auth?redirect=%2Fminha-conta" replace />;
-
   return (
     <Layout>
       <section className="py-12 md:py-16">
@@ -178,12 +190,22 @@ const Account = () => {
                 Speranza Ateliê
               </p>
               <h1 className="font-serif text-4xl md:text-5xl">Minha conta</h1>
-              <p className="text-muted-foreground mt-2">{user.email}</p>
+              <p className="text-muted-foreground mt-2">
+                {user
+                  ? user.email
+                  : "Você está navegando sem conta — favoritos, pedidos e inscrições ficam salvos neste aparelho."}
+              </p>
             </div>
-            <Button variant="outline" className="rounded-none" onClick={signOut}>
-              <LogOut className="w-4 h-4 mr-2" />
-              Sair
-            </Button>
+            {user ? (
+              <Button variant="outline" className="rounded-none" onClick={signOut}>
+                <LogOut className="w-4 h-4 mr-2" />
+                Sair
+              </Button>
+            ) : (
+              <Button asChild variant="outline" className="rounded-none">
+                <Link to="/auth?redirect=%2Fminha-conta">Entrar / criar conta</Link>
+              </Button>
+            )}
           </div>
 
           <Tabs defaultValue="favoritos">
