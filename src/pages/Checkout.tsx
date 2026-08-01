@@ -65,8 +65,26 @@ const Checkout = () => {
   const giftWrapCents = isGift ? GIFT_WRAP_CENTS : 0;
   const totalCents = subtotalCents + shippingCents + giftWrapCents;
 
-  const set = (field: string, value: string) =>
+  const errorKeyOf: Record<string, string> = {
+    postalCode: "cep",
+    addressLine: "address",
+    addressNumber: "number",
+  };
+
+  const set = (field: string, value: string) => {
     setForm((f) => ({ ...f, [field]: value }));
+    const key = errorKeyOf[field] ?? field;
+    setErrors((e) => (e[key] ? { ...e, [key]: "" } : e));
+  };
+
+  const errClass = (key: string) =>
+    errors[key] ? "border-destructive focus-visible:ring-destructive" : "";
+
+  const FieldError = ({ name }: { name: string }) =>
+    errors[name] ? (
+      <p className="text-xs text-destructive">{errors[name]}</p>
+    ) : null;
+
 
   if (items.length === 0) {
     return (
