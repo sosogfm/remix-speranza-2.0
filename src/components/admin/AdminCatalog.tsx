@@ -205,6 +205,37 @@ export const AdminInfoBlocks = ({ productId }: { productId?: string }) => {
     invalidate();
   };
 
+  const copyDefaults = async () => {
+    if (!productId) return;
+    const { data, error } = await supabase
+      .from("product_info_blocks")
+      .select("*")
+      .is("product_id", null)
+      .order("position");
+    if (error || !data?.length) {
+      toast({
+        title: "Nenhuma informação padrão cadastrada",
+        description: "Crie os blocos padrão na aba Informações.",
+        variant: "destructive",
+      });
+      return;
+    }
+    const { error: insErr } = await supabase.from("product_info_blocks").insert(
+      data.map((b: any, i: number) => ({
+        product_id: productId,
+        title: b.title,
+        body: b.body,
+        position: blocks.length + i,
+      })),
+    );
+    if (insErr) {
+      toast({ title: "Erro ao copiar", description: insErr.message, variant: "destructive" });
+      return;
+    }
+    invalidate();
+    toast({ title: "Informações padrão copiadas para esta peça" });
+  };
+
   return (
     <div className="border border-border p-6 space-y-5">
       <div>
@@ -217,6 +248,17 @@ export const AdminInfoBlocks = ({ productId }: { productId?: string }) => {
         </p>
       </div>
 
+      {productId && (
+        <Button
+          variant="outline"
+          onClick={copyDefaults}
+          className="rounded-none h-9 text-xs tracking-[0.15em] uppercase"
+        >
+          <Plus className="w-3.5 h-3.5 mr-2" />
+          Trazer informações padrão
+        </Button>
+      )}
+
       {blocks.length === 0 ? (
         <p className="text-sm text-muted-foreground">Nenhum bloco.</p>
       ) : (
@@ -226,7 +268,7 @@ export const AdminInfoBlocks = ({ productId }: { productId?: string }) => {
               <div className="flex items-center gap-3">
                 <Input
                   defaultValue={b.title}
-                  className="rounded-none h-9 max-w-64"
+                  className="rounded-none h-10 max-w-80 text-base"
                   onBlur={(e) =>
                     e.target.value !== b.title && update(b.id, { title: e.target.value })
                   }

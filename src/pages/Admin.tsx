@@ -109,7 +109,7 @@ const AdminProducts = () => {
               <div className="flex items-center gap-2">
                 <Input
                   defaultValue={p.name}
-                  className="rounded-none h-9 font-serif"
+                  className="rounded-none h-11 font-serif text-base w-full"
                   onBlur={(e) => {
                     if (e.target.value.trim() && e.target.value !== p.name)
                       update(p.id, { name: e.target.value.trim() });
@@ -134,7 +134,7 @@ const AdminProducts = () => {
                 type="number"
                 step="0.01"
                 defaultValue={(p.price_cents / 100).toFixed(2)}
-                className="rounded-none h-9 w-28"
+                className="rounded-none h-11 w-36 text-base"
                 onBlur={(e) => {
                   const v = Math.round(Number(e.target.value) * 100);
                   if (v && v !== p.price_cents) update(p.id, { price_cents: v });
@@ -146,7 +146,7 @@ const AdminProducts = () => {
                 type="number"
                 min={0}
                 defaultValue={p.stock_quantity}
-                className="rounded-none h-9 w-24"
+                className="rounded-none h-11 w-28 text-base"
                 onBlur={(e) => {
                   const v = Number(e.target.value);
                   if (v !== p.stock_quantity) update(p.id, { stock_quantity: v });
