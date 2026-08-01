@@ -113,6 +113,8 @@ const Checkout = () => {
           total_cents: totalCents,
           installments: Number(installments),
           payment_method: paymentMethod,
+          is_gift: isGift,
+          gift_message: isGift ? giftMessage || null : null,
         })
         .select("id, order_number")
         .single();
@@ -124,10 +126,11 @@ const Checkout = () => {
           order_id: order.id,
           product_id: i.product.id,
           product_name: i.product.name,
-          unit_price_cents: i.product.priceCents,
+          unit_price_cents: i.product.priceCents + (i.extraCents || 0),
           quantity: i.quantity,
           personalization_text: i.personalization ?? null,
         }))
+
       );
       if (itemsError) throw itemsError;
 
