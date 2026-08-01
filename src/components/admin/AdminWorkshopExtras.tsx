@@ -298,6 +298,16 @@ export const AdminPrivateEvents = () => {
     qc.invalidateQueries({ queryKey: ["admin-private-events"] });
   };
 
+  const remove = async (id: string) => {
+    if (!confirm("Excluir este pedido de evento privativo?")) return;
+    const { error } = await supabase.from("private_event_requests").delete().eq("id", id);
+    if (error) {
+      toast({ title: "Erro ao excluir", description: error.message, variant: "destructive" });
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ["admin-private-events"] });
+  };
+
   if (isLoading) return <p className="text-muted-foreground py-10">Carregando…</p>;
   if (!requests.length)
     return (
@@ -318,8 +328,9 @@ export const AdminPrivateEvents = () => {
                 {r.email && ` · ${r.email}`}
               </p>
             </div>
+            <div className="flex items-center gap-2">
             <Select value={r.status} onValueChange={(v) => setStatus(r.id, v)}>
-              <SelectTrigger className="rounded-none h-9 w-48">
+              <SelectTrigger className="rounded-none h-10 w-48">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -329,6 +340,16 @@ export const AdminPrivateEvents = () => {
                 <SelectItem value="closed">Encerrado</SelectItem>
               </SelectContent>
             </Select>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-none"
+              onClick={() => remove(r.id)}
+              aria-label="Excluir pedido"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+            </div>
           </div>
           <p className="text-sm text-muted-foreground">
             {r.experience_type === "decalque"

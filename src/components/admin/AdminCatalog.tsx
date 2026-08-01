@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { addMinutes } from "@/lib/time";
 
 /* ---------------------------------------------------------------- Avaliações */
 
@@ -206,6 +205,37 @@ export const AdminInfoBlocks = ({ productId }: { productId?: string }) => {
     invalidate();
   };
 
+  const copyDefaults = async () => {
+    if (!productId) return;
+    const { data, error } = await supabase
+      .from("product_info_blocks")
+      .select("*")
+      .is("product_id", null)
+      .order("position");
+    if (error || !data?.length) {
+      toast({
+        title: "Nenhuma informação padrão cadastrada",
+        description: "Crie os blocos padrão na aba Informações.",
+        variant: "destructive",
+      });
+      return;
+    }
+    const { error: insErr } = await supabase.from("product_info_blocks").insert(
+      data.map((b: any, i: number) => ({
+        product_id: productId,
+        title: b.title,
+        body: b.body,
+        position: blocks.length + i,
+      })),
+    );
+    if (insErr) {
+      toast({ title: "Erro ao copiar", description: insErr.message, variant: "destructive" });
+      return;
+    }
+    invalidate();
+    toast({ title: "Informações padrão copiadas para esta peça" });
+  };
+
   return (
     <div className="border border-border p-6 space-y-5">
       <div>
@@ -218,6 +248,17 @@ export const AdminInfoBlocks = ({ productId }: { productId?: string }) => {
         </p>
       </div>
 
+      {productId && (
+        <Button
+          variant="outline"
+          onClick={copyDefaults}
+          className="rounded-none h-9 text-xs tracking-[0.15em] uppercase"
+        >
+          <Plus className="w-3.5 h-3.5 mr-2" />
+          Trazer informações padrão
+        </Button>
+      )}
+
       {blocks.length === 0 ? (
         <p className="text-sm text-muted-foreground">Nenhum bloco.</p>
       ) : (
@@ -227,7 +268,7 @@ export const AdminInfoBlocks = ({ productId }: { productId?: string }) => {
               <div className="flex items-center gap-3">
                 <Input
                   defaultValue={b.title}
-                  className="rounded-none h-9 max-w-64"
+                  className="rounded-none h-10 max-w-80 text-base"
                   onBlur={(e) =>
                     e.target.value !== b.title && update(b.id, { title: e.target.value })
                   }
@@ -450,7 +491,7 @@ export const AdminNewWorkshop = () => {
     title: "",
     date: "",
     start: "",
-    duration: "",
+    end: "",
     location: "Videira – SC",
     price: "",
     spots: "10",
@@ -472,8 +513,7 @@ export const AdminNewWorkshop = () => {
       slug: `${slugify(form.title)}-${form.date}`,
       event_date: form.date,
       start_time: form.start || null,
-      duration_minutes: Number(form.duration) || null,
-      end_time: form.start ? addMinutes(form.start, Number(form.duration) || 0) : null,
+      end_time: form.end || null,
       location: form.location.trim() || "Videira – SC",
       price_cents: Math.round(Number(form.price.replace(",", ".") || 0) * 100),
       total_spots: Number(form.spots) || 10,
@@ -490,7 +530,7 @@ export const AdminNewWorkshop = () => {
       title: "",
       date: "",
       start: "",
-      duration: "",
+      end: "",
       location: "Videira – SC",
       price: "",
       spots: "10",
@@ -547,17 +587,16 @@ export const AdminNewWorkshop = () => {
                 value={form.start}
                 onChange={(e) => set("start", e.target.value)}
                 placeholder="14:00"
-                className="rounded-none h-9"
+                className="rounded-none h-10"
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs">Duração (min)</Label>
+              <Label className="text-xs">Término</Label>
               <Input
-                type="number"
-                value={form.duration}
-                onChange={(e) => set("duration", e.target.value)}
-                placeholder="180"
-                className="rounded-none h-9"
+                value={form.end}
+                onChange={(e) => set("end", e.target.value)}
+                placeholder="17:00"
+                className="rounded-none h-10"
               />
             </div>
             <div className="space-y-1">
@@ -634,34 +673,39 @@ export const AdminProductSale = ({ product }: { product: any }) => {
 
   const toLocal = (iso: string | null) => (iso ? iso.slice(0, 16) : "");
 
+  const currentPct =
+    product.sale_price_cents != null && product.price_cents
+      ? Math.round((1 - product.sale_price_cents / product.price_cents) * 100)
+      : "";
+
   return (
-    <div className="grid sm:grid-cols-4 gap-3 mt-3 border-t border-border pt-3">
+    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-3 border-t border-border pt-4">
       <div className="space-y-1">
-        <Label className="text-[10px] uppercase tracking-[0.15em]">Preço promo (R$)</Label>
+        <Label className="text-[11px] uppercase tracking-[0.15em]">Desconto (%)</Label>
         <Input
           type="number"
-          step="0.01"
-          defaultValue={
-            product.sale_price_cents != null
-              ? (product.sale_price_cents / 100).toFixed(2)
-              : ""
-          }
-          className="rounded-none h-9"
-          onBlur={(e) =>
+          min={0}
+          max={95}
+          defaultValue={currentPct}
+          placeholder="ex.: 20"
+          className="rounded-none h-11 text-base"
+          onBlur={(e) => {
+            const pct = Number(e.target.value);
             update({
-              sale_price_cents: e.target.value
-                ? Math.round(Number(e.target.value) * 100)
-                : null,
-            })
-          }
+              sale_price_cents:
+                e.target.value && pct > 0
+                  ? Math.round(product.price_cents * (1 - pct / 100))
+                  : null,
+            });
+          }}
         />
       </div>
       <div className="space-y-1">
-        <Label className="text-[10px] uppercase tracking-[0.15em]">Começa em</Label>
+        <Label className="text-[11px] uppercase tracking-[0.15em]">Começa em</Label>
         <Input
           type="datetime-local"
           defaultValue={toLocal(product.sale_starts_at)}
-          className="rounded-none h-9"
+          className="rounded-none h-11 text-base"
           onBlur={(e) =>
             update({
               sale_starts_at: e.target.value ? new Date(e.target.value).toISOString() : null,
@@ -670,11 +714,11 @@ export const AdminProductSale = ({ product }: { product: any }) => {
         />
       </div>
       <div className="space-y-1">
-        <Label className="text-[10px] uppercase tracking-[0.15em]">Termina em</Label>
+        <Label className="text-[11px] uppercase tracking-[0.15em]">Termina em</Label>
         <Input
           type="datetime-local"
           defaultValue={toLocal(product.sale_ends_at)}
-          className="rounded-none h-9"
+          className="rounded-none h-11 text-base"
           onBlur={(e) =>
             update({
               sale_ends_at: e.target.value ? new Date(e.target.value).toISOString() : null,
@@ -683,19 +727,20 @@ export const AdminProductSale = ({ product }: { product: any }) => {
         />
       </div>
       <div className="space-y-1">
-        <Label className="text-[10px] uppercase tracking-[0.15em]">
+        <Label className="text-[11px] uppercase tracking-[0.15em]">
           Alerta de estoque baixo
         </Label>
         <Input
           type="number"
           defaultValue={product.low_stock_threshold ?? 3}
-          className="rounded-none h-9"
+          className="rounded-none h-11 text-base"
           onBlur={(e) => update({ low_stock_threshold: Number(e.target.value) || 0 })}
         />
       </div>
       {product.sale_price_cents != null && (
-        <p className="text-xs text-muted-foreground sm:col-span-4">
-          De {formatBRL(product.price_cents)} por {formatBRL(product.sale_price_cents)}
+        <p className="text-sm text-muted-foreground sm:col-span-2 lg:col-span-4">
+          De {formatBRL(product.price_cents)} por {formatBRL(product.sale_price_cents)} (
+          {currentPct}% off)
         </p>
       )}
     </div>

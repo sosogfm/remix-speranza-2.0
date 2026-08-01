@@ -73,7 +73,7 @@ const Index = () => {
               <span className="italic font-normal">afetivas</span>
             </h1>
             <p className="text-base md:text-lg text-white/80 mb-10 leading-relaxed max-w-lg">
-              Pinto cada peça à mão, uma a uma, no meu ateliê em Videira — para
+              Pintamos cada peça à mão, uma a uma, no nosso ateliê em Videira — para
               acompanhar os momentos mais bonitos da sua casa.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
@@ -302,8 +302,8 @@ const Index = () => {
               tempo, cuidado e <span className="italic">afeto</span>.
             </h2>
             <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10">
-              Pinto cada porcelana à mão aqui em Videira (SC) e envio para todo
-              o Brasil. Também promovo oficinas e aulas de arte para quem quer
+              Pintamos cada porcelana à mão aqui em Videira (SC) e enviamos para todo
+              o Brasil. Também promovemos oficinas e aulas de arte para quem quer
               viver o processo de perto.
             </p>
             <Button
