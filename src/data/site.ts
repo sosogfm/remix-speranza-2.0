@@ -1,5 +1,5 @@
 export const site = {
-  name: "Speranza Ateliê",
+  name: "Speranza\u00A0",
   artist: "Júlia Brandalise",
   tagline: "Porcelanas afetivas pintadas à mão",
   bio: [
