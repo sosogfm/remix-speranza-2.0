@@ -1,12 +1,18 @@
 import { useState } from "react";
 import { Loader2, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { PersonalizationField } from "@/hooks/usePersonalization";
+import {
+  PersonalizationField,
+  ADDON_SEPARATOR,
+  splitAddonValue,
+  fieldExtraCents,
+} from "@/hooks/usePersonalization";
 import { PersonalizationValue } from "@/hooks/useCart";
 import { formatBRL } from "@/data/products";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -45,6 +51,14 @@ export const PersonalizationFields = ({ fields, values, onChange }: Props) => {
     toast({ title: "Imagem enviada", description: file.name });
   };
 
+  const toggleAddon = (field: PersonalizationField, option: string) => {
+    const current = splitAddonValue(values[field.id] ?? "");
+    const next = current.includes(option)
+      ? current.filter((o) => o !== option)
+      : [...field.options.filter((o) => current.includes(o) || o === option)];
+    onChange(field.id, next.join(ADDON_SEPARATOR));
+  };
+
   if (fields.length === 0) return null;
 
   return (
@@ -55,17 +69,25 @@ export const PersonalizationFields = ({ fields, values, onChange }: Props) => {
 
       {fields.map((field) => {
         const value = values[field.id] ?? "";
+        const selected = splitAddonValue(value);
+        const extra = fieldExtraCents(field, value);
         return (
           <div key={field.id} className="space-y-2">
             <Label htmlFor={field.id} className="text-sm">
               {field.label}
               {field.isRequired && <span className="text-primary"> *</span>}
-              {field.extraPriceCents > 0 && (
-                <span className="text-muted-foreground">
-                  {" "}
-                  (+{formatBRL(field.extraPriceCents)})
-                </span>
-              )}
+              {field.fieldType !== "addon" &&
+                field.fieldType !== "size" &&
+                field.extraPriceCents > 0 && (
+                  <span className="text-muted-foreground">
+                    {" "}
+                    (+{formatBRL(field.extraPriceCents)})
+                  </span>
+                )}
+              {(field.fieldType === "addon" || field.fieldType === "size") &&
+                extra > 0 && (
+                  <span className="text-muted-foreground"> (+{formatBRL(extra)})</span>
+                )}
             </Label>
 
             {field.fieldType === "initial" && (
@@ -88,6 +110,59 @@ export const PersonalizationFields = ({ fields, values, onChange }: Props) => {
                 placeholder={`Até ${field.maxLength} caracteres`}
                 className="rounded-none min-h-24"
               />
+            )}
+
+            {field.fieldType === "addon" && (
+              <div className="border border-border divide-y divide-border">
+                {field.options.map((o) => {
+                  const price = field.optionPrices[o] ?? 0;
+                  const checked = selected.includes(o);
+                  return (
+                    <label
+                      key={o}
+                      className={cn(
+                        "flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors",
+                        checked ? "bg-muted/50" : "hover:bg-muted/30"
+                      )}
+                    >
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={() => toggleAddon(field, o)}
+                      />
+                      <span className="flex-1 text-sm">{o}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {price > 0 ? `+ ${formatBRL(price)}` : "Incluso"}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+
+            {field.fieldType === "size" && (
+              <div className="flex flex-wrap gap-2">
+                {field.options.map((o) => {
+                  const price = field.optionPrices[o] ?? 0;
+                  return (
+                    <button
+                      type="button"
+                      key={o}
+                      onClick={() => onChange(field.id, o)}
+                      className={cn(
+                        "px-4 py-2 text-xs tracking-[0.08em] uppercase border transition-colors",
+                        value === o
+                          ? "bg-foreground text-background border-foreground"
+                          : "border-border hover:border-foreground"
+                      )}
+                    >
+                      {o}
+                      {price > 0 && (
+                        <span className="ml-2 opacity-70">+ {formatBRL(price)}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             )}
 
             {(field.fieldType === "choice" || field.fieldType === "color") &&
@@ -182,7 +257,7 @@ export const buildPersonalizationValues = (
       label: f.label,
       type: f.fieldType,
       value: values[f.id].trim(),
-      extraCents: f.extraPriceCents,
+      extraCents: fieldExtraCents(f, values[f.id]),
     }));
 
 export const missingRequiredField = (

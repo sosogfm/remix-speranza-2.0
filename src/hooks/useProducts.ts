@@ -19,12 +19,13 @@ type Row = {
   is_active: boolean;
   is_featured: boolean;
   is_new: boolean;
+  is_quote_only: boolean;
   categories: { slug: string; name: string } | null;
   product_images: { image_url: string; position: number }[] | null;
 };
 
 const SELECT =
-  "id,name,slug,description,long_description,materials,dimensions,price_cents,stock_quantity,is_personalizable,personalization_label,personalization_max_length,max_installments,is_active,is_featured,is_new,categories(slug,name),product_images(image_url,position)";
+  "id,name,slug,description,long_description,materials,dimensions,price_cents,stock_quantity,is_personalizable,personalization_label,personalization_max_length,max_installments,is_active,is_featured,is_new,is_quote_only,categories(slug,name),product_images(image_url,position)";
 
 export const mapProduct = (row: Row): Product => {
   const images = (row.product_images ?? [])
@@ -52,6 +53,7 @@ export const mapProduct = (row: Row): Product => {
     personalizationLabel: row.personalization_label ?? "Personalização",
     personalizationMaxLength: row.personalization_max_length ?? 20,
     maxInstallments: row.max_installments ?? 1,
+    isQuoteOnly: row.is_quote_only ?? false,
   };
 };
 

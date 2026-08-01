@@ -7,10 +7,12 @@ import {
   PersonalizationField,
   fieldTypeLabels,
   PersonalizationFieldType,
+  isPricedOptionType,
 } from "@/hooks/usePersonalization";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import {
   Select,
@@ -33,6 +35,10 @@ export const AdminPersonalizationEditor = ({ productId }: { productId: string })
   const [label, setLabel] = useState("");
   const [type, setType] = useState<PersonalizationFieldType>("initial");
   const [options, setOptions] = useState("");
+  const [pricedOptions, setPricedOptions] = useState(
+    "Ouro na borda = 45\nBorda colorida = 10"
+  );
+  const [copyFrom, setCopyFrom] = useState("");
   const [maxLength, setMaxLength] = useState("20");
   const [extra, setExtra] = useState("0");
   const [required, setRequired] = useState(true);
@@ -56,19 +62,42 @@ export const AdminPersonalizationEditor = ({ productId }: { productId: string })
     qc.invalidateQueries({ queryKey: ["personalization-fields", productId] });
   };
 
+  /** "Ouro na borda = 45" por linha → opções + preços em centavos */
+  const parsePricedOptions = () => {
+    const list: string[] = [];
+    const prices: Record<string, number> = {};
+    pricedOptions.split("\n").forEach((line) => {
+      const [rawName, rawPrice] = line.split("=");
+      const name = (rawName ?? "").trim();
+      if (!name) return;
+      list.push(name);
+      prices[name] = Math.round(
+        Number((rawPrice ?? "0").replace(/[^0-9,.-]/g, "").replace(",", ".")) * 100
+      ) || 0;
+    });
+    return { list, prices };
+  };
+
   const add = async () => {
     if (!label.trim()) {
       toast({ title: "Dê um nome ao campo", variant: "destructive" });
+      return;
+    }
+    const priced = isPricedOptionType(type) ? parsePricedOptions() : null;
+    if (priced && priced.list.length === 0) {
+      toast({ title: "Liste ao menos uma opção", variant: "destructive" });
       return;
     }
     const { error } = await supabase.from("product_personalization_fields").insert({
       product_id: productId,
       label: label.trim(),
       field_type: type,
-      options:
-        type === "choice" || type === "color"
-          ? options.split(",").map((o) => o.trim()).filter(Boolean)
-          : [],
+      options: priced
+        ? priced.list
+        : type === "choice" || type === "color"
+        ? options.split(",").map((o) => o.trim()).filter(Boolean)
+        : [],
+      option_prices: priced ? priced.prices : {},
       max_length: Number(maxLength) || 20,
       extra_price_cents: Math.round(Number(extra.replace(",", ".")) * 100) || 0,
       is_required: required,
@@ -80,6 +109,53 @@ export const AdminPersonalizationEditor = ({ productId }: { productId: string })
     }
     setLabel("");
     setOptions("");
+    invalidate();
+  };
+
+  const { data: otherProducts = [] } = useQuery({
+    queryKey: ["admin-products-simple"],
+    enabled: open,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id,name")
+        .order("name");
+      if (error) throw error;
+      return (data ?? []).filter((p) => p.id !== productId);
+    },
+  });
+
+  const copyFields = async () => {
+    if (!copyFrom) return;
+    const { data, error } = await supabase
+      .from("product_personalization_fields")
+      .select("*")
+      .eq("product_id", copyFrom)
+      .order("position");
+    if (error || !data?.length) {
+      toast({ title: "Nada para copiar", variant: "destructive" });
+      return;
+    }
+    const rows = data.map((f: any, i: number) => ({
+      product_id: productId,
+      label: f.label,
+      help_text: f.help_text,
+      field_type: f.field_type,
+      options: f.options,
+      option_prices: f.option_prices,
+      max_length: f.max_length,
+      is_required: f.is_required,
+      extra_price_cents: f.extra_price_cents,
+      position: (fields as any[]).length + i,
+    }));
+    const { error: insErr } = await supabase
+      .from("product_personalization_fields")
+      .insert(rows);
+    if (insErr) {
+      toast({ title: "Erro ao copiar", description: insErr.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: `${rows.length} campo(s) copiado(s)` });
     invalidate();
   };
 
@@ -116,7 +192,14 @@ export const AdminPersonalizationEditor = ({ productId }: { productId: string })
                   <span>
                     <strong>{f.label}</strong> ·{" "}
                     {fieldTypeLabels[f.field_type as PersonalizationFieldType]}
-                    {f.options?.length > 0 && ` (${f.options.join(", ")})`}
+                    {f.options?.length > 0 &&
+                      ` (${f.options
+                        .map((o: string) =>
+                          f.option_prices?.[o]
+                            ? `${o} +${formatBRL(f.option_prices[o])}`
+                            : o
+                        )
+                        .join(", ")})`}
                     {f.extra_price_cents > 0 && ` · +${formatBRL(f.extra_price_cents)}`}
                     {f.is_required ? " · obrigatório" : " · opcional"}
                   </span>
@@ -168,6 +251,22 @@ export const AdminPersonalizationEditor = ({ productId }: { productId: string })
                 />
               </div>
             )}
+            {isPricedOptionType(type) && (
+              <div className="space-y-1 sm:col-span-2 lg:col-span-3">
+                <Label className="text-xs">
+                  Opções e preços — uma por linha, no formato "Nome = valor em R$"
+                </Label>
+                <Textarea
+                  value={pricedOptions}
+                  onChange={(e) => setPricedOptions(e.target.value)}
+                  placeholder={"Ouro na borda = 45\nAlça em ouro = 40\nBorda colorida = 10"}
+                  className="rounded-none min-h-28 font-mono text-xs"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Use 0 para opções sem custo (ex.: tamanho 350ml = 0).
+                </p>
+              </div>
+            )}
             {(type === "initial" || type === "text") && (
               <div className="space-y-1">
                 <Label className="text-xs">Máx. de caracteres</Label>
@@ -179,7 +278,7 @@ export const AdminPersonalizationEditor = ({ productId }: { productId: string })
                 />
               </div>
             )}
-            <div className="space-y-1">
+            <div className={isPricedOptionType(type) ? "hidden" : "space-y-1"}>
               <Label className="text-xs">Acréscimo (R$)</Label>
               <Input
                 value={extra}
@@ -197,6 +296,32 @@ export const AdminPersonalizationEditor = ({ productId }: { productId: string })
             <Plus className="w-3.5 h-3.5 mr-2" />
             Adicionar campo
           </Button>
+
+          <div className="border-t border-border pt-4 flex flex-wrap items-end gap-3">
+            <div className="space-y-1 min-w-56">
+              <Label className="text-xs">Copiar campos de outra peça</Label>
+              <Select value={copyFrom} onValueChange={setCopyFrom}>
+                <SelectTrigger className="rounded-none h-9">
+                  <SelectValue placeholder="Escolha uma peça" />
+                </SelectTrigger>
+                <SelectContent className="rounded-none">
+                  {otherProducts.map((p: any) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button
+              variant="outline"
+              onClick={copyFields}
+              disabled={!copyFrom}
+              className="rounded-none h-9 text-xs tracking-[0.15em] uppercase"
+            >
+              Copiar
+            </Button>
+          </div>
         </div>
       )}
     </div>

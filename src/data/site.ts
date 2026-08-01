@@ -79,4 +79,6 @@ export const dietaryOptions = [
   { value: "sem-gluten", label: "Sem glúten" },
 ];
 
-export const GIFT_WRAP_CENTS = 0;
+/** Caixa cartonada com as cores da marca + fita de cetim */
+export const GIFT_WRAP_CENTS = 3500;
+
