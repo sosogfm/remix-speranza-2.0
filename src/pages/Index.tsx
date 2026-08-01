@@ -291,17 +291,16 @@ const Index = () => {
             transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }}
           >
             <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-6">
-              About Us
+              Sobre o ateliê
             </p>
             <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground leading-[1.3] mb-8">
-              We believe in the beauty of slow living—in objects made with care,
-              materials that age gracefully, and spaces that invite{" "}
-              <span className="italic">pause</span>.
+              Acreditamos na beleza do feito à mão — em peças que carregam
+              tempo, cuidado e <span className="italic">afeto</span>.
             </h2>
             <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10">
-              Every piece in our collection is selected for its material integrity, 
-              its maker's story, and its ability to endure beautifully. We work with 
-              artisans who share our commitment to craft and sustainability.
+              Cada porcelana é pintada à mão por Júlia Brandalise, em Videira (SC),
+              e enviada para todo o Brasil. Também promovemos oficinas e aulas de
+              arte para quem quer viver o processo de perto.
             </p>
             <Button
               asChild
@@ -310,7 +309,7 @@ const Index = () => {
               className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase"
             >
               <Link to="/sobre">
-                Read Our Story
+                Conheça nossa história
                 <ArrowRight className="ml-3 w-4 h-4" />
               </Link>
             </Button>
@@ -318,7 +317,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Follow Us / Instagram Section */}
+      {/* Instagram */}
       <section className="py-20 md:py-28">
         <div className="container-full">
           <motion.div
@@ -329,14 +328,15 @@ const Index = () => {
             className="text-center mb-12"
           >
             <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-3">
-              Follow Us
+              Acompanhe
             </p>
             <h2 className="font-serif text-3xl md:text-4xl text-foreground mb-4">
-              @maisonhome
+              {site.instagramHandle}
             </h2>
             <p className="text-muted-foreground max-w-md mx-auto">
-              Join our community and get inspired by curated spaces and behind-the-scenes moments.
+              Bastidores do ateliê, novidades e datas das próximas oficinas.
             </p>
+
           </motion.div>
 
           {/* Instagram Grid */}
