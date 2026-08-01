@@ -406,10 +406,10 @@ const Admin = () => {
 
   return (
     <Layout>
-      <section className="py-12 md:py-16">
-        <div className="container-full space-y-10">
+      <section className="py-8 md:py-10">
+        <div className="container-full space-y-6">
           <div>
-            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-3">
+            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-2">
               Speranza Ateliê
             </p>
             <h1 className="font-serif text-4xl md:text-5xl">Administração</h1>
@@ -425,26 +425,26 @@ const Admin = () => {
               <TabsTrigger value="site" className="rounded-none">Informações</TabsTrigger>
               <TabsTrigger value="shipping" className="rounded-none">Frete</TabsTrigger>
             </TabsList>
-            <TabsContent value="products" className="pt-8">
+            <TabsContent value="products" className="pt-4">
               <AdminProducts />
             </TabsContent>
-            <TabsContent value="orders" className="pt-8">
+            <TabsContent value="orders" className="pt-4">
               <AdminOrders />
             </TabsContent>
-            <TabsContent value="workshops" className="pt-8">
+            <TabsContent value="workshops" className="pt-4">
               <AdminWorkshops />
             </TabsContent>
-            <TabsContent value="events" className="pt-8">
+            <TabsContent value="events" className="pt-4">
               <AdminPrivateEvents />
             </TabsContent>
-            <TabsContent value="reviews" className="pt-8">
+            <TabsContent value="reviews" className="pt-4">
               <AdminReviews />
             </TabsContent>
-            <TabsContent value="site" className="pt-8 space-y-8">
+            <TabsContent value="site" className="pt-4 space-y-6">
               <AdminInfoBlocks />
               <AdminExperiences />
             </TabsContent>
-            <TabsContent value="shipping" className="pt-8">
+            <TabsContent value="shipping" className="pt-4">
               <AdminShipping />
             </TabsContent>
           </Tabs>
