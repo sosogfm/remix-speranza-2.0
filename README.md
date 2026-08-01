@@ -24,17 +24,8 @@ Craftsmanship and story-focused descriptions.
 
 UX tone: curated, thoughtful, slow-living, premium.
 
-Include: wishlist, cart drawer, smooth transitions between sections.
+Include: wishlist, cart drawer, smooth transitions between
 
-This project was built with [Lovable](https://lovable.dev).
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/f728c834-8a71-41a5-b19a-1ba66c8e72ec).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
