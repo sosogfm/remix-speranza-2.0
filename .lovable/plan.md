@@ -1,30 +1,33 @@
 # Ajustes de imagens, categorias e vitrine
 
-## 1. Imagens de fundo das abas (hoje não dá para trocar)
-As imagens grandes de topo da home, do Sobre e das outras abas estão fixas no código (fotos de banco de imagens). Vou criar um painel no admin **"Imagens do site"** onde você faz upload da foto de cada fundo:
-
-- Home (topo), Sobre (topo e blocos internos), Oficinas, Peças.
-- Upload direto para o armazenamento do site, com prévia e botão de trocar/remover.
-- Se nenhuma imagem for enviada, continua a imagem atual como padrão.
+## 1. Imagens de fundo (troca manual)
+Nada de painel no admin. As fotos de fundo hoje estão espalhadas pelo código; vou juntar todas em **um único arquivo** (`src/data/images.ts`), com nomes claros (`homeHero`, `sobreHero`, `sobreBloco1`, etc.). Para trocar, basta substituir o link/arquivo nesse arquivo — ou me pedir a troca.
 
 ## 2. Home
-- Remover o "Role" e a setinha do rodapé do topo.
-- Subir a faixa de avaliações (menos espaço acima e posição mais alta na página).
+- Remover o "Role" e a setinha do topo.
+- Subir a faixa de avaliações na página (menos espaço acima).
 
-## 3. Oficinas com data sem horário
-- Início e término passam a ser opcionais: se ficarem vazios, a oficina mostra só a data, sem "às 14:00".
+## 3. Avaliações
+- Altura fixa para todos os cards (a largura se ajusta à proporção de cada imagem), com cantos arredondados.
 
-## 4. Categorias
-- Novo painel para **criar, renomear e excluir categorias** no admin.
-- Uma peça pode ficar em **mais de uma categoria** (seleção múltipla no cadastro e na edição).
-- Categorias aparecem sempre em **ordem alfabética** automaticamente (filtros da loja, rodapé, admin) — sem precisar arrastar ordem.
+## 4. Instagram automático
+A grade de fotos abaixo de "Bastidores do ateliê" hoje é fixa. Vou fazê-la puxar os posts reais do Instagram da Júlia e atualizar sozinha (cache de algumas horas). Isso exige uma conexão com o Instagram: preciso de um **token de acesso da conta profissional** (Instagram/Facebook). Vou montar a função no servidor e, na hora, peço o token pelo formulário seguro — se não houver token, a grade continua com as fotos atuais.
 
-## 5. Vitrine das peças
+## 5. Oficinas
+Continuam com data **e** horários, como estão. O que muda é o admin de **descontos das peças**: as datas de início/fim do desconto passam a ser **só data, sem horário** (e o campo fica mais largo para dar para ler).
+
+## 6. Categorias
+- Painel para **criar, renomear e excluir categorias**.
+- Uma peça pode ficar em **mais de uma categoria**.
+- Categorias sempre em **ordem alfabética** automática (filtros da loja, rodapé, admin).
+
+## 7. Vitrine das peças
 - Selo de oferta vira uma faixa **horizontal no canto superior direito** com a porcentagem (ex.: "-20%").
-- Peças com mais de uma foto passam as imagens **sozinhas, deslizando para o lado**, sem o efeito de troca no hover.
+- Peças com mais de uma foto mantêm a **troca no hover**, mas com a segunda imagem **deslizando para o lado**, sem gradiente nem fade.
 
 ## Detalhes técnicos
-- Banco: tabela `site_images` (chave + caminho da imagem) com leitura pública e escrita só para admin; tabela de ligação `product_categories` (produto ↔ categoria) com migração dos vínculos atuais de `products.category_id`, mantendo a coluna antiga como categoria principal para compatibilidade.
-- Consultas de produto (`useProducts`) passam a trazer a lista de categorias; filtro em `Products.tsx` considera qualquer categoria da peça; `collections` deixa de ser lista fixa e passa a vir do banco ordenada por nome.
-- `ProductCard`: badge de desconto calculado de `sale_price_cents` vs `price_cents`; carrossel automático (intervalo ~4s) quando houver 2+ imagens.
-- `Index.tsx`/`About.tsx`/`Workshops.tsx` leem os fundos de `site_images` via novo hook em `useSiteContent.ts`, com fallback para as URLs atuais.
+- `src/data/images.ts` centraliza as URLs de fundo; `Index.tsx`/`About.tsx`/demais páginas passam a importar de lá.
+- Banco: tabela de ligação `product_categories` (produto ↔ categoria) com migração dos vínculos atuais de `products.category_id`; `useProducts` traz a lista de categorias e o filtro de `Products.tsx` considera qualquer uma; `collections` deixa de ser lista fixa e vem do banco ordenada por nome.
+- `ProductCard`: badge calculado de `sale_price_cents` vs `price_cents`; segunda imagem em `translate-x` no hover, removendo o overlay em gradiente e o fade.
+- Instagram: edge function `instagram-feed` chamando a Graph API com token guardado como segredo, cache no cliente via React Query.
+- `AdminProductSale`: inputs `type="date"` (sem hora) e largura maior.
