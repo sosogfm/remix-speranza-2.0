@@ -20,7 +20,7 @@ export const ReviewsMarquee = () => {
       </div>
 
       <div className="relative">
-        <div className="flex gap-6 w-max animate-[marquee_45s_linear_infinite] hover:[animation-play-state:paused]">
+        <div className="flex gap-6 w-max animate-marquee [animation-duration:45s] hover:[animation-play-state:paused]">
           {loop.map((r, i) => {
             const url = signed[r.imageUrl];
             if (!url) return null;
