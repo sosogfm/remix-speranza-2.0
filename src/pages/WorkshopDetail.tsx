@@ -104,7 +104,7 @@ const WorkshopDetail = () => {
         id: String(registrationId ?? crypto.randomUUID()),
         workshop_id: workshop.id,
         workshop_title: workshop.title,
-        workshop_date: workshop.date ?? null,
+        workshop_date: workshop.eventDate ?? null,
         full_name: fullName.trim(),
         phone: phone.trim(),
         is_waitlist: waitlist,
