@@ -142,25 +142,27 @@ const Index = () => {
               className="md:py-12"
             >
               <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-4">
-                Featured Collection
+                Categoria em destaque
               </p>
               <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-foreground mb-6 leading-[0.95]">
                 {featuredCollection.name}
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-8 max-w-md">
-                {featuredCollection.description}. Discover sculptural forms that cast warmth and shadow, 
-                designed to transform any space into a sanctuary of light.
+                {featuredCollection.description}. Cada peça é modelada, pintada e
+                queimada à mão — pequenas imperfeições fazem parte da beleza do
+                feito artesanalmente.
               </p>
               <Button
                 asChild
                 size="lg"
                 className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase btn-premium"
               >
-                <Link to={`/products?collection=${featuredCollection.slug}`}>
-                  Shop {featuredCollection.name}
+                <Link to={`/produtos?categoria=${featuredCollection.slug}`}>
+                  Ver {featuredCollection.name}
                   <ArrowRight className="ml-3 w-4 h-4" />
                 </Link>
               </Button>
+
             </motion.div>
           </div>
         </div>
