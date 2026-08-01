@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { CalendarDays, MapPin, Clock, User } from "lucide-react";
+import { formatDuration } from "@/lib/time";
 import { Layout } from "@/components/Layout";
 import { useWorkshop, formatWorkshopDateLong } from "@/hooks/useWorkshops";
 import { formatBRL } from "@/data/products";
