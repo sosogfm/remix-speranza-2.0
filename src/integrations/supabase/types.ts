@@ -800,6 +800,7 @@ export type Database = {
           allows_waitlist: boolean
           created_at: string
           description: string | null
+          duration_minutes: number | null
           end_time: string | null
           event_date: string
           glazing_available: boolean
@@ -824,6 +825,7 @@ export type Database = {
           allows_waitlist?: boolean
           created_at?: string
           description?: string | null
+          duration_minutes?: number | null
           end_time?: string | null
           event_date: string
           glazing_available?: boolean
@@ -848,6 +850,7 @@ export type Database = {
           allows_waitlist?: boolean
           created_at?: string
           description?: string | null
+          duration_minutes?: number | null
           end_time?: string | null
           event_date?: string
           glazing_available?: boolean
