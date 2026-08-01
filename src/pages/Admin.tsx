@@ -58,7 +58,7 @@ const AdminProducts = () => {
     },
   });
 
-  const update = async (id: string, patch: Record<string, unknown>) => {
+  const update = async (id: string, patch: any) => {
     setSavingId(id);
     const { error } = await supabase.from("products").update(patch).eq("id", id);
     setSavingId(null);
@@ -140,7 +140,7 @@ const AdminOrders = () => {
     },
   });
 
-  const update = async (id: string, patch: Record<string, unknown>) => {
+  const update = async (id: string, patch: any) => {
     const { error } = await supabase.from("orders").update(patch).eq("id", id);
     if (error) {
       toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
@@ -245,7 +245,7 @@ const AdminShipping = () => {
     },
   });
 
-  const update = async (id: string, patch: Record<string, unknown>) => {
+  const update = async (id: string, patch: any) => {
     const { error } = await supabase.from("shipping_rates").update(patch).eq("id", id);
     if (error) {
       toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
