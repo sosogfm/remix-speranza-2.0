@@ -54,6 +54,7 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("pix");
   const [installments, setInstallments] = useState("1");
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const { data: shipping, isFetching: loadingShipping } = useShippingQuote(
     form.postalCode,
@@ -80,19 +81,51 @@ const Checkout = () => {
     );
   }
 
+  const validate = () => {
+    const e: Record<string, string> = {};
+    const digits = (v: string) => onlyDigits(v);
+
+    if (form.name.trim().length < 3) e.name = "Informe seu nome completo.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim()))
+      e.email = "E-mail inválido. Exemplo: nome@email.com";
+    if (digits(form.phone).length < 10)
+      e.phone = "Telefone inválido. Inclua o DDD, ex.: (49) 99999-9999";
+    const doc = digits(form.document);
+    if (doc.length !== 11 && doc.length !== 14)
+      e.document = "CPF deve ter 11 dígitos e CNPJ, 14.";
+    if (digits(form.postalCode).length !== 8)
+      e.cep = "CEP inválido. Use 8 dígitos, ex.: 89560-000";
+    else if (!shipping)
+      e.cep = "Ainda não conseguimos calcular o frete para este CEP.";
+    if (!form.neighborhood.trim()) e.neighborhood = "Informe o bairro.";
+    if (!form.addressLine.trim()) e.address = "Informe a rua/avenida.";
+    if (!form.addressNumber.trim()) e.number = "Informe o número.";
+    if (!form.city.trim()) e.city = "Informe a cidade.";
+    if (!/^[A-Z]{2}$/.test(form.state.trim())) e.state = "Use a sigla do estado, ex.: SC";
+
+    return e;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (onlyDigits(form.postalCode).length !== 8 || !shipping) {
+    const found = validate();
+    setErrors(found);
+    const firstKey = Object.keys(found)[0];
+    if (firstKey) {
+      const el = document.getElementById(firstKey);
+      el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      el?.focus({ preventScroll: true });
       toast({
-        title: "CEP inválido",
-        description: "Informe um CEP válido para calcularmos o frete.",
+        title: "Confira os dados destacados",
+        description: found[firstKey],
         variant: "destructive",
       });
       return;
     }
 
     setSubmitting(true);
+
     try {
       const { data, error } = await supabase.rpc("place_guest_order", {
         _order: {
