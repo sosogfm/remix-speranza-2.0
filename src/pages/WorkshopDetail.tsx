@@ -88,7 +88,7 @@ const WorkshopDetail = () => {
     if (!fullName.trim() || !phone.trim()) {
       toast({
         title: "Preencha nome e telefone",
-        description: "É por telefone que eu entro em contato com você.",
+        description: "É por telefone que entramos em contato com você.",
         variant: "destructive",
       });
       return;
@@ -149,7 +149,7 @@ const WorkshopDetail = () => {
 
     toast({
       title: waitlist ? "Você entrou na lista de espera" : "Inscrição enviada",
-      description: "Eu te chamo no WhatsApp para confirmar sua vaga.",
+      description: "Vamos te chamar no WhatsApp para confirmar sua vaga.",
     });
     navigate("/minha-conta");
   };

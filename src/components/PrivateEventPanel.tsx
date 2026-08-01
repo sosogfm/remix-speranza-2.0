@@ -42,7 +42,7 @@ export const PrivateEventPanel = () => {
     if (!fullName.trim() || !phone.trim()) {
       toast({
         title: "Preencha nome e telefone",
-        description: "É por telefone que eu entro em contato com você.",
+        description: "É por telefone que entramos em contato com você.",
         variant: "destructive",
       });
       return;
@@ -77,7 +77,7 @@ export const PrivateEventPanel = () => {
     setOpen(false);
     toast({
       title: "Recebi seu pedido!",
-      description: "Eu te chamo no WhatsApp para combinarmos os detalhes.",
+      description: "Vamos te chamar no WhatsApp para combinarmos os detalhes.",
     });
   };
 

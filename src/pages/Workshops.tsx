@@ -77,9 +77,9 @@ const Workshops = () => {
             Oficinas
           </h1>
           <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-            Faço um convite para você desacelerar e se reconectar com o que é
-            simples e essencial. No meu ateliê, em um ambiente acolhedor, te
-            ensino as bases da arte em porcelana e cerâmica — sem precisar de
+            Fazemos um convite para você desacelerar e se reconectar com o que é
+            simples e essencial. No nosso ateliê, em um ambiente acolhedor,
+            ensinamos as bases da arte em porcelana e cerâmica — sem precisar de
             experiência. Vagas limitadas, com materiais, queima das peças e café
             da tarde inclusos.
           </p>
