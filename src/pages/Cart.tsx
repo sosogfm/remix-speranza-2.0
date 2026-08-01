@@ -1,18 +1,26 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, ShoppingBag, Trash2 } from "lucide-react";
+import { ArrowRight, ShoppingBag, Trash2, Gift } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { QuantitySelector } from "@/components/QuantitySelector";
 import { useCart } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import { formatBRL } from "@/data/products";
 
 const Cart = () => {
-  const { items, updateQuantity, removeItem, getSubtotalCents } = useCart();
+  const {
+    items,
+    updateQuantity,
+    removeItem,
+    getSubtotalCents,
+    isGift,
+    setGift,
+    giftMessage,
+    setGiftMessage,
+  } = useCart();
   const subtotalCents = getSubtotalCents();
-  const shippingCents = subtotalCents > 50000 ? 0 : 2500;
-  const totalCents = subtotalCents + shippingCents;
-
 
   if (items.length === 0) {
     return (
@@ -24,10 +32,10 @@ const Cart = () => {
             transition={{ duration: 0.6 }}
           >
             <ShoppingBag className="w-16 h-16 mx-auto mb-6 text-muted-foreground/30" />
-            <h1 className="font-serif text-4xl mb-4">Your Bag is Empty</h1>
+            <h1 className="font-serif text-4xl mb-4">Sua sacola está vazia</h1>
             <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-              Discover our curated collection of handcrafted home goods and find
-              pieces that speak to you.
+              Conheça as porcelanas pintadas à mão do ateliê e encontre a peça
+              que combina com você.
             </p>
             <Button
               asChild
@@ -35,7 +43,7 @@ const Cart = () => {
               className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase btn-premium"
             >
               <Link to="/produtos">
-                Start Shopping
+                Ver a loja
                 <ArrowRight className="ml-3 w-4 h-4" />
               </Link>
             </Button>
@@ -47,14 +55,13 @@ const Cart = () => {
 
   return (
     <Layout>
-      {/* Breadcrumb */}
       <div className="container-full py-6 border-b border-border">
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
           <Link to="/produtos" className="hover:text-foreground transition-colors">
-            Shop
+            Loja
           </Link>
           <span className="text-border">/</span>
-          <span className="text-foreground">Your Bag</span>
+          <span className="text-foreground">Sacola</span>
         </div>
       </div>
 
@@ -66,11 +73,10 @@ const Cart = () => {
             transition={{ duration: 0.6 }}
             className="font-serif text-4xl md:text-5xl mb-12"
           >
-            Your Bag
+            Sua sacola
           </motion.h1>
 
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-16">
-            {/* Cart Items */}
             <div className="lg:col-span-7">
               <div className="space-y-0">
                 {items.map((item, index) => (
@@ -81,9 +87,8 @@ const Cart = () => {
                     transition={{ duration: 0.4, delay: index * 0.1 }}
                     className="flex gap-6 py-8 border-b border-border"
                   >
-                    {/* Product Image */}
                     <Link
-                      to={`/product/${item.product.slug}`}
+                      to={`/produto/${item.product.slug}`}
                       className="w-28 h-32 md:w-36 md:h-44 flex-shrink-0 overflow-hidden bg-muted/30 group"
                     >
                       <img
@@ -93,11 +98,10 @@ const Cart = () => {
                       />
                     </Link>
 
-                    {/* Product Details */}
                     <div className="flex-1 flex flex-col">
                       <div className="flex-1">
                         <Link
-                          to={`/product/${item.product.slug}`}
+                          to={`/produto/${item.product.slug}`}
                           className="font-serif text-lg md:text-xl hover:text-primary transition-colors"
                         >
                           {item.product.name}
@@ -114,11 +118,10 @@ const Cart = () => {
                           </p>
                         )}
                         <p className="font-serif text-lg mt-3">
-                          {formatBRL(item.product.priceCents)}
+                          {formatBRL(item.product.priceCents + (item.extraCents || 0))}
                         </p>
                       </div>
 
-                      {/* Actions */}
                       <div className="flex items-center justify-between mt-4">
                         <QuantitySelector
                           quantity={item.quantity}
@@ -127,6 +130,7 @@ const Cart = () => {
                         />
                         <button
                           onClick={() => removeItem(item.key)}
+                          aria-label="Remover peça"
                           className="p-2 text-muted-foreground hover:text-destructive transition-colors"
                         >
                           <Trash2 className="w-5 h-5" />
@@ -142,45 +146,65 @@ const Cart = () => {
                 className="inline-flex items-center gap-2 mt-8 text-sm tracking-[0.1em] uppercase text-muted-foreground hover:text-foreground transition-colors"
               >
                 <ArrowRight className="w-4 h-4 rotate-180" />
-                Continue Shopping
+                Continuar comprando
               </Link>
             </div>
 
-            {/* Order Summary */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="lg:col-span-5"
             >
-              <div className="bg-linen p-8 lg:sticky lg:top-28">
-                <h2 className="font-serif text-2xl mb-8">Resumo do pedido</h2>
+              <div className="bg-linen p-8 lg:sticky lg:top-28 space-y-8">
+                <h2 className="font-serif text-2xl">Resumo do pedido</h2>
 
-                <div className="space-y-4 mb-8">
+                <div className="space-y-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span>{formatBRL(subtotalCents)}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Frete (estimado)</span>
-                    <span>
-                      {shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}
+                  <p className="text-xs text-muted-foreground">
+                    O frete é calculado na próxima etapa, depois que você
+                    informar o seu CEP e endereço.
+                  </p>
+                </div>
+
+                <div className="border-t border-border pt-6 space-y-4">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <Checkbox
+                      checked={isGift}
+                      onCheckedChange={(v) => setGift(Boolean(v))}
+                      className="mt-0.5"
+                    />
+                    <span className="text-sm">
+                      <span className="flex items-center gap-2 font-medium">
+                        <Gift className="w-4 h-4 text-primary" />
+                        É um presente
+                      </span>
+                      <span className="text-muted-foreground">
+                        Embalamos com carinho, sem mostrar o valor.
+                      </span>
                     </span>
-                  </div>
-                  {subtotalCents < 50000 && (
-                    <p className="text-xs text-muted-foreground">
-                      Frete grátis em pedidos acima de {formatBRL(50000)}
-                    </p>
+                  </label>
+
+                  {isGift && (
+                    <Textarea
+                      value={giftMessage}
+                      onChange={(e) => setGiftMessage(e.target.value)}
+                      placeholder="Mensagem do cartãozinho (opcional)"
+                      maxLength={300}
+                      className="rounded-none min-h-24 bg-background"
+                    />
                   )}
                 </div>
 
-                <div className="border-t border-border pt-4 mb-8">
+                <div className="border-t border-border pt-4">
                   <div className="flex justify-between font-serif text-xl">
-                    <span>Total</span>
-                    <span>{formatBRL(totalCents)}</span>
+                    <span>Total parcial</span>
+                    <span>{formatBRL(subtotalCents)}</span>
                   </div>
                 </div>
-
 
                 <Button
                   asChild
@@ -188,27 +212,26 @@ const Cart = () => {
                   className="w-full rounded-none py-6 text-sm tracking-[0.15em] uppercase btn-premium"
                 >
                   <Link to="/finalizar">
-                    Proceed to Checkout
+                    Finalizar compra
                     <ArrowRight className="ml-3 w-4 h-4" />
                   </Link>
                 </Button>
 
-                {/* Trust signals */}
-                <div className="mt-8 pt-6 border-t border-border grid grid-cols-2 gap-4">
+                <div className="pt-6 border-t border-border grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-muted-foreground/60 mb-1">
-                      Shipping
+                      Envio
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Worldwide delivery
+                      De Videira/SC para todo o Brasil
                     </p>
                   </div>
                   <div>
                     <p className="text-[11px] font-semibold tracking-[0.15em] uppercase text-muted-foreground/60 mb-1">
-                      Returns
+                      Feito à mão
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      14-day policy
+                      Peças únicas, sob encomenda
                     </p>
                   </div>
                 </div>
