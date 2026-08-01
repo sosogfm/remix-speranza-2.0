@@ -395,11 +395,10 @@ const Checkout = () => {
                     <span>Total</span>
                     <span>{formatBRL(totalCents)}</span>
                   </div>
-                  {paymentMethod === "credit_card" && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {installmentLabel(totalCents, Number(installments))}
-                    </p>
-                  )}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Parcelamento disponível conforme o seu cartão.
+                  </p>
+
                 </div>
 
                 <Button
