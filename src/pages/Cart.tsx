@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight, ShoppingBag, Trash2, Gift } from "lucide-react";
 import { GIFT_WRAP_CENTS } from "@/data/site";
+import { SmartImage } from "@/components/SmartImage";
 import { Layout } from "@/components/Layout";
 import { QuantitySelector } from "@/components/QuantitySelector";
 import { useCart, unitPriceCents } from "@/hooks/useCart";
@@ -92,7 +93,7 @@ const Cart = () => {
                       to={`/produto/${item.product.slug}`}
                       className="w-28 h-32 md:w-36 md:h-44 flex-shrink-0 overflow-hidden bg-muted/30 group"
                     >
-                      <img
+                      <SmartImage
                         src={item.product.images[0]}
                         alt={item.product.name}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

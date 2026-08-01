@@ -14,6 +14,7 @@ import { useWishlist } from "@/hooks/useWishlist";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { SmartImage } from "@/components/SmartImage";
 
 interface ProductCardProps {
   product: Product;
@@ -60,7 +61,7 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
             variant === "large" ? "aspect-[3/4]" : "aspect-[4/5]"
           )}
         >
-          <img
+          <SmartImage
             src={product.images[0]}
             alt={product.name}
             loading="lazy"
@@ -73,7 +74,7 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
           />
 
           {hasSecondImage && (
-            <img
+            <SmartImage
               src={product.images[1]}
               alt={`${product.name} — outra vista`}
               loading="lazy"

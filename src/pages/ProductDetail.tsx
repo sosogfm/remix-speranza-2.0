@@ -2,6 +2,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, ShoppingBag, Heart, MessageCircle } from "lucide-react";
+import { SmartImage } from "@/components/SmartImage";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { QuantitySelector } from "@/components/QuantitySelector";
@@ -216,7 +217,7 @@ const ProductDetail = () => {
                         index === currentImageIndex ? "ring-2 ring-foreground" : "opacity-60"
                       )}
                     >
-                      <img src={image} alt="" className="w-full h-full object-cover" />
+                      <SmartImage src={image} alt="" className="w-full h-full object-cover" />
                     </button>
                   ))}
                 </div>
