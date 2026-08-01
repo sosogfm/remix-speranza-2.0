@@ -106,8 +106,11 @@ export type Database = {
           customer_email: string
           customer_name: string
           customer_phone: string | null
+          gift_message: string | null
+          gift_wrap_cents: number
           id: string
           installments: number
+          is_gift: boolean
           neighborhood: string | null
           notes: string | null
           order_number: string
@@ -136,8 +139,11 @@ export type Database = {
           customer_email: string
           customer_name: string
           customer_phone?: string | null
+          gift_message?: string | null
+          gift_wrap_cents?: number
           id?: string
           installments?: number
+          is_gift?: boolean
           neighborhood?: string | null
           notes?: string | null
           order_number?: string
@@ -166,8 +172,11 @@ export type Database = {
           customer_email?: string
           customer_name?: string
           customer_phone?: string | null
+          gift_message?: string | null
+          gift_wrap_cents?: number
           id?: string
           installments?: number
+          is_gift?: boolean
           neighborhood?: string | null
           notes?: string | null
           order_number?: string
@@ -216,6 +225,59 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "product_images_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_personalization_fields: {
+        Row: {
+          created_at: string
+          extra_price_cents: number
+          field_type: Database["public"]["Enums"]["personalization_field_type"]
+          help_text: string | null
+          id: string
+          is_required: boolean
+          label: string
+          max_length: number
+          options: string[]
+          position: number
+          product_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          extra_price_cents?: number
+          field_type?: Database["public"]["Enums"]["personalization_field_type"]
+          help_text?: string | null
+          id?: string
+          is_required?: boolean
+          label: string
+          max_length?: number
+          options?: string[]
+          position?: number
+          product_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          extra_price_cents?: number
+          field_type?: Database["public"]["Enums"]["personalization_field_type"]
+          help_text?: string | null
+          id?: string
+          is_required?: boolean
+          label?: string
+          max_length?: number
+          options?: string[]
+          position?: number
+          product_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_personalization_fields_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
@@ -387,6 +449,176 @@ export type Database = {
         }
         Relationships: []
       }
+      wishlists: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wishlists_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workshop_registrations: {
+        Row: {
+          created_at: string
+          dietary_restriction: string
+          full_name: string
+          id: string
+          instagram: string | null
+          is_waitlist: boolean
+          notes: string | null
+          order_id: string | null
+          phone: string
+          status: string
+          updated_at: string
+          user_id: string | null
+          wants_glazing: boolean
+          workshop_id: string
+        }
+        Insert: {
+          created_at?: string
+          dietary_restriction?: string
+          full_name: string
+          id?: string
+          instagram?: string | null
+          is_waitlist?: boolean
+          notes?: string | null
+          order_id?: string | null
+          phone: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          wants_glazing?: boolean
+          workshop_id: string
+        }
+        Update: {
+          created_at?: string
+          dietary_restriction?: string
+          full_name?: string
+          id?: string
+          instagram?: string | null
+          is_waitlist?: boolean
+          notes?: string | null
+          order_id?: string | null
+          phone?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          wants_glazing?: boolean
+          workshop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workshop_registrations_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workshop_registrations_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workshops: {
+        Row: {
+          allows_waitlist: boolean
+          created_at: string
+          description: string | null
+          end_time: string | null
+          event_date: string
+          glazing_available: boolean
+          glazing_price_cents: number
+          id: string
+          image_url: string | null
+          is_published: boolean
+          is_sold_out: boolean
+          location: string
+          notes: string | null
+          price_cents: number
+          slug: string
+          spots_taken: number
+          start_time: string | null
+          summary: string | null
+          teacher: string | null
+          title: string
+          total_spots: number
+          updated_at: string
+        }
+        Insert: {
+          allows_waitlist?: boolean
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          event_date: string
+          glazing_available?: boolean
+          glazing_price_cents?: number
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          is_sold_out?: boolean
+          location?: string
+          notes?: string | null
+          price_cents: number
+          slug: string
+          spots_taken?: number
+          start_time?: string | null
+          summary?: string | null
+          teacher?: string | null
+          title: string
+          total_spots?: number
+          updated_at?: string
+        }
+        Update: {
+          allows_waitlist?: boolean
+          created_at?: string
+          description?: string | null
+          end_time?: string | null
+          event_date?: string
+          glazing_available?: boolean
+          glazing_price_cents?: number
+          id?: string
+          image_url?: string | null
+          is_published?: boolean
+          is_sold_out?: boolean
+          location?: string
+          notes?: string | null
+          price_cents?: number
+          slug?: string
+          spots_taken?: number
+          start_time?: string | null
+          summary?: string | null
+          teacher?: string | null
+          title?: string
+          total_spots?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -402,6 +634,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "customer"
+      personalization_field_type:
+        | "initial"
+        | "text"
+        | "color"
+        | "image"
+        | "choice"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -530,6 +768,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "customer"],
+      personalization_field_type: [
+        "initial",
+        "text",
+        "color",
+        "image",
+        "choice",
+      ],
     },
   },
 } as const
