@@ -6,7 +6,7 @@ import { useWishlistIds } from "@/hooks/useWishlist";
 import { useAuth } from "@/hooks/useAuth";
 
 import { CartIcon } from "@/components/CartIcon";
-import { collections } from "@/data/products";
+import { useCollections } from "@/hooks/useProducts";
 import { site } from "@/data/site";
 import {
   NavigationMenu,

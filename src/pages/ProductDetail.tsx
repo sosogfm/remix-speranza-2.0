@@ -12,7 +12,6 @@ import {
   missingRequiredField,
 } from "@/components/PersonalizationFields";
 import {
-  collections,
   formatBRL,
   installmentLabel,
   activeSaleCents,

@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import { Instagram, MessageCircle, LinkIcon, MapPin, Phone } from "lucide-react";
-import { collections } from "@/data/products";
+import { useCollections } from "@/hooks/useProducts";
 import { site } from "@/data/site";
 
 export const Footer = () => {
+  const { data: collections = [] } = useCollections();
   return (
     <footer className="bg-foreground text-background">
       <div className="border-b border-background/10">
