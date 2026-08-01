@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { CollectionCard } from "@/components/CollectionCard";
+import { ReviewsMarquee } from "@/components/ReviewsMarquee";
 import { collections } from "@/data/products";
 import { useProducts } from "@/hooks/useProducts";
 import { site } from "@/data/site";
@@ -281,6 +282,8 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      <ReviewsMarquee />
 
       {/* About Us Section */}
       <section className="py-24 md:py-32 bg-linen">
