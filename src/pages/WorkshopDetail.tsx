@@ -208,7 +208,13 @@ const WorkshopDetail = () => {
                 <Clock className="w-4 h-4 text-primary" />
                 {workshop.startTime?.slice(0, 5) ?? "14h"} –{" "}
                 {workshop.endTime?.slice(0, 5) ?? "18h"}
+                {formatDuration(workshop.durationMinutes) && (
+                  <span className="text-muted-foreground">
+                    ({formatDuration(workshop.durationMinutes)})
+                  </span>
+                )}
               </p>
+
               <p className="flex items-center gap-3">
                 <MapPin className="w-4 h-4 text-primary" />
                 {workshop.location}
