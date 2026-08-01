@@ -117,9 +117,29 @@ export const useCategories = () =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("categories")
-        .select("id,name,slug,display_order")
-        .order("display_order");
+        .select("id,name,slug,description,image_url")
+        .order("name");
       if (error) throw error;
-      return data;
+      return (data ?? []).sort((a: any, b: any) =>
+        a.name.localeCompare(b.name, "pt-BR")
+      );
     },
   });
+
+/** Categorias em formato de "coleção" (com imagem), sempre em ordem alfabética */
+export const useCollections = () => {
+  const query = useCategories();
+  const data: Collection[] = (query.data ?? []).map((c: any) => {
+    const fallback = staticCollections.find((s) => s.slug === c.slug);
+    return {
+      id: c.id,
+      name: c.name,
+      slug: c.slug,
+      description: c.description ?? fallback?.description ?? "",
+      image: c.image_url ?? fallback?.image ?? productPlaceholderImage,
+      heroImage: fallback?.heroImage,
+    };
+  });
+  return { ...query, data };
+};
+
