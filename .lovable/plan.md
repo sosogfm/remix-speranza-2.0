@@ -1,233 +1,71 @@
+# Speranza Ateliê — Loja própria com pagamentos, estoque e personalização
 
+Build a self-contained store: products, stock, personalization flags, cart, checkout, shipping and an admin panel — all inside the app. Only one external service is required (the payment processor), plus optional ones for shipping labels and tax invoices.
 
-# Homepage & Store Restructure
+## Payment approach (one processor covers everything)
 
-This plan transforms the portfolio/inquiry-only website into a fully functional e-commerce store with cart, checkout, and proper product flow.
+Mercado Pago is the single processor that natively covers everything you listed for Brazil:
 
----
+- Pix (QR code + copia e cola)
+- Credit card with "parcelas sem juros" (the 2x you show on product prices)
+- Debit card
+- Boleto bancário
+- Apple Pay / Google Pay through its wallet checkout
 
-## Summary of Changes
+Stripe in Brazil does not do boleto/debit/installments as cleanly, so using both would mean two dashboards, two reconciliations and two fee structures. Recommendation: start with Mercado Pago only. You bring your own Mercado Pago account credentials (access token), stored securely as a backend secret.
 
-### Current State → New State
-- **Wishlist page** → Removed (keep wishlist functionality in header icon only)
-- **Inquiry-based flow** → Shopping cart + checkout flow
-- **Product detail "Inquire" button** → "Add to Bag" + quantity selector
-- **Homepage structure** → Reorganized to match reference layout
+Payment flow: the app creates the order server-side, calls Mercado Pago Checkout Pro / Pix API, and a webhook confirms payment and marks the order paid + decrements stock. Nothing about prices or stock is trusted from the browser.
 
----
+## What gets built
 
-## 1. Homepage Restructure
+### 1. Backend (Lovable Cloud)
+Enable Lovable Cloud (database, auth, server functions, image storage). Tables:
 
-Reorganize sections to follow this exact order:
+- `categories` — the 12 categorias (Arte Sacra, Boleiras, Canecas, Cozinha, Cuias, Home Decor, Kits para Presente, Natal, Porta Joias, Urso Petit Poá, Xícaras, Coleção Colo)
+- `products` — nome, slug, descrição, preço (BRL, centavos), `stock_quantity`, `is_personalizable`, `personalization_label` (ex. "Inicial"), `personalization_max_length`, `max_installments`, ativo/destaque, categoria
+- `product_images` — múltiplas fotos por produto
+- `orders` + `order_items` — snapshot de preço, texto de personalização por item, endereço, frete, status de pagamento e de envio
+- `shipping_zones` / `shipping_rates` — frete por região/peso, frete grátis acima de X
+- `user_roles` + `has_role()` — admin separado da tabela de usuários (segurança)
 
-| Section | Description |
-|---------|-------------|
-| Hero Banner | Keep existing lifestyle hero |
-| Featured Collection(s) | 1-2 highlighted collections with editorial imagery |
-| Latest Products | Grid of newest arrivals |
-| Collections | Grid/list of all collection categories |
-| About Us | Brand philosophy snippet with link |
-| Follow Us | Social media / Instagram feed placeholder |
+RLS: público lê produtos ativos; só admin escreve; cliente vê só os próprios pedidos.
 
-### Remove from Homepage
-- Philosophy statement section (move essence to About Us section)
-- Marquee text banner
-- Full-width lifestyle banner mid-page
-- Newsletter section (move to footer only)
+### 2. Admin panel (`/admin`, login protegido)
+- Produtos: criar/editar, upload de fotos, preço, **quantidade em estoque**, e o switch **"Personalizável (sim/não)"** com o rótulo do campo que o cliente preenche
+- Estoque: lista com alerta de baixo estoque, ajuste rápido
+- Pedidos: status (pago, em produção, enviado, entregue), código de rastreio, marcar como enviado
+- Frete: tabela de faixas de CEP e valores
+- Categorias
 
----
+### 3. Loja (frontend)
+- Migrar os produtos mock de `src/data/products.ts` para o banco
+- Página de produto: se `is_personalizable`, mostra campo de texto obrigatório (ex. inicial "N"); mostra "R$ 145,00 — 2x de R$ 72,50 sem juros" calculado a partir do preço e das parcelas
+- "Esgotado" quando estoque = 0; carrinho limitado ao estoque disponível
+- Carrinho e checkout já existem — checkout passa a: endereço + CEP → cálculo de frete → escolha do meio de pagamento → Pix QR / cartão / boleto
+- Página de confirmação com QR Pix ou linha digitável do boleto, e página "Meus pedidos"
+- Filtros por categoria, preço e personalizável
 
-## 2. Collection/Products Page Updates
+### 4. Envio (shipping)
+Duas camadas:
+- **Já incluso:** tabelas de frete próprias por região/CEP + frete grátis acima de um valor, rastreio manual por pedido, e-mail ao cliente quando enviado
+- **Opcional (recomendado depois):** integração com Melhor Envio para cotar Correios/Jadlog automaticamente e imprimir etiquetas. Isso é um serviço externo; posso adicionar quando você quiser.
 
-### Add Filters
-- Collection filter (already exists)
-- Price range filter (Low to High, High to Low)
-- Material type filter
-- "New Arrivals" and "Featured" quick filters
+### 5. Impostos / nota fiscal
+Emissão automática de NF-e/NFC-e exige um emissor autorizado (Focus NFe, eNotas ou similar) — não dá para fazer 100% dentro do app. O que faço agora: guardar CPF/CNPJ no pedido e deixar o hook pronto para plugar o emissor. Quando você tiver a conta, integro a emissão automática após o pagamento confirmado.
 
-### Add Sorting
-- Dropdown with options:
-  - Featured (default)
-  - Newest
-  - Price: Low to High
-  - Price: High to Low
-  - Alphabetical A-Z
+## Ordem de execução
 
-### Product Grid
-- Keep existing editorial-style grid
-- Ensure all cards show mock data
-- Only the first product links to real detail page (others link to same product for demo purposes)
+1. Ativar Lovable Cloud + criar o banco e as políticas de segurança
+2. Login de admin + painel de produtos/estoque/personalização
+3. Migrar catálogo e conectar a loja ao banco
+4. Frete por CEP no checkout
+5. Mercado Pago: criar pedido, Pix/cartão/boleto, webhook de confirmação, baixa de estoque
+6. Painel de pedidos + e-mails de confirmação e envio
 
----
+## Notas técnicas
 
-## 3. Product Detail Page Updates
-
-### Current → New Layout
-| Element | Change |
-|---------|--------|
-| Images | Keep existing gallery |
-| Title, Description, Price | Keep |
-| "Inquire About This Piece" | → "Add to Bag" primary CTA |
-| Wishlist button | Keep as secondary action |
-| **New: Quantity Selector** | Add increment/decrement control |
-| Related Products | Keep existing |
-
-### New Elements to Add
-- Quantity selector (1-10, with +/- buttons)
-- "Add to Bag" button replaces inquiry button
-- Toast notification on add to cart
-
----
-
-## 4. New Cart System
-
-### Create Cart Store (Zustand)
-Similar to wishlist but with quantity:
-- `items: { product, quantity }[]`
-- `addItem(product, quantity)`
-- `updateQuantity(productId, quantity)`
-- `removeItem(productId)`
-- `getTotal()`
-- `getItemCount()`
-- Persist to localStorage
-
-### Cart Page (`/cart`)
-| Element | Description |
-|---------|-------------|
-| Product List | Image, title, price, quantity selector, remove button |
-| Cart Summary | Subtotal, estimated shipping, total |
-| Checkout CTA | Button linking to checkout page |
-| Continue Shopping | Secondary link back to products |
-
----
-
-## 5. Checkout Page (`/checkout`)
-
-### Coming Soon Banner
-- Prominent banner: "Online checkout coming soon"
-- Message: "Please contact us to complete your order"
-- Email/phone contact info
-
-### Order Summary
-- List of cart items (read-only)
-- Quantities and prices
-- Subtotal and total
-
-### Contact Form
-- Name, Email, Phone
-- Shipping address fields
-- Order notes/special requests
-- "Submit Order Request" button
-- Form submits and clears cart with success message
-
----
-
-## 6. Header Updates
-
-### Navigation Changes
-| Current | New |
-|---------|-----|
-| Wishlist icon | Keep (but no dedicated page, opens mini drawer or tooltip) |
-| **New:** Cart icon | Bag icon with item count badge |
-
-### Cart Icon Behavior
-- Shows item count
-- Links to `/cart` page
-
----
-
-## 7. Mock Data Strategy
-
-### Product Cards Approach
-- All product cards render with unique mock data (images, names, prices)
-- For demo simplicity, clicking any product goes to a single working detail page
-- This prevents broken pages while showcasing the grid design
-
-### Implementation
-- Keep existing product data
-- First product (Arc Pendant Light) is the "real" linkable product
-- Other cards can link to this same product for the demo
-
----
-
-## 8. Files to Create
-
-| File | Purpose |
-|------|---------|
-| `src/hooks/useCart.ts` | Cart state management with Zustand |
-| `src/pages/Cart.tsx` | Shopping cart page |
-| `src/pages/Checkout.tsx` | Checkout page with form |
-| `src/components/QuantitySelector.tsx` | Reusable +/- quantity control |
-| `src/components/CartIcon.tsx` | Header cart icon with badge |
-
----
-
-## 9. Files to Modify
-
-| File | Changes |
-|------|---------|
-| `src/pages/Index.tsx` | Restructure sections per new layout |
-| `src/pages/Products.tsx` | Add filters and sorting UI |
-| `src/pages/ProductDetail.tsx` | Add quantity selector, change CTA to "Add to Bag" |
-| `src/components/Header.tsx` | Add cart icon, update wishlist behavior |
-| `src/components/Footer.tsx` | Remove wishlist link, keep rest |
-| `src/App.tsx` | Add `/cart` and `/checkout` routes, remove `/wishlist` |
-| `src/components/Layout.tsx` | Fix TypeScript error with Framer Motion variants |
-
----
-
-## 10. Files to Delete
-
-| File | Reason |
-|------|--------|
-| `src/pages/Wishlist.tsx` | User requested removal |
-
----
-
-## Technical Details
-
-### Fix Build Error (Layout.tsx)
-The Framer Motion `ease` array needs to be typed as a tuple:
-```typescript
-ease: [0.25, 0.46, 0.45, 0.94] as const
-```
-
-### Cart Store Structure
-```typescript
-interface CartItem {
-  product: Product;
-  quantity: number;
-}
-
-interface CartState {
-  items: CartItem[];
-  addItem: (product: Product, quantity: number) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  removeItem: (productId: string) => void;
-  clearCart: () => void;
-  getSubtotal: () => number;
-  getItemCount: () => number;
-}
-```
-
-### Quantity Selector Component
-- Shows current quantity (default: 1)
-- Minus button (disabled at 1)
-- Plus button (max 10)
-- Clean, minimal styling matching brand
-
-### Sorting Implementation
-- URL parameter based (`?sort=price-asc`)
-- Combined with existing collection filter
-- `useMemo` for filtered and sorted products
-
----
-
-## Visual Design Notes
-
-- Maintain warm, Scandinavian aesthetic throughout
-- Cart and checkout pages use same cream/neutral tones
-- No dark theming - keep light, warm palette
-- Generous whitespace on cart/checkout pages
-- Form inputs match existing inquiry form styling
-
+- Preços em centavos (integer) para evitar erro de arredondamento; formatação `pt-BR` / BRL
+- Todo cálculo de total, frete e desconto é feito em edge function; o cliente nunca define preço
+- Webhook do Mercado Pago valida assinatura e é idempotente (evita baixa dupla de estoque)
+- Baixa de estoque em transação, só após `payment.approved`
+- Secret necessário: `MERCADOPAGO_ACCESS_TOKEN` (peço quando chegarmos no passo 5)
