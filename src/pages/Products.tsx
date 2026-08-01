@@ -3,8 +3,8 @@ import { useSearchParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
-import { collections, activeSaleCents, effectivePriceCents, isLowStock } from "@/data/products";
-import { useProducts } from "@/hooks/useProducts";
+import { activeSaleCents, effectivePriceCents, isLowStock } from "@/data/products";
+import { useProducts, useCollections } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
 import {
   Select,

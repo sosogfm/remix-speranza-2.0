@@ -97,9 +97,10 @@ const Index = () => {
       </section>
 
       {/* Featured Collection */}
-      <section className="py-20 md:py-28">
+      <section className={featuredCollection ? "py-20 md:py-28" : "hidden"}>
         <div className="container-full">
           <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
+
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
