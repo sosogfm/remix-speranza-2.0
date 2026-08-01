@@ -44,7 +44,13 @@ const ProductDetail = () => {
   const { data: fields = [] } = usePersonalizationFields(product?.id);
   const { data: infoBlocks = [] } = useProductInfoBlocks(product?.id);
   const optionImagePaths = fields.flatMap((f) => Object.values(f.optionImages ?? {}));
-  const { data: signedImages = {} } = useSignedUrls(optionImagePaths);
+  const galleryPaths = (product?.images ?? []).filter(
+    (i) => !/^(https?:|data:|blob:|\/)/i.test(i)
+  );
+  const { data: signedImages = {} } = useSignedUrls([
+    ...optionImagePaths,
+    ...galleryPaths,
+  ]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [values, setValues] = useState<Record<string, string>>({});
@@ -153,7 +159,11 @@ const ProductDetail = () => {
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={optionImageUrl || currentImageIndex}
-                    src={optionImageUrl || product.images[currentImageIndex]}
+                    src={
+                      optionImageUrl ||
+                      signedImages[product.images[currentImageIndex]] ||
+                      product.images[currentImageIndex]
+                    }
                     alt={`${product.name} — porcelana artesanal Speranza Ateliê`}
                     initial={{ opacity: 0, scale: 1.02 }}
                     animate={{ opacity: 1, scale: 1 }}
