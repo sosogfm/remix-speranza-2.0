@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { addMinutes } from "@/lib/time";
 
 /* ---------------------------------------------------------------- Avaliações */
 
@@ -449,7 +450,7 @@ export const AdminNewWorkshop = () => {
     title: "",
     date: "",
     start: "",
-    end: "",
+    duration: "",
     location: "Videira – SC",
     price: "",
     spots: "10",
@@ -471,7 +472,8 @@ export const AdminNewWorkshop = () => {
       slug: `${slugify(form.title)}-${form.date}`,
       event_date: form.date,
       start_time: form.start || null,
-      end_time: form.end || null,
+      duration_minutes: Number(form.duration) || null,
+      end_time: form.start ? addMinutes(form.start, Number(form.duration) || 0) : null,
       location: form.location.trim() || "Videira – SC",
       price_cents: Math.round(Number(form.price.replace(",", ".") || 0) * 100),
       total_spots: Number(form.spots) || 10,
@@ -488,7 +490,7 @@ export const AdminNewWorkshop = () => {
       title: "",
       date: "",
       start: "",
-      end: "",
+      duration: "",
       location: "Videira – SC",
       price: "",
       spots: "10",
@@ -549,11 +551,12 @@ export const AdminNewWorkshop = () => {
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs">Término</Label>
+              <Label className="text-xs">Duração (min)</Label>
               <Input
-                value={form.end}
-                onChange={(e) => set("end", e.target.value)}
-                placeholder="17:00"
+                type="number"
+                value={form.duration}
+                onChange={(e) => set("duration", e.target.value)}
+                placeholder="180"
                 className="rounded-none h-9"
               />
             </div>

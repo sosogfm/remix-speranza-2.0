@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Heart, Package, CalendarDays, LogOut } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { SmartImage } from "@/components/SmartImage";
 import { Layout } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -47,7 +48,7 @@ const Favoritos = () => {
           <div key={row.product_id} className="group">
             <Link to={`/produto/${p.slug}`} className="block">
               <div className="aspect-[4/5] overflow-hidden bg-muted/40 mb-4">
-                <img
+                <SmartImage
                   src={image}
                   alt={p.name}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"

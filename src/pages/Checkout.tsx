@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { GIFT_WRAP_CENTS } from "@/data/site";
+import { SmartImage } from "@/components/SmartImage";
 import { Layout } from "@/components/Layout";
 import { useCart, unitPriceCents } from "@/hooks/useCart";
 import { useShippingQuote, onlyDigits } from "@/hooks/useShipping";
@@ -310,7 +311,7 @@ const Checkout = () => {
                   {items.map((item) => (
                     <div key={item.key} className="flex gap-4">
                       <div className="w-16 h-20 flex-shrink-0 overflow-hidden bg-muted/30">
-                        <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
+                        <SmartImage src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
                       </div>
                       <div className="flex-1 text-sm">
                         <p className="font-serif text-base">{item.product.name}</p>
