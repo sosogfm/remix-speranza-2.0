@@ -5,12 +5,14 @@ import { Layout } from "@/components/Layout";
 import { QuantitySelector } from "@/components/QuantitySelector";
 import { useCart } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
+import { formatBRL } from "@/data/products";
 
 const Cart = () => {
-  const { items, updateQuantity, removeItem, getSubtotal } = useCart();
-  const subtotal = getSubtotal();
-  const shipping = subtotal > 500 ? 0 : 25;
-  const total = subtotal + shipping;
+  const { items, updateQuantity, removeItem, getSubtotalCents } = useCart();
+  const subtotalCents = getSubtotalCents();
+  const shippingCents = subtotalCents > 50000 ? 0 : 2500;
+  const totalCents = subtotalCents + shippingCents;
+
 
   if (items.length === 0) {
     return (
@@ -73,7 +75,7 @@ const Cart = () => {
               <div className="space-y-0">
                 {items.map((item, index) => (
                   <motion.div
-                    key={item.product.id}
+                    key={item.key}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, delay: index * 0.1 }}
@@ -103,8 +105,16 @@ const Cart = () => {
                         <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                           {item.product.description}
                         </p>
+                        {item.personalization && (
+                          <p className="text-sm mt-2">
+                            <span className="text-muted-foreground">
+                              Personalização:{" "}
+                            </span>
+                            {item.personalization}
+                          </p>
+                        )}
                         <p className="font-serif text-lg mt-3">
-                          ${item.product.price.toLocaleString()}
+                          {formatBRL(item.product.priceCents)}
                         </p>
                       </div>
 
@@ -112,12 +122,11 @@ const Cart = () => {
                       <div className="flex items-center justify-between mt-4">
                         <QuantitySelector
                           quantity={item.quantity}
-                          onQuantityChange={(qty) =>
-                            updateQuantity(item.product.id, qty)
-                          }
+                          max={Math.max(item.product.stock, 1)}
+                          onQuantityChange={(qty) => updateQuantity(item.key, qty)}
                         />
                         <button
-                          onClick={() => removeItem(item.product.id)}
+                          onClick={() => removeItem(item.key)}
                           className="p-2 text-muted-foreground hover:text-destructive transition-colors"
                         >
                           <Trash2 className="w-5 h-5" />
@@ -145,22 +154,22 @@ const Cart = () => {
               className="lg:col-span-5"
             >
               <div className="bg-linen p-8 lg:sticky lg:top-28">
-                <h2 className="font-serif text-2xl mb-8">Order Summary</h2>
+                <h2 className="font-serif text-2xl mb-8">Resumo do pedido</h2>
 
                 <div className="space-y-4 mb-8">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span>${subtotal.toLocaleString()}</span>
+                    <span>{formatBRL(subtotalCents)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Shipping</span>
+                    <span className="text-muted-foreground">Frete (estimado)</span>
                     <span>
-                      {shipping === 0 ? "Complimentary" : `$${shipping}`}
+                      {shippingCents === 0 ? "Grátis" : formatBRL(shippingCents)}
                     </span>
                   </div>
-                  {subtotal < 500 && (
+                  {subtotalCents < 50000 && (
                     <p className="text-xs text-muted-foreground">
-                      Free shipping on orders over $500
+                      Frete grátis em pedidos acima de {formatBRL(50000)}
                     </p>
                   )}
                 </div>
@@ -168,9 +177,10 @@ const Cart = () => {
                 <div className="border-t border-border pt-4 mb-8">
                   <div className="flex justify-between font-serif text-xl">
                     <span>Total</span>
-                    <span>${total.toLocaleString()}</span>
+                    <span>{formatBRL(totalCents)}</span>
                   </div>
                 </div>
+
 
                 <Button
                   asChild

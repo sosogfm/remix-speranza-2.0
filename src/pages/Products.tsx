@@ -1,10 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowRight, ChevronDown } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
-import { products, collections, getCollectionBySlug } from "@/data/products";
+import { collections } from "@/data/products";
+import { useProducts } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -13,256 +13,161 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-
-type SortOption = "featured" | "newest" | "price-asc" | "price-desc" | "name-asc";
-
-const sortOptions: { value: SortOption; label: string }[] = [
-  { value: "featured", label: "Featured" },
-  { value: "newest", label: "Newest" },
-  { value: "price-asc", label: "Price: Low to High" },
-  { value: "price-desc", label: "Price: High to Low" },
-  { value: "name-asc", label: "Alphabetical A-Z" },
-];
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeCollection = searchParams.get("collection") || "all";
-  const activeSort = (searchParams.get("sort") as SortOption) || "featured";
+  const activeCollection = searchParams.get("collection") ?? "all";
+  const [sort, setSort] = useState("featured");
+  const [onlyPersonalizable, setOnlyPersonalizable] = useState(false);
+  const [onlyInStock, setOnlyInStock] = useState(false);
 
-  const filteredAndSortedProducts = useMemo(() => {
-    let result = [...products];
+  const { data: products = [], isLoading } = useProducts();
 
-    // Filter by collection
+  const filtered = useMemo(() => {
+    let list = [...products];
     if (activeCollection !== "all") {
-      const collection = collections.find((c) => c.slug === activeCollection);
-      if (collection) {
-        result = result.filter((product) => product.collection === collection.id);
-      }
+      list = list.filter((p) => p.collection === activeCollection);
     }
+    if (onlyPersonalizable) list = list.filter((p) => p.isPersonalizable);
+    if (onlyInStock) list = list.filter((p) => p.stock > 0);
 
-    // Sort
-    switch (activeSort) {
-      case "newest":
-        result = result.filter((p) => p.new).concat(result.filter((p) => !p.new));
-        break;
+    switch (sort) {
       case "price-asc":
-        result.sort((a, b) => a.price - b.price);
+        list.sort((a, b) => a.priceCents - b.priceCents);
         break;
       case "price-desc":
-        result.sort((a, b) => b.price - a.price);
+        list.sort((a, b) => b.priceCents - a.priceCents);
         break;
-      case "name-asc":
-        result.sort((a, b) => a.name.localeCompare(b.name));
+      case "name":
+        list.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
         break;
-      case "featured":
+      case "new":
+        list.sort((a, b) => Number(b.new) - Number(a.new));
+        break;
       default:
-        result = result.filter((p) => p.featured).concat(result.filter((p) => !p.featured));
-        break;
+        list.sort((a, b) => Number(b.featured) - Number(a.featured));
     }
+    return list;
+  }, [products, activeCollection, sort, onlyPersonalizable, onlyInStock]);
 
-    return result;
-  }, [activeCollection, activeSort]);
-
-  const currentCollection = activeCollection !== "all"
-    ? getCollectionBySlug(activeCollection)
-    : null;
-
-  const handleFilterChange = (slug: string) => {
-    const newParams = new URLSearchParams(searchParams);
-    if (slug === "all") {
-      newParams.delete("collection");
-    } else {
-      newParams.set("collection", slug);
-    }
-    setSearchParams(newParams);
+  const setCollection = (slug: string) => {
+    if (slug === "all") setSearchParams({});
+    else setSearchParams({ collection: slug });
   };
 
-  const handleSortChange = (value: string) => {
-    const newParams = new URLSearchParams(searchParams);
-    if (value === "featured") {
-      newParams.delete("sort");
-    } else {
-      newParams.set("sort", value);
-    }
-    setSearchParams(newParams);
-  };
+  const current = collections.find((c) => c.slug === activeCollection);
 
   return (
     <Layout>
-      {/* Hero Banner */}
-      <section className="relative h-[40vh] md:h-[55vh] overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src={
-              currentCollection?.heroImage ||
-              "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80"
-            }
-            alt={currentCollection?.name || "All Products"}
-            className="w-full h-full object-cover transition-opacity duration-700"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/20 to-charcoal/10" />
-        </div>
-
-        <div className="relative container-full h-full flex flex-col justify-end pb-12 md:pb-16">
+      <section className="py-14 md:py-20 border-b border-border">
+        <div className="container-full">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] as const }}
+            transition={{ duration: 0.6 }}
           >
-            <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-white/50 mb-3">
-              {currentCollection ? "Collection" : "Shop"}
+            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-4">
+              Speranza Ateliê
             </p>
-            <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl text-white mb-3 leading-[0.95]">
-              {currentCollection ? currentCollection.name : "All Pieces"}
+            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-[1.05]">
+              {current ? current.name : "Todas as peças"}
             </h1>
-            {currentCollection && (
-              <p className="text-base text-white/70 max-w-lg">
-                {currentCollection.description}
-              </p>
-            )}
+            <p className="text-muted-foreground mt-5 max-w-xl">
+              {current
+                ? current.description
+                : "Porcelana feita e pintada à mão, peça por peça, no nosso ateliê."}
+            </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Filters & Sorting */}
-      <section className="py-5 border-b border-border sticky top-16 md:top-20 bg-background/95 backdrop-blur-md z-40">
-        <div className="container-full">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            {/* Collection Filters */}
-            <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 -mb-2 md:mb-0 scrollbar-hide">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleFilterChange("all")}
+      <section className="py-10">
+        <div className="container-full space-y-10">
+          {/* Category chips */}
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setCollection("all")}
+              className={cn(
+                "px-4 py-2 text-xs tracking-[0.15em] uppercase border transition-colors",
+                activeCollection === "all"
+                  ? "bg-foreground text-background border-foreground"
+                  : "border-border hover:border-foreground"
+              )}
+            >
+              Todas
+            </button>
+            {collections.map((c) => (
+              <button
+                key={c.slug}
+                onClick={() => setCollection(c.slug)}
                 className={cn(
-                  "rounded-none px-5 whitespace-nowrap text-xs tracking-[0.1em] uppercase transition-all duration-300",
-                  activeCollection === "all"
-                    ? "bg-foreground text-background hover:bg-foreground/90 hover:text-background"
-                    : "hover:bg-accent"
+                  "px-4 py-2 text-xs tracking-[0.15em] uppercase border transition-colors",
+                  activeCollection === c.slug
+                    ? "bg-foreground text-background border-foreground"
+                    : "border-border hover:border-foreground"
                 )}
               >
-                All
-              </Button>
-              {collections.map((collection) => (
-                <Button
-                  key={collection.id}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleFilterChange(collection.slug)}
-                  className={cn(
-                    "rounded-none px-5 whitespace-nowrap text-xs tracking-[0.1em] uppercase transition-all duration-300",
-                    activeCollection === collection.slug
-                      ? "bg-foreground text-background hover:bg-foreground/90 hover:text-background"
-                      : "hover:bg-accent"
-                  )}
-                >
-                  {collection.name}
-                </Button>
-              ))}
-            </div>
+                {c.name}
+              </button>
+            ))}
+          </div>
 
-            {/* Sorting */}
+          {/* Filters */}
+          <div className="flex flex-wrap items-center gap-6 border-y border-border py-4">
             <div className="flex items-center gap-3">
-              <span className="text-xs text-muted-foreground tracking-[0.1em] uppercase">
-                Sort by
-              </span>
-              <Select value={activeSort} onValueChange={handleSortChange}>
-                <SelectTrigger className="w-[180px] rounded-none text-xs tracking-[0.05em] h-9">
+              <Switch
+                id="personalizable"
+                checked={onlyPersonalizable}
+                onCheckedChange={setOnlyPersonalizable}
+              />
+              <Label htmlFor="personalizable" className="text-sm">
+                Somente personalizáveis
+              </Label>
+            </div>
+            <div className="flex items-center gap-3">
+              <Switch id="stock" checked={onlyInStock} onCheckedChange={setOnlyInStock} />
+              <Label htmlFor="stock" className="text-sm">
+                Somente disponíveis
+              </Label>
+            </div>
+            <div className="ml-auto flex items-center gap-3">
+              <span className="text-sm text-muted-foreground">Ordenar</span>
+              <Select value={sort} onValueChange={setSort}>
+                <SelectTrigger className="w-56 rounded-none">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  {sortOptions.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      value={option.value}
-                      className="text-xs"
-                    >
-                      {option.label}
-                    </SelectItem>
-                  ))}
+                <SelectContent className="rounded-none">
+                  <SelectItem value="featured">Destaques</SelectItem>
+                  <SelectItem value="new">Novidades</SelectItem>
+                  <SelectItem value="price-asc">Preço: menor para maior</SelectItem>
+                  <SelectItem value="price-desc">Preço: maior para menor</SelectItem>
+                  <SelectItem value="name">Nome (A-Z)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Products Grid */}
-      <section className="py-14 md:py-20">
-        <div className="container-full">
-          {filteredAndSortedProducts.length > 0 ? (
-            <>
-              <div className="flex items-center justify-between mb-10">
-                <p className="text-sm text-muted-foreground">
-                  {filteredAndSortedProducts.length}{" "}
-                  {filteredAndSortedProducts.length === 1 ? "piece" : "pieces"}
-                </p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
-                {filteredAndSortedProducts.map((product, index) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    index={index}
-                  />
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-28">
-              <p className="font-serif text-2xl text-muted-foreground mb-4">
-                No pieces found
+          {isLoading ? (
+            <p className="py-20 text-center text-muted-foreground">Carregando peças…</p>
+          ) : filtered.length === 0 ? (
+            <div className="py-20 text-center space-y-5">
+              <p className="text-muted-foreground">
+                Nenhuma peça encontrada com esses filtros.
               </p>
-              <p className="text-muted-foreground mb-8">
-                This collection is currently being curated.
-              </p>
-              <Button
-                asChild
-                variant="outline"
-                className="rounded-none px-8 text-sm tracking-[0.1em] uppercase"
-              >
-                <Link to="/products">View All Pieces</Link>
+              <Button asChild variant="outline" className="rounded-none">
+                <Link to="/products">Ver todas as peças</Link>
               </Button>
             </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
+              {filtered.map((product, index) => (
+                <ProductCard key={product.id} product={product} index={index} />
+              ))}
+            </div>
           )}
-        </div>
-      </section>
-
-      {/* Bottom CTA Banner */}
-      <section className="relative h-[50vh] overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80"
-            alt="Interior lifestyle"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-charcoal/50" />
-        </div>
-        <div className="relative h-full flex items-center justify-center text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <p className="text-[10px] font-semibold tracking-[0.3em] uppercase text-white/50 mb-4">
-              Need Assistance?
-            </p>
-            <h2 className="font-serif text-3xl md:text-5xl text-white mb-6">
-              We're Here to Help
-            </h2>
-            <Button
-              asChild
-              size="lg"
-              className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase bg-white text-charcoal hover:bg-white/90"
-            >
-              <a href="mailto:hello@maison.com">
-                Contact Us
-                <ArrowRight className="ml-3 w-4 h-4" />
-              </a>
-            </Button>
-          </motion.div>
         </div>
       </section>
     </Layout>

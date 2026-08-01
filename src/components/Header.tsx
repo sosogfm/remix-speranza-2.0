@@ -3,6 +3,8 @@ import { Heart, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWishlist } from "@/hooks/useWishlist";
+import { useAuth } from "@/hooks/useAuth";
+
 import { CartIcon } from "@/components/CartIcon";
 import { collections } from "@/data/products";
 import {
@@ -24,6 +26,8 @@ export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { items } = useWishlist();
+  const { user, isAdmin } = useAuth();
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -49,7 +53,7 @@ export const Header = () => {
             to="/"
             className="font-serif text-2xl md:text-3xl tracking-tight text-foreground hover:text-primary transition-colors duration-300"
           >
-            Maison
+            Speranza Ateliê
           </Link>
 
           {/* Desktop Navigation */}
@@ -58,7 +62,7 @@ export const Header = () => {
               <NavigationMenuList>
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="bg-transparent text-xs font-medium tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground">
-                    Collections
+                    Categorias
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[400px] gap-1 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
@@ -91,16 +95,33 @@ export const Header = () => {
               to="/products"
               className="text-xs font-medium tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors duration-300 link-underline"
             >
-              Shop All
+              Loja
             </Link>
 
             <Link
               to="/about"
               className="text-xs font-medium tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors duration-300 link-underline"
             >
-              About
+              O Ateliê
+            </Link>
+
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="text-xs font-medium tracking-[0.15em] uppercase text-primary hover:text-foreground transition-colors duration-300 link-underline"
+              >
+                Admin
+              </Link>
+            )}
+
+            <Link
+              to="/auth"
+              className="text-xs font-medium tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors duration-300 link-underline"
+            >
+              {user ? "Minha conta" : "Entrar"}
             </Link>
           </div>
+
 
           {/* Right side actions */}
           <div className="flex items-center gap-2">
