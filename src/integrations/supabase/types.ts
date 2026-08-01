@@ -631,6 +631,26 @@ export type Database = {
         }
         Returns: boolean
       }
+      place_guest_order: {
+        Args: { _items: Json; _order: Json }
+        Returns: {
+          id: string
+          order_number: string
+        }[]
+      }
+      register_workshop_guest: {
+        Args: {
+          _dietary_restriction?: string
+          _full_name: string
+          _instagram?: string
+          _is_waitlist?: boolean
+          _notes?: string
+          _phone: string
+          _wants_glazing?: boolean
+          _workshop_id: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin" | "customer"
