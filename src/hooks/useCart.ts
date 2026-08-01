@@ -2,23 +2,49 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Product } from "@/data/products";
 
+/** Valor preenchido pela cliente em um campo de personalização */
+export interface PersonalizationValue {
+  fieldId: string;
+  label: string;
+  type: string;
+  value: string;
+  extraCents: number;
+}
+
 export interface CartItem {
   product: Product;
   quantity: number;
+  /** resumo legível, usado no pedido e no admin */
   personalization?: string;
+  personalizationValues?: PersonalizationValue[];
+  /** acréscimo unitário vindo das opções de personalização */
+  extraCents: number;
   key: string;
 }
+
+export const summarizePersonalization = (values: PersonalizationValue[]) =>
+  values
+    .filter((v) => v.value)
+    .map((v) => `${v.label}: ${v.value}`)
+    .join(" · ");
 
 const itemKey = (productId: string, personalization?: string) =>
   `${productId}::${personalization ?? ""}`;
 
 interface CartState {
   items: CartItem[];
-  addItem: (product: Product, quantity?: number, personalization?: string) => void;
+  isGift: boolean;
+  giftMessage: string;
+  addItem: (
+    product: Product,
+    quantity?: number,
+    values?: PersonalizationValue[]
+  ) => void;
   updateQuantity: (key: string, quantity: number) => void;
   removeItem: (key: string) => void;
   clearCart: () => void;
-  getSubtotal: () => number;
+  setGift: (isGift: boolean) => void;
+  setGiftMessage: (message: string) => void;
   getSubtotalCents: () => number;
   getItemCount: () => number;
 }
@@ -27,9 +53,13 @@ export const useCart = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      isGift: false,
+      giftMessage: "",
 
-      addItem: (product, quantity = 1, personalization) => {
-        const key = itemKey(product.id, personalization);
+      addItem: (product, quantity = 1, values) => {
+        const summary = values?.length ? summarizePersonalization(values) : undefined;
+        const extraCents = (values ?? []).reduce((t, v) => t + (v.extraCents || 0), 0);
+        const key = itemKey(product.id, summary);
         set((state) => {
           const existing = state.items.find((i) => i.key === key);
           const max = Math.max(product.stock, 0);
@@ -45,7 +75,14 @@ export const useCart = create<CartState>()(
           return {
             items: [
               ...state.items,
-              { product, quantity: Math.min(quantity, max || 1), personalization, key },
+              {
+                product,
+                quantity: Math.min(quantity, max || 1),
+                personalization: summary,
+                personalizationValues: values,
+                extraCents,
+                key,
+              },
             ],
           };
         });
@@ -65,20 +102,22 @@ export const useCart = create<CartState>()(
         }));
       },
 
-      removeItem: (key) => {
-        set((state) => ({ items: state.items.filter((i) => i.key !== key) }));
-      },
+      removeItem: (key) =>
+        set((state) => ({ items: state.items.filter((i) => i.key !== key) })),
 
-      clearCart: () => set({ items: [] }),
+      clearCart: () => set({ items: [], isGift: false, giftMessage: "" }),
+
+      setGift: (isGift) => set({ isGift }),
+      setGiftMessage: (giftMessage) => set({ giftMessage }),
 
       getSubtotalCents: () =>
-        get().items.reduce((t, i) => t + i.product.priceCents * i.quantity, 0),
-
-      getSubtotal: () =>
-        get().items.reduce((t, i) => t + i.product.price * i.quantity, 0),
+        get().items.reduce(
+          (t, i) => t + (i.product.priceCents + (i.extraCents || 0)) * i.quantity,
+          0
+        ),
 
       getItemCount: () => get().items.reduce((c, i) => c + i.quantity, 0),
     }),
-    { name: "speranza-cart" }
+    { name: "speranza-cart", version: 2 }
   )
 );
