@@ -98,12 +98,13 @@ export const useSyncWishlistOnLogin = () => {
 
   const sync = useCallback(async () => {
     if (!user || localIds.length === 0) return;
-    await supabase
-      .from("wishlists")
-      .upsert(
-        localIds.map((product_id) => ({ user_id: user.id, product_id })),
-        { onConflict: "user_id,product_id", ignoreDuplicates: true }
-      );
+    const remote = await fetchRemoteIds().catch(() => [] as string[]);
+    const missing = localIds.filter((id) => !remote.includes(id));
+    if (missing.length > 0) {
+      await supabase
+        .from("wishlists")
+        .insert(missing.map((product_id) => ({ user_id: user.id, product_id })));
+    }
     clear();
     qc.invalidateQueries({ queryKey: ["wishlist"] });
   }, [user, localIds, clear, qc]);
