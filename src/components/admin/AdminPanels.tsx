@@ -301,6 +301,9 @@ export const AdminWorkshops = () => {
             </div>
           </div>
 
+          <WorkshopBlockPicker workshopId={w.id} />
+
+
           <div>
             <p className="text-xs tracking-[0.15em] uppercase text-muted-foreground mb-2">
               Inscrições ({w.workshop_registrations?.length ?? 0})
