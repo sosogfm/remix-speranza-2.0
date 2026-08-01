@@ -324,48 +324,15 @@ const Checkout = () => {
                 </div>
               </div>
 
-              <div className="space-y-5">
+              <div className="space-y-4">
                 <h2 className="font-serif text-2xl">Pagamento</h2>
-                <div className="grid sm:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <Label>Forma de pagamento</Label>
-                    <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-                      <SelectTrigger className="rounded-none">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-none">
-                        {paymentMethods.map((m) => (
-                          <SelectItem key={m.value} value={m.value}>
-                            {m.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  {paymentMethod === "credit_card" && (
-                    <div className="space-y-2">
-                      <Label>Parcelamento</Label>
-                      <Select value={installments} onValueChange={setInstallments}>
-                        <SelectTrigger className="rounded-none">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-none">
-                          {[1, 2, 3].map((n) => (
-                            <SelectItem key={n} value={String(n)}>
-                              {n}x de {formatBRL(Math.round(totalCents / n))} sem juros
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  O pedido é registrado agora e as instruções de pagamento aparecem na
-                  próxima tela.
+                <p className="text-sm text-muted-foreground">
+                  O pagamento é feito aqui mesmo, na próxima etapa, com cartão em
+                  ambiente seguro. Nada é cobrado antes de você confirmar.
                 </p>
               </div>
             </div>
+
 
             <div className="lg:col-span-5">
               <div className="bg-linen p-8 lg:sticky lg:top-28 space-y-6">
