@@ -631,34 +631,39 @@ export const AdminProductSale = ({ product }: { product: any }) => {
 
   const toLocal = (iso: string | null) => (iso ? iso.slice(0, 16) : "");
 
+  const currentPct =
+    product.sale_price_cents != null && product.price_cents
+      ? Math.round((1 - product.sale_price_cents / product.price_cents) * 100)
+      : "";
+
   return (
-    <div className="grid sm:grid-cols-4 gap-3 mt-3 border-t border-border pt-3">
+    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-3 border-t border-border pt-4">
       <div className="space-y-1">
-        <Label className="text-[10px] uppercase tracking-[0.15em]">Preço promo (R$)</Label>
+        <Label className="text-[11px] uppercase tracking-[0.15em]">Desconto (%)</Label>
         <Input
           type="number"
-          step="0.01"
-          defaultValue={
-            product.sale_price_cents != null
-              ? (product.sale_price_cents / 100).toFixed(2)
-              : ""
-          }
-          className="rounded-none h-9"
-          onBlur={(e) =>
+          min={0}
+          max={95}
+          defaultValue={currentPct}
+          placeholder="ex.: 20"
+          className="rounded-none h-11 text-base"
+          onBlur={(e) => {
+            const pct = Number(e.target.value);
             update({
-              sale_price_cents: e.target.value
-                ? Math.round(Number(e.target.value) * 100)
-                : null,
-            })
-          }
+              sale_price_cents:
+                e.target.value && pct > 0
+                  ? Math.round(product.price_cents * (1 - pct / 100))
+                  : null,
+            });
+          }}
         />
       </div>
       <div className="space-y-1">
-        <Label className="text-[10px] uppercase tracking-[0.15em]">Começa em</Label>
+        <Label className="text-[11px] uppercase tracking-[0.15em]">Começa em</Label>
         <Input
           type="datetime-local"
           defaultValue={toLocal(product.sale_starts_at)}
-          className="rounded-none h-9"
+          className="rounded-none h-11 text-base"
           onBlur={(e) =>
             update({
               sale_starts_at: e.target.value ? new Date(e.target.value).toISOString() : null,
@@ -667,11 +672,11 @@ export const AdminProductSale = ({ product }: { product: any }) => {
         />
       </div>
       <div className="space-y-1">
-        <Label className="text-[10px] uppercase tracking-[0.15em]">Termina em</Label>
+        <Label className="text-[11px] uppercase tracking-[0.15em]">Termina em</Label>
         <Input
           type="datetime-local"
           defaultValue={toLocal(product.sale_ends_at)}
-          className="rounded-none h-9"
+          className="rounded-none h-11 text-base"
           onBlur={(e) =>
             update({
               sale_ends_at: e.target.value ? new Date(e.target.value).toISOString() : null,
@@ -680,19 +685,20 @@ export const AdminProductSale = ({ product }: { product: any }) => {
         />
       </div>
       <div className="space-y-1">
-        <Label className="text-[10px] uppercase tracking-[0.15em]">
+        <Label className="text-[11px] uppercase tracking-[0.15em]">
           Alerta de estoque baixo
         </Label>
         <Input
           type="number"
           defaultValue={product.low_stock_threshold ?? 3}
-          className="rounded-none h-9"
+          className="rounded-none h-11 text-base"
           onBlur={(e) => update({ low_stock_threshold: Number(e.target.value) || 0 })}
         />
       </div>
       {product.sale_price_cents != null && (
-        <p className="text-xs text-muted-foreground sm:col-span-4">
-          De {formatBRL(product.price_cents)} por {formatBRL(product.sale_price_cents)}
+        <p className="text-sm text-muted-foreground sm:col-span-2 lg:col-span-4">
+          De {formatBRL(product.price_cents)} por {formatBRL(product.sale_price_cents)} (
+          {currentPct}% off)
         </p>
       )}
     </div>
