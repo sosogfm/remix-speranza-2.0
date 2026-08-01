@@ -63,16 +63,16 @@ const Index = () => {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="text-[11px] font-semibold tracking-[0.3em] uppercase text-white/70 mb-6"
             >
-              Curated for Considered Living
+              Porcelana artesanal · Videira, SC
             </motion.p>
             <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl xl:text-9xl text-white mb-8 leading-[0.9] tracking-tight">
-              Objects of
+              Porcelanas
               <br />
-              <span className="italic font-normal">Quiet Beauty</span>
+              <span className="italic font-normal">afetivas</span>
             </h1>
             <p className="text-base md:text-lg text-white/80 mb-10 leading-relaxed max-w-lg">
-              Handcrafted home goods and lifestyle pieces designed to bring
-              warmth and intention to everyday moments.
+              Peças pintadas à mão, uma a uma, no ateliê da Júlia Brandalise —
+              feitas para acompanhar os momentos mais bonitos da sua casa.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
@@ -81,11 +81,20 @@ const Index = () => {
                 className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase btn-premium"
               >
                 <Link to="/produtos">
-                  Shop Now
+                  Ver peças
                   <ArrowRight className="ml-3 w-4 h-4" />
                 </Link>
               </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="rounded-none px-10 py-6 text-sm tracking-[0.15em] uppercase bg-background/10 text-white border-white/40 hover:bg-background/20"
+              >
+                <Link to="/oficinas">Oficinas</Link>
+              </Button>
             </div>
+
           </motion.div>
 
           {/* Scroll indicator */}
