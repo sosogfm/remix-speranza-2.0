@@ -27,7 +27,7 @@ export const ReviewsMarquee = () => {
             return (
               <figure
                 key={`${r.id}-${i}`}
-                className="w-64 md:w-72 shrink-0 border border-border bg-background"
+                className="w-48 md:w-56 shrink-0 border border-border bg-background rounded-lg overflow-hidden"
               >
                 <img
                   src={url}

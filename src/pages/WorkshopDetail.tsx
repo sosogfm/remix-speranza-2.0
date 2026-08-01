@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { CalendarDays, MapPin, Clock, User } from "lucide-react";
-import { formatDuration } from "@/lib/time";
 import { Layout } from "@/components/Layout";
 import { useWorkshop, formatWorkshopDateLong } from "@/hooks/useWorkshops";
 import { formatBRL } from "@/data/products";
@@ -209,11 +208,6 @@ const WorkshopDetail = () => {
                 <Clock className="w-4 h-4 text-primary" />
                 {workshop.startTime?.slice(0, 5) ?? "14h"} –{" "}
                 {workshop.endTime?.slice(0, 5) ?? "18h"}
-                {formatDuration(workshop.durationMinutes) && (
-                  <span className="text-muted-foreground">
-                    ({formatDuration(workshop.durationMinutes)})
-                  </span>
-                )}
               </p>
 
               <p className="flex items-center gap-3">
@@ -248,8 +242,7 @@ const WorkshopDetail = () => {
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  {spotsLeft} {spotsLeft === 1 ? "vaga disponível" : "vagas disponíveis"} de{" "}
-                  {workshop.totalSpots}
+                  {spotsLeft} {spotsLeft === 1 ? "vaga disponível" : "vagas disponíveis"}
                 </p>
               )}
 
