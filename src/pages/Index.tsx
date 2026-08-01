@@ -220,50 +220,21 @@ const Index = () => {
 
           {/* Asymmetric grid layout */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
-            {/* First row: 2 items */}
-            <div className="md:col-span-7">
-              <CollectionCard
-                collection={displayedCollections[0]}
-                index={0}
-                variant="wide"
-              />
-            </div>
-            <div className="md:col-span-5">
-              <CollectionCard
-                collection={displayedCollections[1]}
-                index={1}
-              />
-            </div>
-
-            {/* Second row: 3 items */}
-            <div className="md:col-span-4">
-              <CollectionCard
-                collection={displayedCollections[2]}
-                index={2}
-              />
-            </div>
-            <div className="md:col-span-4">
-              <CollectionCard
-                collection={displayedCollections[3]}
-                index={3}
-              />
-            </div>
-            <div className="md:col-span-4">
-              <CollectionCard
-                collection={displayedCollections[4]}
-                index={4}
-              />
-            </div>
-
-            {/* Third row: 1 wide item */}
-            <div className="md:col-span-12">
-              <CollectionCard
-                collection={displayedCollections[5]}
-                index={5}
-                variant="wide"
-              />
-            </div>
+            {displayedCollections.map((collection, i) => {
+              const span =
+                i === 0 ? "md:col-span-7" :
+                i === 1 ? "md:col-span-5" :
+                i === 5 ? "md:col-span-12" :
+                "md:col-span-4";
+              const variant = i === 0 || i === 5 ? "wide" : "default";
+              return (
+                <div key={collection.id ?? collection.slug} className={span}>
+                  <CollectionCard collection={collection} index={i} variant={variant} />
+                </div>
+              );
+            })}
           </div>
+
         </div>
       </section>
 
