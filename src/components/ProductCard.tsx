@@ -118,11 +118,12 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
                 Personalizável
               </span>
             )}
-            {sale != null && (
-              <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-primary text-primary-foreground">
-                Oferta
+            {lowStock && (
+              <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-background text-foreground border border-border">
+                Últimas unidades
               </span>
             )}
+
             {lowStock && (
               <span className="px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase bg-background text-foreground border border-border">
                 Últimas unidades
