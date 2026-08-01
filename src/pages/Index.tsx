@@ -151,6 +151,8 @@ const Index = () => {
           </div>
         </div>
       </section>
+      )}
+
 
       {/* Latest Products */}
       <section className="py-20 md:py-28 bg-linen">
