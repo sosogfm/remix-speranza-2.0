@@ -31,6 +31,12 @@ import {
   AdminWorkshops,
 } from "@/components/admin/AdminPanels";
 import { AdminPrivateEvents } from "@/components/admin/AdminWorkshopExtras";
+import {
+  AdminReviews,
+  AdminInfoBlocks,
+  AdminExperiences,
+  AdminProductSale,
+} from "@/components/admin/AdminCatalog";
 
 
 const orderStatuses = [
@@ -93,14 +99,41 @@ const AdminProducts = () => {
       <TableBody>
         {products.map((p: any) => (
           <TableRow key={p.id}>
-            <TableCell className="font-serif text-base align-top">
-              {p.name}
-              {savingId === p.id && (
-                <Loader2 className="inline w-3 h-3 ml-2 animate-spin" />
-              )}
+            <TableCell className="align-top min-w-72">
+              <div className="flex items-center gap-2">
+                <Input
+                  defaultValue={p.name}
+                  className="rounded-none h-9 font-serif"
+                  onBlur={(e) => {
+                    if (e.target.value.trim() && e.target.value !== p.name)
+                      update(p.id, { name: e.target.value.trim() });
+                  }}
+                />
+                {savingId === p.id && <Loader2 className="w-3 h-3 animate-spin" />}
+              </div>
               {p.is_personalizable && <AdminPersonalizationEditor productId={p.id} />}
+              <AdminProductSale product={p} />
+              <details className="mt-3">
+                <summary className="text-xs tracking-[0.15em] uppercase text-primary cursor-pointer">
+                  Informações desta peça
+                </summary>
+                <div className="mt-3">
+                  <AdminInfoBlocks productId={p.id} />
+                </div>
+              </details>
             </TableCell>
-            <TableCell>{formatBRL(p.price_cents)}</TableCell>
+            <TableCell className="align-top">
+              <Input
+                type="number"
+                step="0.01"
+                defaultValue={(p.price_cents / 100).toFixed(2)}
+                className="rounded-none h-9 w-28"
+                onBlur={(e) => {
+                  const v = Math.round(Number(e.target.value) * 100);
+                  if (v && v !== p.price_cents) update(p.id, { price_cents: v });
+                }}
+              />
+            </TableCell>
             <TableCell>
               <Input
                 type="number"
@@ -380,6 +413,8 @@ const Admin = () => {
               <TabsTrigger value="orders" className="rounded-none">Pedidos</TabsTrigger>
               <TabsTrigger value="workshops" className="rounded-none">Oficinas</TabsTrigger>
               <TabsTrigger value="events" className="rounded-none">Eventos privativos</TabsTrigger>
+              <TabsTrigger value="reviews" className="rounded-none">Avaliações</TabsTrigger>
+              <TabsTrigger value="site" className="rounded-none">Informações</TabsTrigger>
               <TabsTrigger value="shipping" className="rounded-none">Frete</TabsTrigger>
             </TabsList>
             <TabsContent value="products" className="pt-8">
@@ -393,6 +428,13 @@ const Admin = () => {
             </TabsContent>
             <TabsContent value="events" className="pt-8">
               <AdminPrivateEvents />
+            </TabsContent>
+            <TabsContent value="reviews" className="pt-8">
+              <AdminReviews />
+            </TabsContent>
+            <TabsContent value="site" className="pt-8 space-y-8">
+              <AdminInfoBlocks />
+              <AdminExperiences />
             </TabsContent>
             <TabsContent value="shipping" className="pt-8">
               <AdminShipping />
