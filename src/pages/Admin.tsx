@@ -26,6 +26,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import {
+  AdminPersonalizationEditor,
+  AdminWorkshops,
+} from "@/components/admin/AdminPanels";
+
 
 const orderStatuses = [
   { value: "pending", label: "Aguardando pagamento" },
