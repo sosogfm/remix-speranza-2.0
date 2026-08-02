@@ -386,9 +386,16 @@ const Checkout = () => {
               <div className="space-y-4">
                 <h2 className="font-serif text-2xl">Pagamento</h2>
                 <p className="text-sm text-muted-foreground">
-                  O pagamento é feito aqui mesmo, na próxima etapa, com cartão em
-                  ambiente seguro. Nada é cobrado antes de você confirmar.
+                  O pagamento acontece aqui mesmo, em ambiente seguro. Nada é
+                  cobrado antes de você confirmar.
                 </p>
+                <PaymentTabs
+                  method={method}
+                  onMethodChange={setMethod}
+                  card={card}
+                  onCardChange={setCard}
+                  totalCents={totalCents}
+                />
               </div>
             </div>
 
