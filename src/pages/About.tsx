@@ -20,8 +20,7 @@ const About = () => {
         <motion.div className="absolute inset-0" style={{ y: heroImageY }}>
           <img
             src="https://images.unsplash.com/photo-1785706671659-777076389d4c"
-            {/* ok */}
-            alt="Ateliê de porcelana pintada à mão" 
+            alt="Ateliê de porcelana pintada à mão"
             className="w-full h-[120%] object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-charcoal/20 via-charcoal/10 to-charcoal/50" />
@@ -106,7 +105,6 @@ const About = () => {
               <div className="aspect-[4/5] overflow-hidden group">
                 <img
                   src="https://images.unsplash.com/photo-1785706675081-f5412143707b"
-                  
                   alt="Peças de porcelana em ambiente acolhedor"
                   className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
                 />
