@@ -9,7 +9,7 @@ export const siteImages = {
   homeHero: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920&q=80",
 
   /** Página "Sobre" */
-  sobreHero: "https://imgur.com/a/24sMcfk",
+  sobreHero: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1920&q=80",
   sobreBloco1: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=1200&q=80",
   sobreFaixa: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80",
   sobreBloco2: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80",
