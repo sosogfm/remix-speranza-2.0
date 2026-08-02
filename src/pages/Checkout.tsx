@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { GIFT_WRAP_CENTS } from "@/data/site";
@@ -15,9 +15,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { saveGuestOrder } from "@/lib/guestOrders";
-import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
-import { getStripeEnvironment } from "@/lib/stripe";
+import { PaymentTabs, type PaymentMethod } from "@/components/checkout/PaymentTabs";
+import { emptyCardForm, type CardFormState } from "@/components/checkout/CardPanel";
+import { PixPanel } from "@/components/checkout/PixPanel";
+import { BoletoPanel } from "@/components/checkout/BoletoPanel";
+import { createCardToken, mpCredentialsMissing } from "@/lib/mercadopago";
 
 
 const Checkout = () => {
