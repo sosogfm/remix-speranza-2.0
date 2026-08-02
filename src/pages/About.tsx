@@ -21,7 +21,7 @@ const About = () => {
           <img
             src="https://images.unsplash.com/photo-1785706671659-777076389d4c"
             {/* ok */}
-            alt="Ateliê de porcelana pintada à mão" ok
+            alt="Ateliê de porcelana pintada à mão" 
             className="w-full h-[120%] object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-charcoal/20 via-charcoal/10 to-charcoal/50" />
@@ -156,7 +156,7 @@ const About = () => {
             >
               <div className="aspect-[4/5] overflow-hidden group">
                 <img
-                  src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80"
+                  src="https://images.unsplash.com/photo-1785706671659-777076389d4c?w=1200&q=80"
                   alt="Mãos pintando porcelana"
                   className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
                 />
