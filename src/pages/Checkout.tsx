@@ -43,9 +43,12 @@ const Checkout = () => {
     state: "",
     notes: "",
   });
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [method, setMethod] = useState<PaymentMethod>("pix");
+  const [card, setCard] = useState<CardFormState>(emptyCardForm);
+  const [result, setResult] = useState<any | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const navigate = useNavigate();
 
 
   const { data: shipping, isFetching: loadingShipping } = useShippingQuote(
