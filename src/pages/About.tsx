@@ -32,17 +32,14 @@ const About = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           >
-            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-white/60 mb-5">
-              Nossa história
-            </p>
+            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-white/60 mb-5">Nossa história</p>
             <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl text-white mb-6 leading-[0.9]">
               Porcelanas
               <br />
               <span className="italic font-normal">pintadas à mão</span>
             </h1>
             <p className="text-base md:text-lg text-white/70 max-w-lg leading-relaxed">
-              De Videira, Santa Catarina, para todo o Brasil — peças que fazemos
-              com tempo, cuidado e afeto.
+              De Videira, Santa Catarina, para todo o Brasil — peças que fazemos com tempo, cuidado e afeto.
             </p>
           </motion.div>
         </div>
@@ -64,8 +61,7 @@ const About = () => {
               </span>
             </div>
             <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground leading-[1.25] tracking-tight">
-              Acreditamos que as peças que usamos todos os dias podem contar
-              histórias, atravessar gerações e trazer{" "}
+              Acreditamos que as peças que usamos todos os dias podem contar histórias, atravessar gerações e trazer{" "}
               <span className="italic">alegria</span> aos momentos simples.
             </h2>
           </motion.div>
@@ -83,23 +79,20 @@ const About = () => {
               transition={{ duration: 0.8 }}
               className="md:col-span-5"
             >
-              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-5">
-                O começo
-              </p>
+              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-5">O começo</p>
               <h3 className="font-serif text-3xl md:text-4xl text-foreground mb-8 leading-tight">
                 Um ateliê nascido
                 <br />
                 <span className="italic">do afeto</span>
               </h3>
               <p className="text-muted-foreground leading-[1.8] mb-5">
-                O Speranza Ateliê começou como um encontro entre a pintura e a
-                porcelana — o desejo de transformar objetos do dia a dia em
-                lembranças que ficam. Cada caneca, xícara, boleira ou porta joias
-                é pintada à mão, uma de cada vez.
+                O Speranza Ateliê começou como um encontro entre a pintura e a porcelana — o desejo de transformar
+                objetos do dia a dia em lembranças que ficam. Cada caneca, xícara, boleira ou porta joias é pintada à
+                mão, uma de cada vez.
               </p>
               <p className="text-muted-foreground leading-[1.8]">
-                O que começou pequeno virou um ateliê que envia peças para todo o
-                Brasil e recebe pessoas em oficinas de arte em Videira, SC.
+                O que começou pequeno virou um ateliê que envia peças para todo o Brasil e recebe pessoas em oficinas de
+                arte em Videira, SC.
               </p>
             </motion.div>
             <motion.div
@@ -111,7 +104,7 @@ const About = () => {
             >
               <div className="aspect-[4/5] overflow-hidden group">
                 <img
-                  src="https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=1200&q=80"
+                  src="https://imgur.com/a/24sMcfk"
                   alt="Peças de porcelana em ambiente acolhedor"
                   className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
                 />
@@ -174,23 +167,19 @@ const About = () => {
               transition={{ duration: 0.8, delay: 0.15 }}
               className="md:col-span-5"
             >
-              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-5">
-                Como trabalhamos
-              </p>
+              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-5">Como trabalhamos</p>
               <h3 className="font-serif text-3xl md:text-4xl text-foreground mb-8 leading-tight">
                 Do ateliê
                 <br />
                 <span className="italic">para a sua casa</span>
               </h3>
               <p className="text-muted-foreground leading-[1.8] mb-5">
-                Muitas peças podem ser personalizadas: uma inicial, um nome, uma
-                frase, uma cor ou até um desenho enviado por você. É só escolher
-                a peça e preencher a personalização na página do produto.
+                Muitas peças podem ser personalizadas: uma inicial, um nome, uma frase, uma cor ou até um desenho
+                enviado por você. É só escolher a peça e preencher a personalização na página do produto.
               </p>
               <p className="text-muted-foreground leading-[1.8]">
-                Depois de pintadas, as peças passam pela queima e são embaladas
-                com cuidado — com opção de embalagem para presente — e enviadas
-                para todo o Brasil.
+                Depois de pintadas, as peças passam pela queima e são embaladas com cuidado — com opção de embalagem
+                para presente — e enviadas para todo o Brasil.
               </p>
             </motion.div>
           </div>
@@ -207,12 +196,8 @@ const About = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-20"
           >
-            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-3">
-              O que nos guia
-            </p>
-            <h2 className="font-serif text-4xl md:text-5xl text-foreground">
-              Nossos valores
-            </h2>
+            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-3">O que nos guia</p>
+            <h2 className="font-serif text-4xl md:text-5xl text-foreground">Nossos valores</h2>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-16 md:gap-12 lg:gap-20">
@@ -226,8 +211,7 @@ const About = () => {
               {
                 title: "Personalização",
                 number: "02",
-                description:
-                  "Iniciais, nomes, frases, cores ou desenhos: a peça pode ser pensada para uma pessoa só.",
+                description: "Iniciais, nomes, frases, cores ou desenhos: a peça pode ser pensada para uma pessoa só.",
               },
               {
                 title: "Oficinas",
@@ -247,13 +231,9 @@ const About = () => {
                 <span className="text-[11px] font-semibold tracking-[0.3em] text-primary/50 mb-4 block">
                   {value.number}
                 </span>
-                <h3 className="font-serif text-2xl text-foreground mb-5">
-                  {value.title}
-                </h3>
+                <h3 className="font-serif text-2xl text-foreground mb-5">{value.title}</h3>
                 <div className="w-8 h-px bg-primary/30 mx-auto mb-5" />
-                <p className="text-muted-foreground leading-[1.8]">
-                  {value.description}
-                </p>
+                <p className="text-muted-foreground leading-[1.8]">{value.description}</p>
               </motion.div>
             ))}
           </div>
@@ -278,15 +258,13 @@ const About = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-white/50 mb-5">
-              Vamos conversar
-            </p>
+            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-white/50 mb-5">Vamos conversar</p>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white mb-6 leading-tight">
               Ficou com alguma dúvida?
             </h2>
             <p className="text-white/60 mb-10 max-w-md mx-auto leading-relaxed">
-              Chame no WhatsApp ({site.phone}) ou no Instagram — será um prazer
-              ajudar a escolher a peça certa ou pensar uma personalização.
+              Chame no WhatsApp ({site.phone}) ou no Instagram — será um prazer ajudar a escolher a peça certa ou pensar
+              uma personalização.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
