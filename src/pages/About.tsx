@@ -104,7 +104,7 @@ const About = () => {
             >
               <div className="aspect-[4/5] overflow-hidden group">
                 <img
-                  src="https://unsplash.com/pt-br/fotografias/eLGW1KQ8_CA"
+                  src="https://images.unsplash.com/photo-1785705337746-112182618250"
                   alt="Peças de porcelana em ambiente acolhedor"
                   className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
                 />
