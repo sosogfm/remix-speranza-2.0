@@ -96,7 +96,6 @@ Deno.serve(async (req) => {
 
     switch (payment.status) {
       case "approved":
-ುcase_approved:
         await approve(orderId, payment);
         break;
       case "rejected":
