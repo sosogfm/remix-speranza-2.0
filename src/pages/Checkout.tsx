@@ -473,7 +473,11 @@ const Checkout = () => {
                   className="w-full rounded-none h-12 text-sm tracking-[0.15em] uppercase"
                 >
                   {submitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                  Ir para o pagamento
+                  {method === "pix"
+                    ? "Gerar QR Code do Pix"
+                    : method === "boleto"
+                    ? "Gerar boleto"
+                    : `Pagar em ${card.installments}x`}
 
                 </Button>
               </div>
