@@ -104,7 +104,7 @@ const About = () => {
             >
               <div className="aspect-[4/5] overflow-hidden group">
                 <img
-                  src="https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=1200&q=80"
+                  src="https://i.imgur.com/8PcKRyK_d.jpeg?maxwidth=520&shape=thumb&fidelity=high"
                   alt="Peças de porcelana em ambiente acolhedor"
                   className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
                 />
@@ -121,7 +121,7 @@ const About = () => {
           >
             <div className="relative h-[50vh] md:h-[70vh] overflow-hidden group">
               <img
-                src="https://i.imgur.com/8PcKRyK_d.jpeg?maxwidth=520&shape=thumb&fidelity=high"
+                src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80",
                 alt="Detalhe do trabalho manual no ateliê"
                 className="w-full h-full object-cover transition-transform duration-[2s] ease-out group-hover:scale-105"
               />
