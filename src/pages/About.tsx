@@ -121,7 +121,7 @@ const About = () => {
           >
             <div className="relative h-[50vh] md:h-[70vh] overflow-hidden group">
               <img
-                src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1920&q=80"
+                src="https://i.imgur.com/8PcKRyK_d.jpeg?maxwidth=520&shape=thumb&fidelity=high"
                 alt="Detalhe do trabalho manual no ateliê"
                 className="w-full h-full object-cover transition-transform duration-[2s] ease-out group-hover:scale-105"
               />
