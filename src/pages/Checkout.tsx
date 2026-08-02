@@ -140,10 +140,34 @@ const Checkout = () => {
     setSubmitting(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
+      let cardPayload: any = null;
+      if (method === "card") {
+        if (mpCredentialsMissing()) {
+          throw new Error(
+            "O pagamento com cartão ainda não está ativo: falta a credencial do Mercado Pago.",
+          );
+        }
+        const token = await createCardToken({
+          cardNumber: card.cardNumber,
+          cardholderName: card.cardholderName,
+          expirationMonth: card.expirationMonth,
+          expirationYear: card.expirationYear,
+          securityCode: card.securityCode,
+          identificationNumber: card.identificationNumber || form.document,
+        });
+        cardPayload = {
+          token,
+          installments: card.installments,
+          paymentMethodId: card.paymentMethodId,
+          issuerId: card.issuerId,
+        };
+      }
+
+      const { data, error } = await supabase.functions.invoke("mp-create-payment", {
         body: {
-          environment: getStripeEnvironment(),
           origin: window.location.origin,
+          method,
+          card: cardPayload,
           customer: {
             name: form.name,
             email: form.email,
@@ -170,8 +194,8 @@ const Checkout = () => {
         },
       });
 
-      if (error) throw error;
-      if (!data?.clientSecret) throw new Error(data?.error ?? "Pagamento indisponível");
+      if (error && !data) throw error;
+      if (data?.error) throw new Error(data.error);
 
       // Guarda uma cópia no aparelho para quem comprou sem conta
       saveGuestOrder({
@@ -187,8 +211,9 @@ const Checkout = () => {
         subtotal_cents: data.subtotalCents,
         shipping_cents: data.shippingCents,
         total_cents: data.totalCents,
-        installments: 1,
-        payment_method: "card",
+        installments: method === "card" ? card.installments : 1,
+        payment_method:
+          method === "card" ? "credit_card" : method === "pix" ? "pix" : "boleto",
         order_items: items.map((i, idx) => ({
           id: `${data.orderId}-${idx}`,
           product_name: i.product.name,
@@ -199,13 +224,19 @@ const Checkout = () => {
       });
 
       clearCart();
-      setClientSecret(data.clientSecret);
+
+      if (method === "card") {
+        navigate(`/pedido/${data.orderId}`);
+        return;
+      }
+
+      setResult({ ...data, method });
       window.scrollTo({ top: 0, behavior: "smooth" });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       toast({
         title: "Não foi possível finalizar",
-        description: "Tente novamente em instantes.",
+        description: err?.message ?? "Tente novamente em instantes.",
         variant: "destructive",
       });
     } finally {
@@ -213,14 +244,36 @@ const Checkout = () => {
     }
   };
 
-  if (clientSecret) {
+  if (result) {
     return (
       <Layout>
         <PaymentTestModeBanner />
         <section className="py-12 md:py-16">
           <div className="container-narrow space-y-8">
-            <h1 className="font-serif text-4xl md:text-5xl">Pagamento</h1>
-            <StripeEmbeddedCheckout clientSecret={clientSecret} />
+            <h1 className="font-serif text-4xl md:text-5xl">
+              {result.method === "pix" ? "Pague com Pix" : "Seu boleto"}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Pedido {result.orderNumber} — total {formatBRL(result.totalCents)}
+            </p>
+            {result.method === "pix" ? (
+              <PixPanel
+                qrCodeBase64={result.pix?.qrCodeBase64 ?? null}
+                qrCode={result.pix?.qrCode ?? null}
+                expiresAt={result.pix?.expiresAt}
+              />
+            ) : (
+              <BoletoPanel
+                url={result.boleto?.url ?? null}
+                barcode={result.boleto?.barcode ?? null}
+                expiresAt={result.boleto?.expiresAt}
+              />
+            )}
+            <div className="text-center">
+              <Button asChild variant="outline" className="rounded-none px-8">
+                <Link to={`/pedido/${result.orderId}`}>Ver meu pedido</Link>
+              </Button>
+            </div>
           </div>
         </section>
       </Layout>
