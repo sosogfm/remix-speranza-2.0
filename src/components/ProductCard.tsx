@@ -212,7 +212,11 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
                 {installmentLabel(price, product.maxInstallments)}
               </p>
             )}
+            {sale != null && (
+              <SaleCountdown endsAt={product.saleEndsAt} className="mt-1" />
+            )}
           </div>
+
         </div>
       </Link>
     </motion.article>
