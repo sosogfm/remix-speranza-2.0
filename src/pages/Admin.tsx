@@ -121,6 +121,56 @@ const AdminProducts = () => {
                 />
                 {savingId === p.id && <Loader2 className="w-3 h-3 animate-spin" />}
               </div>
+
+              <div className="mt-3 space-y-3">
+                <div className="space-y-1">
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
+                    Descrição curta (aparece na vitrine)
+                  </p>
+                  <Textarea
+                    defaultValue={p.description ?? ""}
+                    className="rounded-none min-h-16 text-base"
+                    onBlur={(e) => {
+                      if (e.target.value !== (p.description ?? ""))
+                        update(p.id, { description: e.target.value.trim() || null });
+                    }}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
+                    Descrição completa (página da peça)
+                  </p>
+                  <Textarea
+                    defaultValue={p.long_description ?? ""}
+                    className="rounded-none min-h-24 text-base"
+                    onBlur={(e) => {
+                      if (e.target.value !== (p.long_description ?? ""))
+                        update(p.id, { long_description: e.target.value.trim() || null });
+                    }}
+                  />
+                </div>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <Input
+                    defaultValue={p.materials ?? ""}
+                    placeholder="Material"
+                    className="rounded-none h-11 text-base"
+                    onBlur={(e) => {
+                      if (e.target.value !== (p.materials ?? ""))
+                        update(p.id, { materials: e.target.value.trim() || null });
+                    }}
+                  />
+                  <Input
+                    defaultValue={p.dimensions ?? ""}
+                    placeholder="Medidas"
+                    className="rounded-none h-11 text-base"
+                    onBlur={(e) => {
+                      if (e.target.value !== (p.dimensions ?? ""))
+                        update(p.id, { dimensions: e.target.value.trim() || null });
+                    }}
+                  />
+                </div>
+              </div>
+
               <AdminProductImages productId={p.id} />
               <AdminProductCategories productId={p.id} primaryCategoryId={p.category_id} />
               {p.is_personalizable && <AdminPersonalizationEditor productId={p.id} />}
@@ -133,7 +183,17 @@ const AdminProducts = () => {
                   <AdminInfoBlocks productId={p.id} />
                 </div>
               </details>
+
+              <Button
+                variant="outline"
+                onClick={() => removeProduct(p.id, p.name)}
+                className="mt-4 rounded-none h-9 text-xs tracking-[0.15em] uppercase text-destructive"
+              >
+                <Trash2 className="w-3.5 h-3.5 mr-2" />
+                Excluir peça
+              </Button>
             </TableCell>
+
             <TableCell className="align-top">
               <Input
                 type="number"
