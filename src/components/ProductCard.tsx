@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Heart } from "lucide-react";
+import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   Product,
@@ -14,6 +15,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { SmartImage } from "@/components/SmartImage";
+import { SaleCountdown } from "@/components/SaleCountdown";
+
 
 interface ProductCardProps {
   product: Product;
