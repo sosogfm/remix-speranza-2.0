@@ -92,6 +92,30 @@ const AdminProducts = () => {
     qc.invalidateQueries({ queryKey: ["products"] });
   };
 
+  const removeProduct = async (id: string, name: string) => {
+    if (!window.confirm(`Excluir a peça "${name}"? Isso não pode ser desfeito.`)) return;
+    setSavingId(id);
+    await supabase.from("product_images").delete().eq("product_id", id);
+    await supabase.from("product_categories").delete().eq("product_id", id);
+    await supabase.from("product_personalization_fields").delete().eq("product_id", id);
+    await supabase.from("product_info_blocks").delete().eq("product_id", id);
+    const { error } = await supabase.from("products").delete().eq("id", id);
+    setSavingId(null);
+    if (error) {
+      toast({
+        title: "Não consegui excluir",
+        description:
+          "Se a peça já tem pedidos, desative-a em vez de excluir. (" + error.message + ")",
+        variant: "destructive",
+      });
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ["admin-products"] });
+    qc.invalidateQueries({ queryKey: ["products"] });
+    toast({ title: "Peça excluída" });
+  };
+
+
   if (isLoading) return <p className="text-muted-foreground py-10">Carregando…</p>;
 
   return (
