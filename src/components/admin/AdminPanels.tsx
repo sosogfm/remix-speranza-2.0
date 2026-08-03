@@ -525,20 +525,96 @@ export const AdminWorkshops = () => {
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs">Esmaltação (R$)</Label>
+              <Label className="text-xs">Valor promocional (R$)</Label>
               <Input
                 type="number"
                 step="0.01"
-                defaultValue={(w.glazing_price_cents / 100).toFixed(2)}
+                defaultValue={
+                  w.sale_price_cents != null ? (w.sale_price_cents / 100).toFixed(2) : ""
+                }
                 className="rounded-none h-9"
                 onBlur={(e) =>
                   update(w.id, {
-                    glazing_price_cents: Math.round(Number(e.target.value) * 100),
+                    sale_price_cents: e.target.value
+                      ? Math.round(Number(e.target.value) * 100)
+                      : null,
                   })
                 }
               />
             </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Promoção começa</Label>
+              <Input
+                type="datetime-local"
+                defaultValue={toLocalInput(w.sale_starts_at)}
+                className="rounded-none h-9"
+                onBlur={(e) =>
+                  update(w.id, {
+                    sale_starts_at: e.target.value
+                      ? new Date(e.target.value).toISOString()
+                      : null,
+                  })
+                }
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Promoção termina</Label>
+              <Input
+                type="datetime-local"
+                defaultValue={toLocalInput(w.sale_ends_at)}
+                className="rounded-none h-9"
+                onBlur={(e) =>
+                  update(w.id, {
+                    sale_ends_at: e.target.value
+                      ? new Date(e.target.value).toISOString()
+                      : null,
+                  })
+                }
+              />
+            </div>
+            <div className="space-y-2 sm:col-span-3">
+              <Label className="text-xs">Imagem de capa</Label>
+              <div className="flex flex-wrap items-center gap-3">
+                {w.image_url && (
+                  <>
+                    <span className="text-xs text-muted-foreground max-w-xs truncate">
+                      {w.image_url}
+                    </span>
+                    <Button
+                      variant="outline"
+                      className="rounded-none h-9 text-xs uppercase tracking-[0.15em]"
+                      onClick={() => update(w.id, { image_url: null })}
+                    >
+                      <Trash2 className="w-3.5 h-3.5 mr-2" />
+                      Remover capa
+                    </Button>
+                  </>
+                )}
+                <Input
+                  type="file"
+                  accept="image/*"
+                  className="rounded-none h-9 max-w-xs"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    try {
+                      const path = await uploadSiteImage(file, `workshops/${w.id}`);
+                      await update(w.id, { image_url: path });
+                      toast({ title: "Capa atualizada" });
+                    } catch (err: any) {
+                      toast({
+                        title: "Erro ao enviar",
+                        description: err.message,
+                        variant: "destructive",
+                      });
+                    }
+                    e.target.value = "";
+                  }}
+                />
+              </div>
+            </div>
           </div>
+
 
           <WorkshopBlockPicker workshopId={w.id} />
 
