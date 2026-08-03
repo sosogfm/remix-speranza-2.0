@@ -587,7 +587,7 @@ export const AdminCategories = () => {
     toast({ title: "Categoria criada" });
   };
 
-  const patch = async (id: string, values: Record<string, any>) => {
+  const patch = async (id: string, values: any) => {
     const { error } = await supabase.from("categories").update(values).eq("id", id);
     if (error) {
       toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
