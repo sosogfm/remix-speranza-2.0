@@ -31,7 +31,16 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
   const navigate = useNavigate();
   const inWishlist = isInWishlist(product.id);
   const collectionName = product.collectionName;
-  const hasSecondImage = product.images.length > 1;
+  const images = product.images.length ? product.images : [""];
+  const hasSecondImage = images.length > 1;
+  const [slide, setSlide] = useState(0);
+
+  const step = (e: React.MouseEvent, dir: 1 | -1) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSlide((s) => (s + dir + images.length) % images.length);
+  };
+
   const outOfStock = product.stock <= 0;
   const sale = activeSaleCents(product);
   const price = effectivePriceCents(product);
