@@ -545,6 +545,7 @@ export const AdminCategories = () => {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [name, setName] = useState("");
+  const [categoryDescription, setCategoryDescription] = useState("");
   const [saving, setSaving] = useState(false);
 
   const { data: categories = [] } = useQuery({
@@ -572,6 +573,7 @@ export const AdminCategories = () => {
     const { error } = await supabase.from("categories").insert({
       name: name.trim(),
       slug: slugify(name),
+      description: categoryDescription.trim() || null,
       display_order: 0,
     });
     setSaving(false);
@@ -580,16 +582,13 @@ export const AdminCategories = () => {
       return;
     }
     setName("");
+    setCategoryDescription("");
     invalidate();
     toast({ title: "Categoria criada" });
   };
 
-  const rename = async (id: string, value: string) => {
-    if (!value.trim()) return;
-    const { error } = await supabase
-      .from("categories")
-      .update({ name: value.trim() })
-      .eq("id", id);
+  const patch = async (id: string, values: Record<string, any>) => {
+    const { error } = await supabase.from("categories").update(values).eq("id", id);
     if (error) {
       toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
       return;
@@ -615,12 +614,18 @@ export const AdminCategories = () => {
         </p>
       </div>
 
-      <div className="flex gap-2">
+      <div className="grid sm:grid-cols-[minmax(0,240px)_1fr_auto] gap-2 items-start">
         <Input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Nova categoria"
-          className="rounded-none h-10 max-w-xs"
+          className="rounded-none h-10"
+        />
+        <Input
+          value={categoryDescription}
+          onChange={(e) => setCategoryDescription(e.target.value)}
+          placeholder="Descrição que aparece na homepage"
+          className="rounded-none h-10"
         />
         <Button
           onClick={create}
@@ -634,11 +639,24 @@ export const AdminCategories = () => {
 
       <div className="space-y-2">
         {categories.map((c: any) => (
-          <div key={c.id} className="flex items-center gap-3">
+          <div key={c.id} className="grid sm:grid-cols-[minmax(0,240px)_1fr_auto] gap-3 items-center">
             <Input
               defaultValue={c.name}
-              onBlur={(e) => rename(c.id, e.target.value)}
-              className="rounded-none h-10 max-w-sm"
+              onBlur={(e) =>
+                e.target.value.trim() &&
+                e.target.value.trim() !== c.name &&
+                patch(c.id, { name: e.target.value.trim() })
+              }
+              className="rounded-none h-10"
+            />
+            <Input
+              defaultValue={c.description ?? ""}
+              placeholder="Descrição que aparece na homepage"
+              onBlur={(e) =>
+                e.target.value !== (c.description ?? "") &&
+                patch(c.id, { description: e.target.value.trim() || null })
+              }
+              className="rounded-none h-10"
             />
             <button
               type="button"
