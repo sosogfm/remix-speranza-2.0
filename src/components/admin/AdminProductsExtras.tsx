@@ -184,9 +184,11 @@ export const AdminNewProduct = () => {
     price: "",
     stock: "1",
     description: "",
+    longDescription: "",
+    infoTitle: "",
+    infoBody: "",
     materials: "Porcelana pintada à mão",
     dimensions: "",
-    installments: "2",
     personalizable: false,
     quoteOnly: false,
     active: true,
@@ -210,9 +212,9 @@ export const AdminNewProduct = () => {
           price_cents: Math.round(Number(form.price.replace(",", ".") || 0) * 100),
           stock_quantity: Number(form.stock) || 0,
           description: form.description.trim() || null,
+          long_description: form.longDescription.trim() || null,
           materials: form.materials.trim() || null,
           dimensions: form.dimensions.trim() || null,
-          max_installments: Number(form.installments) || 1,
           is_personalizable: form.personalizable,
           is_quote_only: form.quoteOnly,
           is_active: form.active,
@@ -237,6 +239,17 @@ export const AdminNewProduct = () => {
           form.categoryIds.map((id) => ({ product_id: data.id, category_id: id }))
         );
         if (catError) throw catError;
+      }
+
+      if (form.infoTitle.trim() && form.infoBody.trim()) {
+        const { error: infoError } = await supabase.from("product_info_blocks").insert({
+          product_id: data.id,
+          title: form.infoTitle.trim(),
+          body: form.infoBody.trim(),
+          position: 0,
+          is_active: true,
+        });
+        if (infoError) throw infoError;
       }
 
       setForm({
@@ -333,15 +346,6 @@ export const AdminNewProduct = () => {
               />
             </div>
             <div className="space-y-1">
-              <Label className="text-xs">Parcelas</Label>
-              <Input
-                type="number"
-                value={form.installments}
-                onChange={(e) => set("installments", e.target.value)}
-                className="rounded-none h-9"
-              />
-            </div>
-            <div className="space-y-1">
               <Label className="text-xs">Material</Label>
               <Input
                 value={form.materials}
@@ -360,12 +364,41 @@ export const AdminNewProduct = () => {
           </div>
 
           <div className="space-y-1">
-            <Label className="text-xs">Descrição</Label>
+            <Label className="text-xs">Descrição curta (vitrine)</Label>
             <Textarea
               value={form.description}
               onChange={(e) => set("description", e.target.value)}
+              className="rounded-none min-h-16"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-xs">Descrição completa (página da peça)</Label>
+            <Textarea
+              value={form.longDescription}
+              onChange={(e) => set("longDescription", e.target.value)}
               className="rounded-none min-h-24"
             />
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="space-y-1">
+              <Label className="text-xs">Tipo de informação (ex.: Cuidados)</Label>
+              <Input
+                value={form.infoTitle}
+                onChange={(e) => set("infoTitle", e.target.value)}
+                placeholder="Cuidados, Entrega, Detalhes…"
+                className="rounded-none h-9"
+              />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <Label className="text-xs">Texto dessa informação</Label>
+              <Textarea
+                value={form.infoBody}
+                onChange={(e) => set("infoBody", e.target.value)}
+                className="rounded-none min-h-16"
+              />
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-6">
