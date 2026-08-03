@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { formatBRL } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -90,6 +92,30 @@ const AdminProducts = () => {
     qc.invalidateQueries({ queryKey: ["products"] });
   };
 
+  const removeProduct = async (id: string, name: string) => {
+    if (!window.confirm(`Excluir a peça "${name}"? Isso não pode ser desfeito.`)) return;
+    setSavingId(id);
+    await supabase.from("product_images").delete().eq("product_id", id);
+    await supabase.from("product_categories").delete().eq("product_id", id);
+    await supabase.from("product_personalization_fields").delete().eq("product_id", id);
+    await supabase.from("product_info_blocks").delete().eq("product_id", id);
+    const { error } = await supabase.from("products").delete().eq("id", id);
+    setSavingId(null);
+    if (error) {
+      toast({
+        title: "Não consegui excluir",
+        description:
+          "Se a peça já tem pedidos, desative-a em vez de excluir. (" + error.message + ")",
+        variant: "destructive",
+      });
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ["admin-products"] });
+    qc.invalidateQueries({ queryKey: ["products"] });
+    toast({ title: "Peça excluída" });
+  };
+
+
   if (isLoading) return <p className="text-muted-foreground py-10">Carregando…</p>;
 
   return (
@@ -121,6 +147,56 @@ const AdminProducts = () => {
                 />
                 {savingId === p.id && <Loader2 className="w-3 h-3 animate-spin" />}
               </div>
+
+              <div className="mt-3 space-y-3">
+                <div className="space-y-1">
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
+                    Descrição curta (aparece na vitrine)
+                  </p>
+                  <Textarea
+                    defaultValue={p.description ?? ""}
+                    className="rounded-none min-h-16 text-base"
+                    onBlur={(e) => {
+                      if (e.target.value !== (p.description ?? ""))
+                        update(p.id, { description: e.target.value.trim() || null });
+                    }}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground">
+                    Descrição completa (página da peça)
+                  </p>
+                  <Textarea
+                    defaultValue={p.long_description ?? ""}
+                    className="rounded-none min-h-24 text-base"
+                    onBlur={(e) => {
+                      if (e.target.value !== (p.long_description ?? ""))
+                        update(p.id, { long_description: e.target.value.trim() || null });
+                    }}
+                  />
+                </div>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <Input
+                    defaultValue={p.materials ?? ""}
+                    placeholder="Material"
+                    className="rounded-none h-11 text-base"
+                    onBlur={(e) => {
+                      if (e.target.value !== (p.materials ?? ""))
+                        update(p.id, { materials: e.target.value.trim() || null });
+                    }}
+                  />
+                  <Input
+                    defaultValue={p.dimensions ?? ""}
+                    placeholder="Medidas"
+                    className="rounded-none h-11 text-base"
+                    onBlur={(e) => {
+                      if (e.target.value !== (p.dimensions ?? ""))
+                        update(p.id, { dimensions: e.target.value.trim() || null });
+                    }}
+                  />
+                </div>
+              </div>
+
               <AdminProductImages productId={p.id} />
               <AdminProductCategories productId={p.id} primaryCategoryId={p.category_id} />
               {p.is_personalizable && <AdminPersonalizationEditor productId={p.id} />}
@@ -133,7 +209,17 @@ const AdminProducts = () => {
                   <AdminInfoBlocks productId={p.id} />
                 </div>
               </details>
+
+              <Button
+                variant="outline"
+                onClick={() => removeProduct(p.id, p.name)}
+                className="mt-4 rounded-none h-9 text-xs tracking-[0.15em] uppercase text-destructive"
+              >
+                <Trash2 className="w-3.5 h-3.5 mr-2" />
+                Excluir peça
+              </Button>
             </TableCell>
+
             <TableCell className="align-top">
               <Input
                 type="number"

@@ -671,7 +671,14 @@ export const AdminProductSale = ({ product }: { product: any }) => {
     qc.invalidateQueries({ queryKey: ["products"] });
   };
 
-  const toDate = (iso: string | null) => (iso ? iso.slice(0, 10) : "");
+  const toLocal = (iso: string | null) => {
+    if (!iso) return "";
+    const d = new Date(iso);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
+      d.getHours()
+    )}:${pad(d.getMinutes())}`;
+  };
 
   const currentPct =
     product.sale_price_cents != null && product.price_cents
@@ -701,30 +708,34 @@ export const AdminProductSale = ({ product }: { product: any }) => {
         />
       </div>
       <div className="space-y-1">
-        <Label className="text-[11px] uppercase tracking-[0.15em]">Começa em</Label>
+        <Label className="text-[11px] uppercase tracking-[0.15em]">
+          Começa em (data e hora)
+        </Label>
         <Input
-          type="date"
-          defaultValue={toDate(product.sale_starts_at)}
+          type="datetime-local"
+          defaultValue={toLocal(product.sale_starts_at)}
           className="rounded-none h-12 text-base w-full"
           onBlur={(e) =>
             update({
               sale_starts_at: e.target.value
-                ? new Date(`${e.target.value}T00:00:00`).toISOString()
+                ? new Date(e.target.value).toISOString()
                 : null,
             })
           }
         />
       </div>
       <div className="space-y-1">
-        <Label className="text-[11px] uppercase tracking-[0.15em]">Termina em</Label>
+        <Label className="text-[11px] uppercase tracking-[0.15em]">
+          Termina em (data e hora)
+        </Label>
         <Input
-          type="date"
-          defaultValue={toDate(product.sale_ends_at)}
+          type="datetime-local"
+          defaultValue={toLocal(product.sale_ends_at)}
           className="rounded-none h-12 text-base w-full"
           onBlur={(e) =>
             update({
               sale_ends_at: e.target.value
-                ? new Date(`${e.target.value}T23:59:59`).toISOString()
+                ? new Date(e.target.value).toISOString()
                 : null,
             })
           }

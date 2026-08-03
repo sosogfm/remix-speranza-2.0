@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.sync_workshop_spots() FROM PUBLIC, anon, authenticated;

@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Heart } from "lucide-react";
+import { Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   Product,
@@ -14,6 +15,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { SmartImage } from "@/components/SmartImage";
+import { SaleCountdown } from "@/components/SaleCountdown";
+
 
 interface ProductCardProps {
   product: Product;
@@ -28,7 +31,16 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
   const navigate = useNavigate();
   const inWishlist = isInWishlist(product.id);
   const collectionName = product.collectionName;
-  const hasSecondImage = product.images.length > 1;
+  const images = product.images.length ? product.images : [""];
+  const hasSecondImage = images.length > 1;
+  const [slide, setSlide] = useState(0);
+
+  const step = (e: React.MouseEvent, dir: 1 | -1) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSlide((s) => (s + dir + images.length) % images.length);
+  };
+
   const outOfStock = product.stock <= 0;
   const sale = activeSaleCents(product);
   const price = effectivePriceCents(product);
@@ -64,27 +76,49 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
             "relative overflow-hidden bg-muted/50 mb-5",
             variant === "large" ? "aspect-[3/4]" : "aspect-[4/5]"
           )}
+          onMouseEnter={() => hasSecondImage && setSlide(1)}
+          onMouseLeave={() => hasSecondImage && setSlide(0)}
         >
-          <SmartImage
-            src={product.images[0]}
-            alt={product.name}
-            loading="lazy"
-            className={cn(
-              "w-full h-full object-cover transition-transform duration-700 ease-out",
-              hasSecondImage
-                ? "group-hover:-translate-x-full"
-                : "group-hover:scale-105"
-            )}
-          />
+          <div
+            className="flex h-full w-full transition-transform duration-700 ease-out"
+            style={{ transform: `translateX(-${slide * 100}%)` }}
+          >
+            {images.map((src, i) => (
+              <SmartImage
+                key={`${src}-${i}`}
+                src={src}
+                alt={i === 0 ? product.name : `${product.name} — outra vista`}
+                loading="lazy"
+                className={cn(
+                  "w-full h-full shrink-0 object-cover",
+                  !hasSecondImage && "transition-transform duration-700 group-hover:scale-105"
+                )}
+              />
+            ))}
+          </div>
 
           {hasSecondImage && (
-            <SmartImage
-              src={product.images[1]}
-              alt={`${product.name} — outra vista`}
-              loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover translate-x-full transition-transform duration-700 ease-out group-hover:translate-x-0"
-            />
+            <>
+              <button
+                type="button"
+                onClick={(e) => step(e, -1)}
+                aria-label="Foto anterior"
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-background/85 backdrop-blur-md shadow-sm"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => step(e, 1)}
+                aria-label="Próxima foto"
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-background/85 backdrop-blur-md shadow-sm"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </>
           )}
+
+
 
 
           {/* Favoritar */}
@@ -178,7 +212,11 @@ export const ProductCard = ({ product, index = 0, variant = "default" }: Product
                 {installmentLabel(price, product.maxInstallments)}
               </p>
             )}
+            {sale != null && (
+              <SaleCountdown endsAt={product.saleEndsAt} className="mt-1" />
+            )}
           </div>
+
         </div>
       </Link>
     </motion.article>

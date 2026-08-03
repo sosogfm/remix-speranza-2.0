@@ -848,6 +848,9 @@ export type Database = {
           location: string
           notes: string | null
           price_cents: number
+          sale_ends_at: string | null
+          sale_price_cents: number | null
+          sale_starts_at: string | null
           slug: string
           spots_taken: number
           start_time: string | null
@@ -873,6 +876,9 @@ export type Database = {
           location?: string
           notes?: string | null
           price_cents: number
+          sale_ends_at?: string | null
+          sale_price_cents?: number | null
+          sale_starts_at?: string | null
           slug: string
           spots_taken?: number
           start_time?: string | null
@@ -898,6 +904,9 @@ export type Database = {
           location?: string
           notes?: string | null
           price_cents?: number
+          sale_ends_at?: string | null
+          sale_price_cents?: number | null
+          sale_starts_at?: string | null
           slug?: string
           spots_taken?: number
           start_time?: string | null
