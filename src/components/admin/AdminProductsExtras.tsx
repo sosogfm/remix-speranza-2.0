@@ -258,9 +258,12 @@ export const AdminNewProduct = () => {
         price: "",
         stock: "1",
         description: "",
+        longDescription: "",
+        infoTitle: "",
+        infoBody: "",
         materials: "Porcelana pintada à mão",
         dimensions: "",
-        installments: "2",
+
         personalizable: false,
         quoteOnly: false,
         active: true,
