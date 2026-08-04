@@ -146,3 +146,28 @@ export const useCart = create<CartState>()(
     { name: "speranza-cart", version: 3 }
   )
 );
+
+/** Mantém na sacola apenas peças ativas (não excluídas / não desativadas) */
+export const useCartCleanup = () => {
+  const items = useCart((s) => s.items);
+  const keepOnly = useCart((s) => s.keepOnly);
+  const ids = items.map((i) => i.product.id).join(",");
+
+  useEffect(() => {
+    const list = ids ? ids.split(",") : [];
+    if (list.length === 0) return;
+    let active = true;
+    void (async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id")
+        .in("id", list)
+        .eq("is_active", true);
+      if (!active || error) return;
+      keepOnly((data ?? []).map((p) => p.id));
+    })();
+    return () => {
+      active = false;
+    };
+  }, [ids, keepOnly]);
+};
