@@ -4,9 +4,12 @@
  * Para trocar qualquer foto, basta substituir o link abaixo
  * (ou importar um arquivo de `src/assets`).
  */
+import heroPorcelana from "@/assets/hero-porcelana.jpg";
+
 export const siteImages = {
   /** Foto grande do topo da página inicial */
-  homeHero: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920&q=80",
+  homeHero: heroPorcelana,
+
 
   /** Página "Sobre" */
   sobreHero: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1920&q=80",

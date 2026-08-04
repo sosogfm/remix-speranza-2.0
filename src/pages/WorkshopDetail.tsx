@@ -1,8 +1,15 @@
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { CalendarDays, MapPin, Clock, User } from "lucide-react";
+import { CalendarDays, MapPin, Clock } from "lucide-react";
 import { Layout } from "@/components/Layout";
-import { useWorkshop, formatWorkshopDateLong } from "@/hooks/useWorkshops";
+import { SmartImage } from "@/components/SmartImage";
+import { SaleCountdown } from "@/components/SaleCountdown";
+import {
+  useWorkshop,
+  formatWorkshopDateLong,
+  activeWorkshopSaleCents,
+  workshopPriceCents,
+} from "@/hooks/useWorkshops";
 import { formatBRL } from "@/data/products";
 import { site } from "@/data/site";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,11 +18,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  RadioGroup,
-  RadioGroupItem,
-} from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { saveGuestRegistration } from "@/lib/guestOrders";
 import {
@@ -24,8 +26,6 @@ import {
   BlockAnswer,
 } from "@/hooks/useQuestionBlocks";
 import { WorkshopQuestionFields } from "@/components/WorkshopQuestionFields";
-
-const dietOptions = ["Nenhuma", "Vegetariano", "Vegano", "Sem glúten"];
 
 const WorkshopDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -38,11 +38,10 @@ const WorkshopDetail = () => {
   const [fullName, setFullName] = useState("");
   const [instagram, setInstagram] = useState("");
   const [phone, setPhone] = useState("");
-  const [diet, setDiet] = useState("Nenhuma");
-  const [glazing, setGlazing] = useState(false);
   const [notes, setNotes] = useState("");
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [submitting, setSubmitting] = useState(false);
+
 
   if (isLoading) {
     return (
@@ -77,11 +76,13 @@ const WorkshopDetail = () => {
     }));
 
   const blocksExtra = blockAnswers.reduce((s, a) => s + a.extra_cents, 0);
-  const glazingExtra = glazing ? workshop.glazingPriceCents : 0;
-  const extraCents = glazingExtra + blocksExtra;
-  const total = workshop.priceCents + extraCents;
+  const extraCents = blocksExtra;
+  const sale = activeWorkshopSaleCents(workshop);
+  const basePrice = workshopPriceCents(workshop);
+  const total = basePrice + extraCents;
   const spotsLeft = Math.max(workshop.totalSpots - workshop.spotsTaken, 0);
   const waitlist = workshop.isSoldOut || spotsLeft === 0;
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,8 +115,9 @@ const WorkshopDetail = () => {
         _full_name: fullName.trim(),
         _phone: phone.trim(),
         _instagram: instagram.trim() || null,
-        _dietary_restriction: diet,
-        _wants_glazing: glazing,
+        _dietary_restriction: "Nenhuma",
+        _wants_glazing: false,
+
         _notes: notes.trim() || null,
         _is_waitlist: waitlist,
         _answers: blockAnswers as any,
@@ -171,7 +173,7 @@ const WorkshopDetail = () => {
           <div className="lg:col-span-7 space-y-8">
             <div className="aspect-[4/3] bg-muted/40 overflow-hidden">
               {workshop.imageUrl ? (
-                <img
+                <SmartImage
                   src={workshop.imageUrl}
                   alt={`Oficina ${workshop.title}`}
                   className="w-full h-full object-cover"
@@ -182,6 +184,7 @@ const WorkshopDetail = () => {
                 </div>
               )}
             </div>
+
 
             <div>
               <h1 className="font-serif text-3xl md:text-5xl leading-[1.05] mb-5">
@@ -214,12 +217,6 @@ const WorkshopDetail = () => {
                 <MapPin className="w-4 h-4 text-primary" />
                 {workshop.location}
               </p>
-              {workshop.teacher && (
-                <p className="flex items-center gap-3">
-                  <User className="w-4 h-4 text-primary" />
-                  Professora {workshop.teacher}
-                </p>
-              )}
             </div>
 
             {workshop.notes && (
@@ -230,11 +227,22 @@ const WorkshopDetail = () => {
           <div className="lg:col-span-5 lg:sticky lg:top-28 lg:self-start">
             <div className="border border-border p-7 space-y-6">
               <div>
-                <p className="font-serif text-3xl">{formatBRL(total)}</p>
+                <p className="font-serif text-3xl flex items-baseline gap-3">
+                  <span className={sale != null ? "text-primary" : undefined}>
+                    {formatBRL(total)}
+                  </span>
+                  {sale != null && (
+                    <span className="text-base text-muted-foreground line-through">
+                      {formatBRL(workshop.priceCents + extraCents)}
+                    </span>
+                  )}
+                </p>
+                {sale != null && <SaleCountdown endsAt={workshop.saleEndsAt} />}
                 <p className="text-sm text-muted-foreground">
                   por pessoa · inclui materiais, queima e café da tarde
                 </p>
               </div>
+
 
               {waitlist ? (
                 <p className="text-sm text-destructive">
@@ -285,19 +293,8 @@ const WorkshopDetail = () => {
                     />
                   </div>
 
-                  <div className="space-y-3">
-                    <Label>Restrições alimentares</Label>
-                    <RadioGroup value={diet} onValueChange={setDiet} className="space-y-2">
-                      {dietOptions.map((o) => (
-                        <div key={o} className="flex items-center gap-3">
-                          <RadioGroupItem value={o} id={`diet-${o}`} />
-                          <Label htmlFor={`diet-${o}`} className="font-normal">
-                            {o}
-                          </Label>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                  </div>
+
+
 
                   <WorkshopQuestionFields
                     blocks={blocks}
@@ -308,19 +305,8 @@ const WorkshopDetail = () => {
                   />
 
 
-                  {workshop.glazingAvailable && (
-                    <label className="flex items-start gap-3 cursor-pointer">
-                      <Checkbox
-                        checked={glazing}
-                        onCheckedChange={(v) => setGlazing(Boolean(v))}
-                        className="mt-0.5"
-                      />
-                      <span className="text-sm text-muted-foreground">
-                        Quero fazer a esmaltação da minha peça em outro encontro
-                        (+{formatBRL(workshop.glazingPriceCents)})
-                      </span>
-                    </label>
-                  )}
+
+
 
                   <div className="space-y-2">
                     <Label htmlFor="obs">Alguma observação?</Label>

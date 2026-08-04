@@ -1,6 +1,9 @@
+import { useEffect } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Product } from "@/data/products";
+import { supabase } from "@/integrations/supabase/client";
+
 
 /** Valor preenchido pela cliente em um campo de personalização */
 export interface PersonalizationValue {
@@ -54,7 +57,10 @@ interface CartState {
   setGiftMessage: (message: string) => void;
   getSubtotalCents: () => number;
   getItemCount: () => number;
+  /** remove da sacola peças que saíram do ar ou foram excluídas */
+  keepOnly: (productIds: string[]) => void;
 }
+
 
 export const useCart = create<CartState>()(
   persist(

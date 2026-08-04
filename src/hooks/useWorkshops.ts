@@ -24,7 +24,23 @@ export interface Workshop {
   glazingPriceCents: number;
   notes: string | null;
   isPublished: boolean;
+  salePriceCents: number | null;
+  saleStartsAt: string | null;
+  saleEndsAt: string | null;
 }
+
+/** valor promocional válido agora (ou null) */
+export const activeWorkshopSaleCents = (w: Workshop): number | null => {
+  if (w.salePriceCents == null || w.salePriceCents <= 0) return null;
+  if (w.salePriceCents >= w.priceCents) return null;
+  const now = Date.now();
+  if (w.saleStartsAt && new Date(w.saleStartsAt).getTime() > now) return null;
+  if (w.saleEndsAt && new Date(w.saleEndsAt).getTime() < now) return null;
+  return w.salePriceCents;
+};
+
+export const workshopPriceCents = (w: Workshop) =>
+  activeWorkshopSaleCents(w) ?? w.priceCents;
 
 export const mapWorkshop = (r: any): Workshop => ({
   id: r.id,
@@ -48,7 +64,11 @@ export const mapWorkshop = (r: any): Workshop => ({
   glazingPriceCents: r.glazing_price_cents,
   notes: r.notes,
   isPublished: r.is_published,
+  salePriceCents: r.sale_price_cents ?? null,
+  saleStartsAt: r.sale_starts_at ?? null,
+  saleEndsAt: r.sale_ends_at ?? null,
 });
+
 
 export const formatWorkshopDate = (iso: string) => {
   const [y, m, d] = iso.split("-");

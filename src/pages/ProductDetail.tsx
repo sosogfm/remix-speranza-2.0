@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+
 import { ChevronLeft, ChevronRight, ShoppingBag, Heart, MessageCircle } from "lucide-react";
 import { SmartImage } from "@/components/SmartImage";
 import { Layout } from "@/components/Layout";
@@ -25,7 +25,8 @@ import {
   usePersonalizationFields,
   totalExtraCents,
   sizeBaseCents,
-  selectedOptionImage,
+  selectedOptionImages,
+  optionImageList,
 } from "@/hooks/usePersonalization";
 import { site } from "@/data/site";
 
@@ -42,7 +43,9 @@ const ProductDetail = () => {
   const { data: allProducts = [] } = useProducts();
   const { data: fields = [] } = usePersonalizationFields(product?.id);
   const { data: infoBlocks = [] } = useProductInfoBlocks(product?.id);
-  const optionImagePaths = fields.flatMap((f) => Object.values(f.optionImages ?? {}));
+  const optionImagePaths = fields.flatMap((f) =>
+    (f.options ?? []).flatMap((o) => optionImageList(f.optionImages, o))
+  );
   const galleryPaths = (product?.images ?? []).filter(
     (i) => !/^(https?:|data:|blob:|\/)/i.test(i)
   );
@@ -50,6 +53,7 @@ const ProductDetail = () => {
     ...optionImagePaths,
     ...galleryPaths,
   ]);
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [values, setValues] = useState<Record<string, string>>({});
@@ -97,8 +101,10 @@ const ProductDetail = () => {
   const compareAtCents =
     sizePrice != null ? null : sale != null ? product.priceCents : null;
   const parcelas = installmentLabel(unitCents, product.maxInstallments);
-  const optionImagePath = selectedOptionImage(fields, values);
-  const optionImageUrl = optionImagePath ? signedImages[optionImagePath] ?? "" : "";
+  const optionImages = selectedOptionImages(fields, values);
+  const gallery = optionImages.length ? optionImages : product.images;
+  const slideIndex = Math.min(currentImageIndex, Math.max(gallery.length - 1, 0));
+
   const quoteUrl = `${site.whatsapp}?text=${encodeURIComponent(
     `Oi Júlia! Gostaria de um orçamento para: ${product.name}`
   )}`;
@@ -125,9 +131,12 @@ const ProductDetail = () => {
   };
 
   const nextImage = () =>
-    setCurrentImageIndex((p) => (p === product.images.length - 1 ? 0 : p + 1));
+    setCurrentImageIndex((p) => (p + 1) % Math.max(gallery.length, 1));
   const prevImage = () =>
-    setCurrentImageIndex((p) => (p === 0 ? product.images.length - 1 : p - 1));
+    setCurrentImageIndex(
+      (p) => (p - 1 + Math.max(gallery.length, 1)) % Math.max(gallery.length, 1)
+    );
+
 
   return (
     <Layout>
@@ -157,24 +166,21 @@ const ProductDetail = () => {
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-20">
             <div className="lg:col-span-7 space-y-4">
               <div className="relative aspect-[4/5] overflow-hidden bg-muted/30 group">
-                <AnimatePresence mode="wait">
-                  <motion.img
-                    key={optionImageUrl || currentImageIndex}
-                    src={
-                      optionImageUrl ||
-                      signedImages[product.images[currentImageIndex]] ||
-                      product.images[currentImageIndex]
-                    }
-                    alt={`${product.name} — porcelana artesanal Speranza Ateliê`}
-                    initial={{ opacity: 0, scale: 1.02 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
-                    transition={{ duration: 0.5 }}
-                    className="w-full h-full object-cover"
-                  />
-                </AnimatePresence>
+                <div
+                  className="flex h-full w-full transition-transform duration-700 ease-out"
+                  style={{ transform: `translateX(-${slideIndex * 100}%)` }}
+                >
+                  {gallery.map((image, i) => (
+                    <img
+                      key={`${image}-${i}`}
+                      src={signedImages[image] || image}
+                      alt={`${product.name} — porcelana artesanal Speranza Ateliê`}
+                      className="w-full h-full shrink-0 object-cover"
+                    />
+                  ))}
+                </div>
 
-                {product.images.length > 1 && (
+                {gallery.length > 1 && (
                   <>
                     <button
                       onClick={prevImage}
@@ -217,15 +223,15 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              {product.images.length > 1 && (
-                <div className="flex gap-3">
-                  {product.images.map((image, index) => (
+              {gallery.length > 1 && (
+                <div className="flex gap-3 overflow-x-auto pb-1">
+                  {gallery.map((image, index) => (
                     <button
-                      key={index}
+                      key={`${image}-thumb-${index}`}
                       onClick={() => setCurrentImageIndex(index)}
                       className={cn(
-                        "w-24 h-24 overflow-hidden transition-all duration-300",
-                        index === currentImageIndex ? "ring-2 ring-foreground" : "opacity-60"
+                        "w-20 h-20 sm:w-24 sm:h-24 shrink-0 overflow-hidden transition-all duration-300",
+                        index === slideIndex ? "ring-2 ring-foreground" : "opacity-60"
                       )}
                     >
                       <SmartImage src={image} alt="" className="w-full h-full object-cover" />
@@ -233,6 +239,7 @@ const ProductDetail = () => {
                   ))}
                 </div>
               )}
+
             </div>
 
             <div className="lg:col-span-5 lg:sticky lg:top-28 lg:self-start">
