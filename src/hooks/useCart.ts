@@ -131,6 +131,17 @@ export const useCart = create<CartState>()(
         ),
 
       getItemCount: () => get().items.reduce((c, i) => c + i.quantity, 0),
+
+      keepOnly: (productIds) =>
+        set((state) => {
+          const filtered = state.items.filter((i) =>
+            productIds.includes(i.product.id)
+          );
+          return filtered.length === state.items.length
+            ? state
+            : { items: filtered };
+        }),
+
     }),
     { name: "speranza-cart", version: 3 }
   )
