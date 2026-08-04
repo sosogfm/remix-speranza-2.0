@@ -177,22 +177,51 @@ export const AdminPersonalizationEditor = ({ productId }: { productId: string })
     invalidate();
   };
 
-  /** imagem por opção (ex.: foto do urso no tamanho P) */
-  const setOptionImage = async (field: any, option: string, file: File) => {
+  /** imagens por opção (ex.: fotos do urso no tamanho P) — aceita várias */
+  const addOptionImages = async (field: any, option: string, fileList: FileList) => {
     try {
-      const path = await uploadSiteImage(file, `options/${productId}`);
-      const images = { ...(field.option_images ?? {}), [option]: path };
+      const current = field.option_images ?? {};
+      const existing = current[option];
+      const list: string[] = Array.isArray(existing)
+        ? [...existing]
+        : existing
+        ? [existing]
+        : [];
+      for (let i = 0; i < fileList.length; i++) {
+        list.push(await uploadSiteImage(fileList[i], `options/${productId}`));
+      }
       const { error } = await supabase
         .from("product_personalization_fields")
-        .update({ option_images: images })
+        .update({ option_images: { ...current, [option]: list } })
         .eq("id", field.id);
       if (error) throw error;
-      toast({ title: "Imagem da opção salva" });
+      toast({ title: "Imagens da opção salvas" });
       invalidate();
     } catch (e: any) {
       toast({ title: "Erro ao enviar", description: e.message, variant: "destructive" });
     }
   };
+
+  /** apaga todas as imagens de uma opção */
+  const clearOptionImages = async (field: any, option: string) => {
+    const current = { ...(field.option_images ?? {}) };
+    delete current[option];
+    const { error } = await supabase
+      .from("product_personalization_fields")
+      .update({ option_images: current })
+      .eq("id", field.id);
+    if (error) {
+      toast({ title: "Erro ao remover", description: error.message, variant: "destructive" });
+      return;
+    }
+    invalidate();
+  };
+
+  const countOptionImages = (field: any, option: string) => {
+    const v = field.option_images?.[option];
+    return Array.isArray(v) ? v.length : v ? 1 : 0;
+  };
+
 
   return (
     <div className="mt-3">
@@ -234,25 +263,40 @@ export const AdminPersonalizationEditor = ({ productId }: { productId: string })
                     {f.is_required ? " · obrigatório" : " · opcional"}
                     {isPricedOptionType(f.field_type) && f.options?.length > 0 && (
                       <span className="mt-2 flex flex-wrap gap-2">
-                        {f.options.map((o: string) => (
-                          <label
-                            key={o}
-                            className="inline-flex items-center gap-1 border border-border px-2 py-1 text-[11px] cursor-pointer"
-                          >
-                            {f.option_images?.[o] ? "Trocar" : "Imagem"} · {o}
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={(e) => {
-                                const file = e.target.files?.[0];
-                                if (file) setOptionImage(f, o, file);
-                              }}
-                            />
-                          </label>
-                        ))}
+                        {f.options.map((o: string) => {
+                          const count = countOptionImages(f, o);
+                          return (
+                            <span key={o} className="inline-flex items-center gap-1">
+                              <label className="inline-flex items-center gap-1 border border-border px-2 py-1 text-[11px] cursor-pointer">
+                                {count ? `${count} foto(s)` : "Adicionar fotos"} · {o}
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  multiple
+                                  className="hidden"
+                                  onChange={(e) => {
+                                    if (e.target.files?.length)
+                                      addOptionImages(f, o, e.target.files);
+                                    e.target.value = "";
+                                  }}
+                                />
+                              </label>
+                              {count > 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => clearOptionImages(f, o)}
+                                  className="text-muted-foreground hover:text-destructive"
+                                  aria-label={`Remover fotos de ${o}`}
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </button>
+                              )}
+                            </span>
+                          );
+                        })}
                       </span>
                     )}
+
                   </span>
                   <button
                     onClick={() => remove(f.id)}

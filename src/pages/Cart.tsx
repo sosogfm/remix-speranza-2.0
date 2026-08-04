@@ -5,13 +5,14 @@ import { GIFT_WRAP_CENTS } from "@/data/site";
 import { SmartImage } from "@/components/SmartImage";
 import { Layout } from "@/components/Layout";
 import { QuantitySelector } from "@/components/QuantitySelector";
-import { useCart, unitPriceCents } from "@/hooks/useCart";
+import { useCart, unitPriceCents, useCartCleanup } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { formatBRL } from "@/data/products";
 
 const Cart = () => {
+  useCartCleanup();
   const {
     items,
     updateQuantity,

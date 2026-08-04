@@ -1,6 +1,9 @@
+import { useEffect } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { Product } from "@/data/products";
+import { supabase } from "@/integrations/supabase/client";
+
 
 /** Valor preenchido pela cliente em um campo de personalização */
 export interface PersonalizationValue {
@@ -54,7 +57,10 @@ interface CartState {
   setGiftMessage: (message: string) => void;
   getSubtotalCents: () => number;
   getItemCount: () => number;
+  /** remove da sacola peças que saíram do ar ou foram excluídas */
+  keepOnly: (productIds: string[]) => void;
 }
+
 
 export const useCart = create<CartState>()(
   persist(
@@ -125,7 +131,43 @@ export const useCart = create<CartState>()(
         ),
 
       getItemCount: () => get().items.reduce((c, i) => c + i.quantity, 0),
+
+      keepOnly: (productIds) =>
+        set((state) => {
+          const filtered = state.items.filter((i) =>
+            productIds.includes(i.product.id)
+          );
+          return filtered.length === state.items.length
+            ? state
+            : { items: filtered };
+        }),
+
     }),
     { name: "speranza-cart", version: 3 }
   )
 );
+
+/** Mantém na sacola apenas peças ativas (não excluídas / não desativadas) */
+export const useCartCleanup = () => {
+  const items = useCart((s) => s.items);
+  const keepOnly = useCart((s) => s.keepOnly);
+  const ids = items.map((i) => i.product.id).join(",");
+
+  useEffect(() => {
+    const list = ids ? ids.split(",") : [];
+    if (list.length === 0) return;
+    let active = true;
+    void (async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("id")
+        .in("id", list)
+        .eq("is_active", true);
+      if (!active || error) return;
+      keepOnly((data ?? []).map((p) => p.id));
+    })();
+    return () => {
+      active = false;
+    };
+  }, [ids, keepOnly]);
+};

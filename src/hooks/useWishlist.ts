@@ -124,7 +124,7 @@ export const useWishlistProducts = () => {
     queryKey: ["wishlist-products", user?.id, localIds.join(",")],
     queryFn: async () => {
       const select =
-        "id,name,slug,price_cents,max_installments,stock_quantity,product_images(image_url,position)";
+        "id,name,slug,price_cents,max_installments,stock_quantity,is_active,product_images(image_url,position)";
 
       if (user) {
         const { data, error } = await supabase
@@ -132,16 +132,19 @@ export const useWishlistProducts = () => {
           .select(`product_id, products(${select})`)
           .order("created_at", { ascending: false });
         if (error) throw error;
-        return data;
+        // peças inativas ou excluídas não aparecem nos favoritos
+        return (data ?? []).filter((r: any) => r.products?.is_active);
       }
 
       if (localIds.length === 0) return [];
       const { data, error } = await supabase
         .from("products")
         .select(select)
-        .in("id", localIds);
+        .in("id", localIds)
+        .eq("is_active", true);
       if (error) throw error;
       return (data ?? []).map((p) => ({ product_id: p.id, products: p }));
     },
+
   });
 };

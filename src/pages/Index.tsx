@@ -229,8 +229,22 @@ const Index = () => {
               const variant = i === 0 || i === 5 ? "wide" : "default";
               return (
                 <div key={collection.id ?? collection.slug} className={span}>
-                  <CollectionCard collection={collection} index={i} variant={variant} />
+                  <CollectionCard
+                    collection={collection}
+                    index={i}
+                    variant={variant}
+                    images={allProducts
+                      .filter(
+                        (p) =>
+                          p.collection === collection.slug ||
+                          p.collectionSlugs?.includes(collection.slug)
+                      )
+                      .map((p) => p.images[0])
+                      .filter(Boolean)
+                      .slice(0, 5)}
+                  />
                 </div>
+
               );
             })}
           </div>

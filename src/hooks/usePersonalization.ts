@@ -19,13 +19,24 @@ export interface PersonalizationField {
   options: string[];
   /** preço adicional por opção, em centavos (usado em "addon" e "size") */
   optionPrices: Record<string, number>;
-  /** imagem por opção (caminho no bucket site-images) */
-  optionImages: Record<string, string>;
+  /** imagens por opção (uma ou várias, caminhos no bucket site-images) */
+  optionImages: Record<string, string | string[]>;
   maxLength: number;
   isRequired: boolean;
   extraPriceCents: number;
   position: number;
 }
+
+/** normaliza o valor guardado (string antiga ou lista nova) em lista */
+export const optionImageList = (
+  images: Record<string, string | string[]> | undefined,
+  option: string
+): string[] => {
+  const v = images?.[option];
+  if (!v) return [];
+  return Array.isArray(v) ? v.filter(Boolean) : [v];
+};
+
 
 export const fieldTypeLabels: Record<PersonalizationFieldType, string> = {
   initial: "Inicial",
@@ -86,16 +97,17 @@ export const sizeBaseCents = (
   return null;
 };
 
-/** Imagem associada à opção escolhida (primeira encontrada) */
-export const selectedOptionImage = (
+/** Imagens associadas às opções escolhidas (primeira opção com imagens) */
+export const selectedOptionImages = (
   fields: PersonalizationField[],
   values: Record<string, string>
-): string | null => {
+): string[] => {
   for (const f of fields) {
     const v = (values[f.id] ?? "").trim();
-    if (v && f.optionImages?.[v]) return f.optionImages[v];
+    const list = optionImageList(f.optionImages, v);
+    if (v && list.length) return list;
   }
-  return null;
+  return [];
 };
 
 const map = (r: any): PersonalizationField => ({
@@ -106,7 +118,8 @@ const map = (r: any): PersonalizationField => ({
   fieldType: r.field_type,
   options: r.options ?? [],
   optionPrices: (r.option_prices ?? {}) as Record<string, number>,
-  optionImages: (r.option_images ?? {}) as Record<string, string>,
+  optionImages: (r.option_images ?? {}) as Record<string, string | string[]>,
+
   maxLength: r.max_length,
   isRequired: r.is_required,
   extraPriceCents: r.extra_price_cents,

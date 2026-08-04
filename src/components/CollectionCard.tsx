@@ -1,15 +1,36 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Collection } from "@/data/products";
+import { SmartImage } from "@/components/SmartImage";
 
 interface CollectionCardProps {
   collection: Collection;
   index?: number;
   variant?: "default" | "wide" | "tall";
+  /** fotos das peças desta categoria — alternam automaticamente */
+  images?: string[];
 }
 
-export const CollectionCard = ({ collection, index = 0, variant = "default" }: CollectionCardProps) => {
+export const CollectionCard = ({
+  collection,
+  index = 0,
+  variant = "default",
+  images = [],
+}: CollectionCardProps) => {
+  const gallery = images.length ? images : [collection.image];
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (gallery.length < 2) return;
+    const id = window.setInterval(
+      () => setCurrent((c) => (c + 1) % gallery.length),
+      4000 + index * 600
+    );
+    return () => window.clearInterval(id);
+  }, [gallery.length, index]);
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 40 }}
@@ -28,12 +49,18 @@ export const CollectionCard = ({ collection, index = 0, variant = "default" }: C
             "aspect-[3/4]"
           }`}
         >
-          {/* Image with zoom on hover */}
-          <img
-            src={collection.image}
-            alt={collection.name}
-            className="w-full h-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-110"
-          />
+          {/* Capa alternando entre as peças da categoria */}
+          {gallery.map((src, i) => (
+            <SmartImage
+              key={`${src}-${i}`}
+              src={src}
+              alt={collection.name}
+              className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 ease-out group-hover:scale-110 ${
+                i === current % gallery.length ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          ))}
+
 
           {/* Multi-layer gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-charcoal/10 to-transparent" />
