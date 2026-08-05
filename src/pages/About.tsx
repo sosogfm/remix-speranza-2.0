@@ -79,20 +79,26 @@ const About = () => {
               transition={{ duration: 0.8 }}
               className="md:col-span-5"
             >
-              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-5">O começo</p>
+              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-5">Quem faz</p>
               <h3 className="font-serif text-3xl md:text-4xl text-foreground mb-8 leading-tight">
-                Um ateliê nascido
+                Júlia, da odontologia
                 <br />
-                <span className="italic">do afeto</span>
+                <span className="italic">à porcelana</span>
               </h3>
               <p className="text-muted-foreground leading-[1.8] mb-5">
-                O Speranza Ateliê começou como um encontro entre a pintura e a porcelana — o desejo de transformar
-                objetos do dia a dia em lembranças que ficam. Cada caneca, xícara, boleira ou porta joias é pintada à
-                mão, uma de cada vez.
+                Antes de se dedicar integralmente à porcelana, Júlia era dentista. Apesar de amar a profissão, as artes
+                manuais sempre ocuparam um lugar especial na sua vida — ainda na faculdade, produzia peças em biscuit e
+                encontrava na criação um refúgio da rotina intensa.
+              </p>
+              <p className="text-muted-foreground leading-[1.8] mb-5">
+                Desde 2019 ela empreende com trabalhos artesanais, até que, em 2023, conheceu a pintura em porcelana. Foi
+                um encontro que mudou completamente sua trajetória: encantada pela delicadeza da técnica e pela
+                possibilidade de transformar porcelanas em peças únicas, decidiu em 2024 deixar a odontologia para viver
+                exclusivamente desse sonho.
               </p>
               <p className="text-muted-foreground leading-[1.8]">
-                O que começou pequeno virou um ateliê que envia peças para todo o Brasil e recebe pessoas em oficinas de
-                arte em Videira, SC.
+                Assim nasceu o Speranza Ateliê: um espaço onde tradição, delicadeza e afeto se encontram em cada
+                pincelada.
               </p>
             </motion.div>
             <motion.div
