@@ -34,12 +34,12 @@ const About = () => {
           >
             <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-white/60 mb-5">Nossa história</p>
             <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl text-white mb-6 leading-[0.9]">
-              Porcelanas
+              Nascido da coragem
               <br />
-              <span className="italic font-normal">pintadas à mão</span>
+              <span className="italic font-normal">de recomeçar</span>
             </h1>
             <p className="text-base md:text-lg text-white/70 max-w-lg leading-relaxed">
-              De Videira, Santa Catarina, para todo o Brasil — peças que fazemos com tempo, cuidado e afeto.
+              De Videira, Santa Catarina, para todo o Brasil — porcelanas pintadas à mão, com tempo, intenção e carinho.
             </p>
           </motion.div>
         </div>
