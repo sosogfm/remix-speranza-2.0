@@ -173,19 +173,25 @@ const About = () => {
               transition={{ duration: 0.8, delay: 0.15 }}
               className="md:col-span-5"
             >
-              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-5">Como trabalhamos</p>
+              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-5">Como fazemos</p>
               <h3 className="font-serif text-3xl md:text-4xl text-foreground mb-8 leading-tight">
-                Do ateliê
+                Pintura, queima
                 <br />
-                <span className="italic">para a sua casa</span>
+                <span className="italic">e ouro 24 quilates</span>
               </h3>
               <p className="text-muted-foreground leading-[1.8] mb-5">
-                Muitas peças podem ser personalizadas: uma inicial, um nome, uma frase, uma cor ou até um desenho
-                enviado por você. É só escolher a peça e preencher a personalização na página do produto.
+                Cada peça é produzida artesanalmente e passa por um cuidadoso processo de pintura e queima em forno
+                profissional a aproximadamente 780 °C. Nessa temperatura, as tintas se fundem à porcelana: a decoração
+                se torna permanente, resistente ao uso diário e segura para micro-ondas e lava-louças.
+              </p>
+              <p className="text-muted-foreground leading-[1.8] mb-5">
+                Um dos detalhes mais marcantes das nossas criações é o acabamento em ouro. Todas as peças douradas
+                recebem ouro verdadeiro, puro 24 quilates, importado, aplicado manualmente para valorizar cada traço.
               </p>
               <p className="text-muted-foreground leading-[1.8]">
-                Depois de pintadas, as peças passam pela queima e são embaladas com cuidado — com opção de embalagem
-                para presente — e enviadas para todo o Brasil.
+                Muitas peças podem ser personalizadas — uma inicial, um nome, uma frase, uma cor ou até um desenho
+                enviado por você — e seguem embaladas com cuidado, com opção de embalagem para presente, para todo o
+                Brasil.
               </p>
             </motion.div>
           </div>
