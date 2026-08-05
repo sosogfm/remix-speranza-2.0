@@ -267,13 +267,14 @@ const Index = () => {
               Sobre o ateliê
             </p>
             <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground leading-[1.3] mb-8">
-              Acredito na beleza do feito à mão — em peças que carregam
-              tempo, cuidado e <span className="italic">afeto</span>.
+              Objetos podem carregar memórias e fazer parte dos pequenos rituais
+              que tornam uma casa mais <span className="italic">viva</span>.
             </h2>
             <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-10">
-              Pintamos cada porcelana à mão aqui em Videira (SC) e enviamos para todo
-              o Brasil. Também promovemos oficinas e aulas de arte para quem quer
-              viver o processo de perto.
+              Pintamos cada porcelana à mão aqui em Videira (SC), com queima em forno
+              profissional a cerca de 780 °C e acabamento em ouro verdadeiro 24 quilates.
+              Também promovemos oficinas e aulas de arte para quem quer viver o processo
+              de perto.
             </p>
             <Button
               asChild

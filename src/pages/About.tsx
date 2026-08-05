@@ -34,12 +34,12 @@ const About = () => {
           >
             <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-white/60 mb-5">Nossa história</p>
             <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl text-white mb-6 leading-[0.9]">
-              Porcelanas
+              Nascido da coragem
               <br />
-              <span className="italic font-normal">pintadas à mão</span>
+              <span className="italic font-normal">de recomeçar</span>
             </h1>
             <p className="text-base md:text-lg text-white/70 max-w-lg leading-relaxed">
-              De Videira, Santa Catarina, para todo o Brasil — peças que fazemos com tempo, cuidado e afeto.
+              De Videira, Santa Catarina, para todo o Brasil — porcelanas pintadas à mão, com tempo, intenção e carinho.
             </p>
           </motion.div>
         </div>
@@ -61,8 +61,8 @@ const About = () => {
               </span>
             </div>
             <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground leading-[1.25] tracking-tight">
-              Acreditamos que as peças que usamos todos os dias podem contar histórias, atravessar gerações e trazer{" "}
-              <span className="italic">alegria</span> aos momentos simples.
+              Acreditamos que objetos podem carregar memórias, acolher encontros e fazer parte dos pequenos rituais que
+              tornam uma casa mais <span className="italic">viva</span>.
             </h2>
           </motion.div>
         </div>
@@ -79,20 +79,26 @@ const About = () => {
               transition={{ duration: 0.8 }}
               className="md:col-span-5"
             >
-              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-5">O começo</p>
+              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-5">Quem faz</p>
               <h3 className="font-serif text-3xl md:text-4xl text-foreground mb-8 leading-tight">
-                Um ateliê nascido
+                Júlia, da odontologia
                 <br />
-                <span className="italic">do afeto</span>
+                <span className="italic">à porcelana</span>
               </h3>
               <p className="text-muted-foreground leading-[1.8] mb-5">
-                O Speranza Ateliê começou como um encontro entre a pintura e a porcelana — o desejo de transformar
-                objetos do dia a dia em lembranças que ficam. Cada caneca, xícara, boleira ou porta joias é pintada à
-                mão, uma de cada vez.
+                Antes de se dedicar integralmente à porcelana, Júlia era dentista. Apesar de amar a profissão, as artes
+                manuais sempre ocuparam um lugar especial na sua vida — ainda na faculdade, produzia peças em biscuit e
+                encontrava na criação um refúgio da rotina intensa.
+              </p>
+              <p className="text-muted-foreground leading-[1.8] mb-5">
+                Desde 2019 ela empreende com trabalhos artesanais, até que, em 2023, conheceu a pintura em porcelana. Foi
+                um encontro que mudou completamente sua trajetória: encantada pela delicadeza da técnica e pela
+                possibilidade de transformar porcelanas em peças únicas, decidiu em 2024 deixar a odontologia para viver
+                exclusivamente desse sonho.
               </p>
               <p className="text-muted-foreground leading-[1.8]">
-                O que começou pequeno virou um ateliê que envia peças para todo o Brasil e recebe pessoas em oficinas de
-                arte em Videira, SC.
+                Assim nasceu o Speranza Ateliê: um espaço onde tradição, delicadeza e afeto se encontram em cada
+                pincelada.
               </p>
             </motion.div>
             <motion.div
@@ -134,11 +140,11 @@ const About = () => {
                   transition={{ duration: 0.8, delay: 0.3 }}
                   className="font-serif text-3xl md:text-5xl lg:text-6xl text-white text-center max-w-3xl px-6 leading-tight"
                 >
-                  “A beleza mora na
+                  “Cada peça é criada com
                   <br />
-                  <span className="italic">imperfeição</span>
+                  <span className="italic">tempo, intenção</span>
                   <br />
-                  do que é feito à mão”
+                  e carinho”
                 </motion.p>
               </div>
             </div>
@@ -167,21 +173,73 @@ const About = () => {
               transition={{ duration: 0.8, delay: 0.15 }}
               className="md:col-span-5"
             >
-              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-5">Como trabalhamos</p>
+              <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-5">Como fazemos</p>
               <h3 className="font-serif text-3xl md:text-4xl text-foreground mb-8 leading-tight">
-                Do ateliê
+                Pintura, queima
                 <br />
-                <span className="italic">para a sua casa</span>
+                <span className="italic">e ouro 24 quilates</span>
               </h3>
               <p className="text-muted-foreground leading-[1.8] mb-5">
-                Muitas peças podem ser personalizadas: uma inicial, um nome, uma frase, uma cor ou até um desenho
-                enviado por você. É só escolher a peça e preencher a personalização na página do produto.
+                Cada peça é produzida artesanalmente e passa por um cuidadoso processo de pintura e queima em forno
+                profissional a aproximadamente 780 °C. Nessa temperatura, as tintas se fundem à porcelana: a decoração
+                se torna permanente, resistente ao uso diário e segura para micro-ondas e lava-louças.
+              </p>
+              <p className="text-muted-foreground leading-[1.8] mb-5">
+                Um dos detalhes mais marcantes das nossas criações é o acabamento em ouro. Todas as peças douradas
+                recebem ouro verdadeiro, puro 24 quilates, importado, aplicado manualmente para valorizar cada traço.
               </p>
               <p className="text-muted-foreground leading-[1.8]">
-                Depois de pintadas, as peças passam pela queima e são embaladas com cuidado — com opção de embalagem
-                para presente — e enviadas para todo o Brasil.
+                Muitas peças podem ser personalizadas — uma inicial, um nome, uma frase, uma cor ou até um desenho
+                enviado por você — e seguem embaladas com cuidado, com opção de embalagem para presente, para todo o
+                Brasil.
               </p>
             </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Linha do tempo */}
+      <section className="pb-24 md:pb-32">
+        <div className="container-narrow">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-14 md:mb-20"
+          >
+            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-3">Nossa trajetória</p>
+            <h2 className="font-serif text-3xl md:text-5xl text-foreground">Passo a passo</h2>
+          </motion.div>
+
+          <div className="max-w-2xl mx-auto">
+            {[
+              { year: "2019", text: "Os primeiros trabalhos artesanais, feitos nas horas livres da odontologia." },
+              { year: "2023", text: "O encontro com a pintura em porcelana — e uma trajetória que muda de rumo." },
+              { year: "2024", text: "Júlia deixa a odontologia para viver exclusivamente do ateliê." },
+              {
+                year: "Nov 2024",
+                text: "Começam os workshops de artes manuais, para experiências que vão além da técnica.",
+              },
+              {
+                year: "Hoje",
+                text: "Porcelanas pintadas à mão, peças personalizadas para celebrar histórias e alunos semanais no ateliê.",
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={item.year}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.08 }}
+                className="grid grid-cols-[80px_1fr] md:grid-cols-[140px_1fr] gap-4 md:gap-8 border-t border-border py-6 md:py-7"
+              >
+                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary pt-1">
+                  {item.year}
+                </span>
+                <p className="text-muted-foreground leading-[1.8]">{item.text}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -206,18 +264,19 @@ const About = () => {
                 title: "Feito à mão",
                 number: "01",
                 description:
-                  "Cada peça é pintada individualmente. Pequenas variações são a assinatura do trabalho artesanal.",
+                  "Cada peça é pintada individualmente e queimada a cerca de 780 °C — decoração permanente, segura para micro-ondas e lava-louças.",
               },
               {
-                title: "Personalização",
+                title: "Ouro 24k",
                 number: "02",
-                description: "Iniciais, nomes, frases, cores ou desenhos: a peça pode ser pensada para uma pessoa só.",
+                description:
+                  "As peças douradas recebem ouro verdadeiro, puro 24 quilates, importado e aplicado manualmente traço a traço.",
               },
               {
                 title: "Oficinas",
                 number: "03",
                 description:
-                  "Encontros para desacelerar e criar com as próprias mãos, em turmas pequenas e acolhedoras.",
+                  "Desde novembro de 2024, encontros para desacelerar, cultivar a criatividade e criar com as próprias mãos.",
               },
             ].map((value, i) => (
               <motion.div
@@ -258,13 +317,16 @@ const About = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-white/50 mb-5">Vamos conversar</p>
+            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-white/50 mb-5">Boas-vindas</p>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white mb-6 leading-tight">
-              Ficou com alguma dúvida?
+              Seja bem-vindo ao
+              <br />
+              <span className="italic">Speranza Ateliê</span>
             </h2>
-            <p className="text-white/60 mb-10 max-w-md mx-auto leading-relaxed">
-              Chame no WhatsApp ({site.phone}) ou no Instagram — será um prazer ajudar a escolher a peça certa ou pensar
-              uma personalização.
+            <p className="text-white/60 mb-10 max-w-lg mx-auto leading-relaxed">
+              Esperamos que nossas peças encontrem um lugar especial na sua casa e na sua história. Ficou com alguma
+              dúvida? Chame no WhatsApp ({site.phone}) ou no Instagram — será um prazer ajudar a escolher a peça certa ou
+              pensar uma personalização.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
