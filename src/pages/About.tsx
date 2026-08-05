@@ -140,11 +140,11 @@ const About = () => {
                   transition={{ duration: 0.8, delay: 0.3 }}
                   className="font-serif text-3xl md:text-5xl lg:text-6xl text-white text-center max-w-3xl px-6 leading-tight"
                 >
-                  “A beleza mora na
+                  “Cada peça é criada com
                   <br />
-                  <span className="italic">imperfeição</span>
+                  <span className="italic">tempo, intenção</span>
                   <br />
-                  do que é feito à mão”
+                  e carinho”
                 </motion.p>
               </div>
             </div>
