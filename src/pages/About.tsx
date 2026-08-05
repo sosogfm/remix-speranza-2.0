@@ -218,18 +218,19 @@ const About = () => {
                 title: "Feito à mão",
                 number: "01",
                 description:
-                  "Cada peça é pintada individualmente. Pequenas variações são a assinatura do trabalho artesanal.",
+                  "Cada peça é pintada individualmente e queimada a cerca de 780 °C — decoração permanente, segura para micro-ondas e lava-louças.",
               },
               {
-                title: "Personalização",
+                title: "Ouro 24k",
                 number: "02",
-                description: "Iniciais, nomes, frases, cores ou desenhos: a peça pode ser pensada para uma pessoa só.",
+                description:
+                  "As peças douradas recebem ouro verdadeiro, puro 24 quilates, importado e aplicado manualmente traço a traço.",
               },
               {
                 title: "Oficinas",
                 number: "03",
                 description:
-                  "Encontros para desacelerar e criar com as próprias mãos, em turmas pequenas e acolhedoras.",
+                  "Desde novembro de 2024, encontros para desacelerar, cultivar a criatividade e criar com as próprias mãos.",
               },
             ].map((value, i) => (
               <motion.div
