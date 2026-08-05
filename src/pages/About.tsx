@@ -61,8 +61,8 @@ const About = () => {
               </span>
             </div>
             <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground leading-[1.25] tracking-tight">
-              Acreditamos que as peças que usamos todos os dias podem contar histórias, atravessar gerações e trazer{" "}
-              <span className="italic">alegria</span> aos momentos simples.
+              Acreditamos que objetos podem carregar memórias, acolher encontros e fazer parte dos pequenos rituais que
+              tornam uma casa mais <span className="italic">viva</span>.
             </h2>
           </motion.div>
         </div>
