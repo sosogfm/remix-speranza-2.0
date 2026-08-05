@@ -198,6 +198,52 @@ const About = () => {
         </div>
       </section>
 
+      {/* Linha do tempo */}
+      <section className="pb-24 md:pb-32">
+        <div className="container-narrow">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-14 md:mb-20"
+          >
+            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-3">Nossa trajetória</p>
+            <h2 className="font-serif text-3xl md:text-5xl text-foreground">Passo a passo</h2>
+          </motion.div>
+
+          <div className="max-w-2xl mx-auto">
+            {[
+              { year: "2019", text: "Os primeiros trabalhos artesanais, feitos nas horas livres da odontologia." },
+              { year: "2023", text: "O encontro com a pintura em porcelana — e uma trajetória que muda de rumo." },
+              { year: "2024", text: "Júlia deixa a odontologia para viver exclusivamente do ateliê." },
+              {
+                year: "Nov 2024",
+                text: "Começam os workshops de artes manuais, para experiências que vão além da técnica.",
+              },
+              {
+                year: "Hoje",
+                text: "Porcelanas pintadas à mão, peças personalizadas para celebrar histórias e alunos semanais no ateliê.",
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={item.year}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: i * 0.08 }}
+                className="grid grid-cols-[80px_1fr] md:grid-cols-[140px_1fr] gap-4 md:gap-8 border-t border-border py-6 md:py-7"
+              >
+                <span className="text-[11px] font-semibold tracking-[0.2em] uppercase text-primary pt-1">
+                  {item.year}
+                </span>
+                <p className="text-muted-foreground leading-[1.8]">{item.text}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Valores */}
       <section className="py-24 md:py-36 bg-linen">
         <div className="container-full">
