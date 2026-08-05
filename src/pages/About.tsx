@@ -317,13 +317,16 @@ const About = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
           >
-            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-white/50 mb-5">Vamos conversar</p>
+            <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-white/50 mb-5">Boas-vindas</p>
             <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white mb-6 leading-tight">
-              Ficou com alguma dúvida?
+              Seja bem-vindo ao
+              <br />
+              <span className="italic">Speranza Ateliê</span>
             </h2>
-            <p className="text-white/60 mb-10 max-w-md mx-auto leading-relaxed">
-              Chame no WhatsApp ({site.phone}) ou no Instagram — será um prazer ajudar a escolher a peça certa ou pensar
-              uma personalização.
+            <p className="text-white/60 mb-10 max-w-lg mx-auto leading-relaxed">
+              Esperamos que nossas peças encontrem um lugar especial na sua casa e na sua história. Ficou com alguma
+              dúvida? Chame no WhatsApp ({site.phone}) ou no Instagram — será um prazer ajudar a escolher a peça certa ou
+              pensar uma personalização.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
