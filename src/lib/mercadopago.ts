@@ -1,8 +1,11 @@
 /** SDK oficial do Mercado Pago (MercadoPago.js v2) para tokenizar o cartão */
 const SDK_URL = "https://sdk.mercadopago.com/js/v2";
 
+/** Chave pública (publicável) do Mercado Pago — pode ficar no código */
+const MP_PUBLIC_KEY_FALLBACK = "APP_USR-eef8760f-f936-406c-8906-2baa45e8eb97";
+
 export const MP_PUBLIC_KEY: string =
-  import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY ?? "";
+  import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY || MP_PUBLIC_KEY_FALLBACK;
 
 /** Enquanto a credencial real não chega, o token é um placeholder */
 export const mpCredentialsMissing = () =>
