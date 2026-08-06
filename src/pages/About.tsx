@@ -4,6 +4,7 @@ import { ArrowRight, Instagram, MessageCircle } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { site } from "@/data/site";
+import xicaraPresente from "@/assets/xicara-presente.jpg.asset.json";
 
 const About = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -110,8 +111,8 @@ const About = () => {
             >
               <div className="aspect-[4/5] overflow-hidden group">
                 <img
-                  src="https://images.unsplash.com/photo-1785706671659-777076389d4c?w=1920&q=80"
-                  alt="Peças de porcelana em ambiente acolhedor"
+                  src="https://images.unsplash.com/photo-1785705337746-112182618250?w=1200&q=80"
+                  alt="Mãos pintando porcelana"
                   className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
                 />
               </div>
@@ -160,8 +161,8 @@ const About = () => {
             >
               <div className="aspect-[4/5] overflow-hidden group">
                 <img
-                  src="https://images.unsplash.com/photo-1785705337746-112182618250?w=1200&q=80"
-                  alt="Mãos pintando porcelana"
+                  src={xicaraPresente.url}
+                  alt="Xícara e pires pintados à mão com caixa de presente"
                   className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
                 />
               </div>
