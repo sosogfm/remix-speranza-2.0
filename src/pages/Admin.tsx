@@ -33,6 +33,7 @@ import {
   AdminWorkshops,
 } from "@/components/admin/AdminPanels";
 import { AdminPrivateEvents } from "@/components/admin/AdminWorkshopExtras";
+import { AdminPersonalizationPreview } from "@/components/admin/AdminPersonalizationPreview";
 import {
   AdminReviews,
   AdminInfoBlocks,
