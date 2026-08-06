@@ -4,11 +4,11 @@
  * Para trocar qualquer foto, basta substituir o link abaixo
  * (ou importar um arquivo de `src/assets`).
  */
-import heroPorcelana from "@/assets/hero-porcelana.jpg";
+import pratinhosMonograma from "@/assets/pratinhos-monograma.jpg.asset.json";
 
 export const siteImages = {
   /** Foto grande do topo da página inicial */
-  homeHero: heroPorcelana,
+  homeHero: pratinhosMonograma.url,
 
 
   /** Página "Sobre" */
