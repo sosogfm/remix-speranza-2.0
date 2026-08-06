@@ -118,11 +118,16 @@ const Index = () => {
               transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }}
               className="relative aspect-[4/5] overflow-hidden group"
             >
-              <img
-                src={featuredCollection.heroImage || featuredCollection.image}
+              <SmartImage
+                src={
+                  featuredProducts[0]?.images?.[0] ||
+                  featuredCollection.heroImage ||
+                  featuredCollection.image
+                }
                 alt={featuredCollection.name}
                 className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
               />
+
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal/40 via-transparent to-transparent" />
             </motion.div>
 
