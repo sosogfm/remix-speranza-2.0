@@ -2,20 +2,22 @@ import { Link } from "react-router-dom";
 import { Instagram, MessageCircle, LinkIcon, MapPin, Phone } from "lucide-react";
 import { useCollections } from "@/hooks/useProducts";
 import { site } from "@/data/site";
+import logoSperanza from "@/assets/logo-speranza.png";
 
 export const Footer = () => {
   const { data: collections = [] } = useCollections();
   return (
     <footer className="bg-foreground text-background">
-      <div className="border-b border-background/10">
+      <div className="border-b border-brand-rose/20">
         <div className="container-full py-12 md:py-16">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div>
-              <Link
-                to="/"
-                className="font-serif text-3xl md:text-4xl tracking-tight text-background"
-              >
-                {site.name}
+              <Link to="/" aria-label={site.name} className="inline-block">
+                <img
+                  src={logoSperanza}
+                  alt={`${site.name} — porcelana pintada à mão`}
+                  className="h-14 md:h-16 w-auto brightness-125"
+                />
               </Link>
               <p className="mt-3 text-sm text-background/50 leading-relaxed max-w-sm">
                 {site.tagline}. Promovo oficinas e aulas de arte. De {site.city}{" "}

@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { CartIcon } from "@/components/CartIcon";
 import { useCollections } from "@/hooks/useProducts";
 import { site } from "@/data/site";
+import logoSperanza from "@/assets/logo-speranza.png";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -49,19 +50,20 @@ export const Header = () => {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 transition-all duration-500",
+        "sticky top-0 z-50 transition-all duration-500 bg-brand-blush",
         scrolled
-          ? "bg-background/95 backdrop-blur-md border-b border-border shadow-sm"
-          : "bg-background/80 backdrop-blur-sm border-b border-transparent"
+          ? "backdrop-blur-md border-b border-brand-rose/20 shadow-sm"
+          : "border-b border-transparent"
       )}
     >
       <nav className="container-full">
         <div className="flex items-center justify-between h-16 md:h-20">
-          <Link
-            to="/"
-            className="font-serif text-2xl md:text-3xl tracking-tight text-foreground hover:text-primary transition-colors duration-300"
-          >
-            {site.name}
+          <Link to="/" aria-label={site.name} className="shrink-0">
+            <img
+              src={logoSperanza}
+              alt={`${site.name} — porcelana pintada à mão`}
+              className="h-10 md:h-14 w-auto"
+            />
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
