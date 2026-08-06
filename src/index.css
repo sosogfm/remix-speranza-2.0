@@ -10,47 +10,48 @@
 
 @layer base {
   :root {
-    /* Warm neutral palette */
-    --background: 40 33% 97%;
-    --foreground: 30 10% 15%;
+    /* Warm blush palette (from the Speranza logo) */
+    --background: 26 40% 96%;
+    --foreground: 5 20% 20%;
 
-    --card: 40 30% 95%;
-    --card-foreground: 30 10% 15%;
+    --card: 26 38% 93%;
+    --card-foreground: 5 20% 20%;
 
-    --popover: 40 33% 97%;
-    --popover-foreground: 30 10% 15%;
+    --popover: 26 40% 96%;
+    --popover-foreground: 5 20% 20%;
 
-    /* Muted terracotta primary */
-    --primary: 18 45% 45%;
-    --primary-foreground: 40 33% 97%;
+    /* Rose from the logo lettering */
+    --primary: 4 30% 55%;
+    --primary-foreground: 26 44% 96%;
 
-    /* Warm taupe secondary */
-    --secondary: 30 15% 85%;
-    --secondary-foreground: 30 10% 20%;
+    --secondary: 26 35% 87%;
+    --secondary-foreground: 5 20% 22%;
 
-    --muted: 30 10% 90%;
-    --muted-foreground: 30 8% 45%;
+    --muted: 26 25% 90%;
+    --muted-foreground: 8 12% 42%;
 
-    /* Soft cream accent */
-    --accent: 35 40% 92%;
-    --accent-foreground: 30 10% 20%;
+    --accent: 26 44% 90%;
+    --accent-foreground: 5 20% 22%;
 
     --destructive: 0 65% 50%;
-    --destructive-foreground: 40 33% 97%;
+    --destructive-foreground: 26 44% 96%;
 
-    --border: 30 15% 88%;
-    --input: 30 15% 88%;
-    --ring: 18 45% 45%;
+    --border: 26 25% 85%;
+    --input: 26 25% 85%;
+    --ring: 4 30% 55%;
 
     --radius: 0.25rem;
 
     /* Custom tokens */
-    --terracotta: 18 45% 45%;
-    --terracotta-light: 18 45% 55%;
-    --warm-cream: 40 33% 97%;
-    --warm-taupe: 30 15% 75%;
-    --charcoal: 30 10% 15%;
-    --linen: 35 25% 93%;
+    --brand-blush: 26 44% 84%;
+    --brand-rose: 4 30% 55%;
+    --terracotta: 4 30% 55%;
+    --terracotta-light: 4 34% 65%;
+    --warm-cream: 26 40% 96%;
+    --warm-taupe: 26 22% 74%;
+    --charcoal: 5 20% 20%;
+    --linen: 26 35% 92%;
+
     
     /* Typography */
     --font-serif: 'Cormorant Garamond', Georgia, serif;
@@ -93,12 +94,13 @@
 
     --border: 30 10% 20%;
     --input: 30 10% 20%;
-    --ring: 18 50% 55%;
+    --ring: 4 34% 62%;
 
-    --terracotta: 18 50% 55%;
-    --terracotta-light: 18 50% 65%;
-    --warm-cream: 30 10% 10%;
-    --warm-taupe: 30 10% 30%;
+    --brand-blush: 26 20% 22%;
+    --brand-rose: 4 34% 62%;
+    --terracotta: 4 34% 62%;
+    --terracotta-light: 4 38% 70%;
+
     --charcoal: 40 20% 90%;
     --linen: 30 10% 15%;
 
