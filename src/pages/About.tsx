@@ -4,6 +4,7 @@ import { ArrowRight, Instagram, MessageCircle } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { site } from "@/data/site";
+import xicaraPresente from "@/assets/xicara-presente.jpg.asset.json";
 
 const About = () => {
   const heroRef = useRef<HTMLDivElement>(null);
