@@ -33,6 +33,7 @@ import {
   AdminWorkshops,
 } from "@/components/admin/AdminPanels";
 import { AdminPrivateEvents } from "@/components/admin/AdminWorkshopExtras";
+import { AdminPersonalizationPreview } from "@/components/admin/AdminPersonalizationPreview";
 import {
   AdminReviews,
   AdminInfoBlocks,
@@ -318,14 +319,16 @@ const AdminOrders = () => {
             <p className="font-serif text-xl">{formatBRL(o.total_cents)}</p>
           </div>
 
-          <ul className="text-sm space-y-1">
+          <ul className="text-sm space-y-3">
             {o.order_items?.map((i: any) => (
               <li key={i.id}>
                 {i.quantity}× {i.product_name}
                 {i.personalization_text && ` — “${i.personalization_text}”`}
+                <AdminPersonalizationPreview text={i.personalization_text} />
               </li>
             ))}
           </ul>
+
 
           <div className="grid sm:grid-cols-3 gap-4">
             <Select

@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { CollectionCard } from "@/components/CollectionCard";
+import { SmartImage } from "@/components/SmartImage";
 import { ReviewsMarquee } from "@/components/ReviewsMarquee";
 import { useProducts, useCollections } from "@/hooks/useProducts";
 import { siteImages } from "@/data/images";
@@ -17,7 +18,15 @@ const Index = () => {
   const newProducts = allProducts.filter((p) => p.new);
   const latestProducts = allProducts.slice(0, 4);
   const displayedCollections = collections.slice(0, 6);
-  const featuredCollection = collections[0];
+  const productsOf = (slug: string) =>
+    allProducts.filter(
+      (p) => p.collection === slug || p.collectionSlugs?.includes(slug)
+    );
+  const featuredCollection =
+    collections.find((c) => productsOf(c.slug).length > 0) ?? collections[0];
+  const featuredProducts = featuredCollection
+    ? productsOf(featuredCollection.slug).slice(0, 4)
+    : [];
 
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -110,11 +119,16 @@ const Index = () => {
               transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const }}
               className="relative aspect-[4/5] overflow-hidden group"
             >
-              <img
-                src={featuredCollection.heroImage || featuredCollection.image}
+              <SmartImage
+                src={
+                  featuredProducts[0]?.images?.[0] ||
+                  featuredCollection.heroImage ||
+                  featuredCollection.image
+                }
                 alt={featuredCollection.name}
                 className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
               />
+
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal/40 via-transparent to-transparent" />
             </motion.div>
 
@@ -149,7 +163,16 @@ const Index = () => {
 
             </motion.div>
           </div>
+
+          {featuredProducts.length > 0 && (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mt-14">
+              {featuredProducts.map((product, index) => (
+                <ProductCard key={product.id} product={product} index={index} />
+              ))}
+            </div>
+          )}
         </div>
+
       </section>
       )}
 
