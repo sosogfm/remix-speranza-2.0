@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
 import { CollectionCard } from "@/components/CollectionCard";
+import { SmartImage } from "@/components/SmartImage";
 import { ReviewsMarquee } from "@/components/ReviewsMarquee";
 import { useProducts, useCollections } from "@/hooks/useProducts";
 import { siteImages } from "@/data/images";
