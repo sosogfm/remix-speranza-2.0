@@ -17,7 +17,15 @@ const Index = () => {
   const newProducts = allProducts.filter((p) => p.new);
   const latestProducts = allProducts.slice(0, 4);
   const displayedCollections = collections.slice(0, 6);
-  const featuredCollection = collections[0];
+  const productsOf = (slug: string) =>
+    allProducts.filter(
+      (p) => p.collection === slug || p.collectionSlugs?.includes(slug)
+    );
+  const featuredCollection =
+    collections.find((c) => productsOf(c.slug).length > 0) ?? collections[0];
+  const featuredProducts = featuredCollection
+    ? productsOf(featuredCollection.slug).slice(0, 4)
+    : [];
 
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
