@@ -22,6 +22,9 @@ const OrderConfirmation = () => {
   const { data: remote, isLoading } = useQuery({
     queryKey: ["order", id],
     enabled: !!id,
+    // enquanto o pagamento não é confirmado, conferimos o status sozinho
+    refetchInterval: (query) =>
+      (query.state.data as any)?.payment_status === "paid" ? false : 8000,
     queryFn: async () => {
       const { data: order, error } = await supabase
         .from("orders")
@@ -34,6 +37,8 @@ const OrderConfirmation = () => {
   });
 
   const data: any = remote ?? local;
+  const isPaid = data?.payment_status === "paid";
+
 
   if (isLoading && !local) {
     return (
