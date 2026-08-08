@@ -1,0 +1,14 @@
+REVOKE ALL ON FUNCTION public.has_role(uuid, public.app_role) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.register_workshop_guest(uuid, text, text, text, text, boolean, text, boolean, jsonb, integer) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.register_workshop_guest(uuid, text, text, text, text, boolean, text, boolean, jsonb, integer) TO anon, authenticated, service_role;
+REVOKE ALL ON FUNCTION public.place_guest_order(jsonb, jsonb) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.place_guest_order(jsonb, jsonb) TO anon, authenticated, service_role;
+REVOKE ALL ON FUNCTION public.handle_new_user() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.sync_workshop_spots() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.cleanup_past_workshops() FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.grant_admin_by_email(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.grant_admin_by_email(text) TO authenticated;
+REVOKE ALL ON FUNCTION public.revoke_admin(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.revoke_admin(uuid) TO authenticated;
+REVOKE ALL ON FUNCTION public.list_admins() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.list_admins() TO authenticated;
