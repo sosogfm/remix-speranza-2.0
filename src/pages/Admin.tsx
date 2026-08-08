@@ -272,12 +272,24 @@ const AdminProducts = () => {
 };
 
 
+const orderFilters = [
+  { value: "all", label: "Todos" },
+  { value: "pending", label: "A preparar" },
+  { value: "preparing", label: "Em produção" },
+  { value: "shipped", label: "Enviados" },
+  { value: "delivered", label: "Entregues" },
+];
+
 const AdminOrders = () => {
   const { toast } = useToast();
   const qc = useQueryClient();
+  const [filter, setFilter] = useState("all");
+  const [sendingId, setSendingId] = useState<string | null>(null);
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["admin-orders"],
+    // o webhook do Mercado Pago atualiza o status sozinho — buscamos de tempos em tempos
+    refetchInterval: 20000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("orders")
@@ -297,13 +309,67 @@ const AdminOrders = () => {
     qc.invalidateQueries({ queryKey: ["admin-orders"] });
   };
 
+  const markShipped = async (order: any, trackingCode: string) => {
+    const code = trackingCode.trim();
+    if (!code) {
+      toast({
+        title: "Informe o código de rastreio",
+        description: "O e-mail de envio precisa do código para ser enviado.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setSendingId(order.id);
+    await update(order.id, { shipping_status: "shipped", tracking_code: code });
+    const { error } = await supabase.functions.invoke("send-shipping-email", {
+      body: { orderId: order.id },
+    });
+    setSendingId(null);
+    if (error) {
+      toast({
+        title: "Pedido marcado como enviado",
+        description: "Não conseguimos enviar o e-mail de confirmação agora.",
+        variant: "destructive",
+      });
+      return;
+    }
+    toast({
+      title: "Enviado!",
+      description: `E-mail com o rastreio enviado para ${order.customer_email}.`,
+    });
+  };
+
+  // Boletos só entram na lista de pedidos depois que o pagamento é confirmado
+  const visible = (orders as any[]).filter((o) => {
+    if (o.payment_method === "boleto" && o.payment_status !== "paid") return false;
+    if (filter !== "all" && o.shipping_status !== filter) return false;
+    return true;
+  });
+
   if (isLoading) return <p className="text-muted-foreground py-10">Carregando…</p>;
-  if (orders.length === 0)
-    return <p className="text-muted-foreground py-10">Nenhum pedido ainda.</p>;
 
   return (
     <div className="space-y-6">
-      {orders.map((o: any) => (
+      <div className="flex flex-wrap gap-2">
+        {orderFilters.map((f) => (
+          <Button
+            key={f.value}
+            type="button"
+            size="sm"
+            variant={filter === f.value ? "default" : "outline"}
+            className="rounded-none"
+            onClick={() => setFilter(f.value)}
+          >
+            {f.label}
+          </Button>
+        ))}
+      </div>
+
+      {visible.length === 0 && (
+        <p className="text-muted-foreground py-6">Nenhum pedido nesta visualização.</p>
+      )}
+
+      {visible.map((o: any) => (
         <div key={o.id} className="border border-border p-6 space-y-4">
           <div className="flex flex-wrap justify-between gap-4">
             <div>
