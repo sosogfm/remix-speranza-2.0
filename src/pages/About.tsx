@@ -5,6 +5,7 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { site } from "@/data/site";
 import xicaraPresente from "@/assets/xicara-presente.jpg.asset.json";
+import bandejaLibelula from "@/assets/bandeja-libelula.jpg.asset.json";
 
 const About = () => {
   const heroRef = useRef<HTMLDivElement>(null);
