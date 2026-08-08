@@ -68,13 +68,25 @@ const OrderConfirmation = () => {
       <section className="py-16 md:py-24">
         <div className="container-narrow space-y-10">
           <div className="text-center space-y-4">
-            <CheckCircle2 className="w-12 h-12 mx-auto text-primary" />
-            <h1 className="font-serif text-4xl md:text-5xl">Pedido recebido</h1>
+            <CheckCircle2
+              className={`w-12 h-12 mx-auto ${isPaid ? "text-primary" : "text-muted-foreground"}`}
+            />
+            <h1 className="font-serif text-4xl md:text-5xl">
+              {isPaid ? "Compra concluída!" : "Pedido recebido"}
+            </h1>
             <p className="text-muted-foreground">
-              Pedido <span className="text-foreground">{data.order_number}</span> —
-              enviaremos as instruções de pagamento por e-mail e WhatsApp.
+              Pedido <span className="text-foreground">{data.order_number}</span> —{" "}
+              {isPaid
+                ? "pagamento confirmado. Já começamos a preparar a sua peça com todo o carinho."
+                : "assim que o pagamento for confirmado, esta página é atualizada automaticamente."}
             </p>
+            {isPaid && (
+              <p className="text-sm text-primary">
+                Você receberá o código de rastreio por e-mail quando o pedido for enviado.
+              </p>
+            )}
           </div>
+
 
           <div className="border border-border p-8 space-y-6">
             <div className="space-y-4">
