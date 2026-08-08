@@ -1,6 +1,6 @@
 import { useSignedUrls } from "@/lib/storage";
 
-const FILE_RE = /[\w.-]+\/[\w.-]+\.(png|jpe?g|webp|gif|pdf)/gi;
+const FILE_RE = /[^\s:·"“”]+\/[^\s:·"“”]+\.(png|jpe?g|webp|gif|pdf|heic|avif)/gi;
 
 /** Extrai os arquivos enviados pelo cliente (caminhos do bucket privado) */
 export const extractUploadPaths = (text?: string | null): string[] => {

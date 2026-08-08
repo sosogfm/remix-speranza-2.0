@@ -5,6 +5,7 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { site } from "@/data/site";
 import xicaraPresente from "@/assets/xicara-presente.jpg.asset.json";
+import bandejaLibelula from "@/assets/bandeja-libelula.jpg.asset.json";
 
 const About = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -304,8 +305,8 @@ const About = () => {
       <section className="py-28 md:py-40 relative overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80"
-            alt=""
+            src={bandejaLibelula.url}
+            alt="Bandeja, porta-joias e caneca de porcelana pintados à mão com rosas e libélulas em ouro"
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-charcoal/60" />

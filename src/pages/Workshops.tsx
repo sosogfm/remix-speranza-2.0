@@ -10,6 +10,7 @@ import { formatBRL } from "@/data/products";
 import { site, workshopsAbout, firingInfo } from "@/data/site";
 import { PrivateEventPanel } from "@/components/PrivateEventPanel";
 import { Button } from "@/components/ui/button";
+import { SmartImage } from "@/components/SmartImage";
 
 const WorkshopCard = ({ w, index }: { w: Workshop; index: number }) => (
   <motion.article
@@ -22,7 +23,7 @@ const WorkshopCard = ({ w, index }: { w: Workshop; index: number }) => (
     <Link to={`/oficinas/${w.slug}`} className="block">
       <div className="relative aspect-[4/5] overflow-hidden bg-muted/40 mb-5">
         {w.imageUrl ? (
-          <img
+          <SmartImage
             src={w.imageUrl}
             alt={`Oficina ${w.title} — Speranza Ateliê`}
             className="w-full h-full object-cover transition-transform duration-[1s] group-hover:scale-105"
