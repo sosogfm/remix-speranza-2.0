@@ -396,22 +396,15 @@ const AdminOrders = () => {
           </ul>
 
 
-          <div className="grid sm:grid-cols-3 gap-4">
-            <Select
-              value={o.payment_status}
-              onValueChange={(v) => update(o.id, { payment_status: v })}
-            >
-              <SelectTrigger className="rounded-none">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="rounded-none">
-                {orderStatuses.map((s) => (
-                  <SelectItem key={s.value} value={s.value}>
-                    {s.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="grid sm:grid-cols-3 gap-4 items-start">
+            <div className="border border-border px-3 py-2 text-sm">
+              <span className="text-muted-foreground">Pagamento: </span>
+              {orderStatuses.find((s) => s.value === o.payment_status)?.label ??
+                o.payment_status}
+              <p className="text-xs text-muted-foreground mt-1">
+                Atualizado automaticamente pelo Mercado Pago.
+              </p>
+            </div>
 
             <Select
               value={o.shipping_status}
@@ -429,16 +422,36 @@ const AdminOrders = () => {
               </SelectContent>
             </Select>
 
-            <Input
-              placeholder="Código de rastreio"
-              defaultValue={o.tracking_code ?? ""}
-              className="rounded-none"
-              onBlur={(e) => {
-                if (e.target.value !== (o.tracking_code ?? ""))
-                  update(o.id, { tracking_code: e.target.value || null });
-              }}
-            />
+            <div className="space-y-2">
+              <Input
+                placeholder="Código de rastreio"
+                defaultValue={o.tracking_code ?? ""}
+                className="rounded-none"
+                id={`tracking-${o.id}`}
+                onBlur={(e) => {
+                  if (e.target.value !== (o.tracking_code ?? ""))
+                    update(o.id, { tracking_code: e.target.value || null });
+                }}
+              />
+              <Button
+                type="button"
+                size="sm"
+                className="rounded-none w-full"
+                disabled={sendingId === o.id}
+                onClick={() => {
+                  const el = document.getElementById(
+                    `tracking-${o.id}`,
+                  ) as HTMLInputElement | null;
+                  markShipped(o, el?.value ?? o.tracking_code ?? "");
+                }}
+              >
+                {sendingId === o.id
+                  ? "Enviando e-mail…"
+                  : "Marcar como enviado e avisar cliente"}
+              </Button>
+            </div>
           </div>
+
         </div>
       ))}
     </div>
