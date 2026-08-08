@@ -272,12 +272,24 @@ const AdminProducts = () => {
 };
 
 
+const orderFilters = [
+  { value: "all", label: "Todos" },
+  { value: "pending", label: "A preparar" },
+  { value: "preparing", label: "Em produção" },
+  { value: "shipped", label: "Enviados" },
+  { value: "delivered", label: "Entregues" },
+];
+
 const AdminOrders = () => {
   const { toast } = useToast();
   const qc = useQueryClient();
+  const [filter, setFilter] = useState("all");
+  const [sendingId, setSendingId] = useState<string | null>(null);
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["admin-orders"],
+    // o webhook do Mercado Pago atualiza o status sozinho — buscamos de tempos em tempos
+    refetchInterval: 20000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("orders")
@@ -297,13 +309,67 @@ const AdminOrders = () => {
     qc.invalidateQueries({ queryKey: ["admin-orders"] });
   };
 
+  const markShipped = async (order: any, trackingCode: string) => {
+    const code = trackingCode.trim();
+    if (!code) {
+      toast({
+        title: "Informe o código de rastreio",
+        description: "O e-mail de envio precisa do código para ser enviado.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setSendingId(order.id);
+    await update(order.id, { shipping_status: "shipped", tracking_code: code });
+    const { error } = await supabase.functions.invoke("send-shipping-email", {
+      body: { orderId: order.id },
+    });
+    setSendingId(null);
+    if (error) {
+      toast({
+        title: "Pedido marcado como enviado",
+        description: "Não conseguimos enviar o e-mail de confirmação agora.",
+        variant: "destructive",
+      });
+      return;
+    }
+    toast({
+      title: "Enviado!",
+      description: `E-mail com o rastreio enviado para ${order.customer_email}.`,
+    });
+  };
+
+  // Boletos só entram na lista de pedidos depois que o pagamento é confirmado
+  const visible = (orders as any[]).filter((o) => {
+    if (o.payment_method === "boleto" && o.payment_status !== "paid") return false;
+    if (filter !== "all" && o.shipping_status !== filter) return false;
+    return true;
+  });
+
   if (isLoading) return <p className="text-muted-foreground py-10">Carregando…</p>;
-  if (orders.length === 0)
-    return <p className="text-muted-foreground py-10">Nenhum pedido ainda.</p>;
 
   return (
     <div className="space-y-6">
-      {orders.map((o: any) => (
+      <div className="flex flex-wrap gap-2">
+        {orderFilters.map((f) => (
+          <Button
+            key={f.value}
+            type="button"
+            size="sm"
+            variant={filter === f.value ? "default" : "outline"}
+            className="rounded-none"
+            onClick={() => setFilter(f.value)}
+          >
+            {f.label}
+          </Button>
+        ))}
+      </div>
+
+      {visible.length === 0 && (
+        <p className="text-muted-foreground py-6">Nenhum pedido nesta visualização.</p>
+      )}
+
+      {visible.map((o: any) => (
         <div key={o.id} className="border border-border p-6 space-y-4">
           <div className="flex flex-wrap justify-between gap-4">
             <div>
@@ -330,22 +396,15 @@ const AdminOrders = () => {
           </ul>
 
 
-          <div className="grid sm:grid-cols-3 gap-4">
-            <Select
-              value={o.payment_status}
-              onValueChange={(v) => update(o.id, { payment_status: v })}
-            >
-              <SelectTrigger className="rounded-none">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="rounded-none">
-                {orderStatuses.map((s) => (
-                  <SelectItem key={s.value} value={s.value}>
-                    {s.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="grid sm:grid-cols-3 gap-4 items-start">
+            <div className="border border-border px-3 py-2 text-sm">
+              <span className="text-muted-foreground">Pagamento: </span>
+              {orderStatuses.find((s) => s.value === o.payment_status)?.label ??
+                o.payment_status}
+              <p className="text-xs text-muted-foreground mt-1">
+                Atualizado automaticamente pelo Mercado Pago.
+              </p>
+            </div>
 
             <Select
               value={o.shipping_status}
@@ -363,16 +422,36 @@ const AdminOrders = () => {
               </SelectContent>
             </Select>
 
-            <Input
-              placeholder="Código de rastreio"
-              defaultValue={o.tracking_code ?? ""}
-              className="rounded-none"
-              onBlur={(e) => {
-                if (e.target.value !== (o.tracking_code ?? ""))
-                  update(o.id, { tracking_code: e.target.value || null });
-              }}
-            />
+            <div className="space-y-2">
+              <Input
+                placeholder="Código de rastreio"
+                defaultValue={o.tracking_code ?? ""}
+                className="rounded-none"
+                id={`tracking-${o.id}`}
+                onBlur={(e) => {
+                  if (e.target.value !== (o.tracking_code ?? ""))
+                    update(o.id, { tracking_code: e.target.value || null });
+                }}
+              />
+              <Button
+                type="button"
+                size="sm"
+                className="rounded-none w-full"
+                disabled={sendingId === o.id}
+                onClick={() => {
+                  const el = document.getElementById(
+                    `tracking-${o.id}`,
+                  ) as HTMLInputElement | null;
+                  markShipped(o, el?.value ?? o.tracking_code ?? "");
+                }}
+              >
+                {sendingId === o.id
+                  ? "Enviando e-mail…"
+                  : "Marcar como enviado e avisar cliente"}
+              </Button>
+            </div>
           </div>
+
         </div>
       ))}
     </div>
