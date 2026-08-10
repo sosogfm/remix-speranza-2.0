@@ -125,6 +125,7 @@ const WorkshopDetail = () => {
         _is_waitlist: waitlist,
         _answers: blockAnswers as any,
         _extra_cents: extraCents,
+        _spots: quantity,
       }
     );
     setSubmitting(false);
