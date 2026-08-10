@@ -772,6 +772,7 @@ export type Database = {
           notes: string | null
           order_id: string | null
           phone: string
+          spots: number
           status: string
           updated_at: string
           user_id: string | null
@@ -790,6 +791,7 @@ export type Database = {
           notes?: string | null
           order_id?: string | null
           phone: string
+          spots?: number
           status?: string
           updated_at?: string
           user_id?: string | null
@@ -808,6 +810,7 @@ export type Database = {
           notes?: string | null
           order_id?: string | null
           phone?: string
+          spots?: number
           status?: string
           updated_at?: string
           user_id?: string | null
@@ -957,6 +960,7 @@ export type Database = {
           _is_waitlist?: boolean
           _notes?: string
           _phone: string
+          _spots?: number
           _wants_glazing?: boolean
           _workshop_id: string
         }

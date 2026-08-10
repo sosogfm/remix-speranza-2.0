@@ -15,6 +15,7 @@ import { site } from "@/data/site";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { QuantitySelector } from "@/components/QuantitySelector";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -40,6 +41,7 @@ const WorkshopDetail = () => {
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
+  const [spots, setSpots] = useState(1);
   const [submitting, setSubmitting] = useState(false);
 
 
@@ -79,9 +81,11 @@ const WorkshopDetail = () => {
   const extraCents = blocksExtra;
   const sale = activeWorkshopSaleCents(workshop);
   const basePrice = workshopPriceCents(workshop);
-  const total = basePrice + extraCents;
   const spotsLeft = Math.max(workshop.totalSpots - workshop.spotsTaken, 0);
   const waitlist = workshop.isSoldOut || spotsLeft === 0;
+  const maxSpots = Math.max(waitlist ? 10 : Math.min(spotsLeft, 10), 1);
+  const quantity = Math.min(Math.max(spots, 1), maxSpots);
+  const total = (basePrice + extraCents) * quantity;
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -122,6 +126,7 @@ const WorkshopDetail = () => {
         _is_waitlist: waitlist,
         _answers: blockAnswers as any,
         _extra_cents: extraCents,
+        _spots: quantity,
       }
     );
     setSubmitting(false);
@@ -233,16 +238,26 @@ const WorkshopDetail = () => {
                   </span>
                   {sale != null && (
                     <span className="text-base text-muted-foreground line-through">
-                      {formatBRL(workshop.priceCents + extraCents)}
+                      {formatBRL((workshop.priceCents + extraCents) * quantity)}
                     </span>
                   )}
                 </p>
                 {sale != null && <SaleCountdown endsAt={workshop.saleEndsAt} />}
                 <p className="text-sm text-muted-foreground">
-                  por pessoa · inclui materiais, queima e café da tarde
+                  {formatBRL(basePrice + extraCents)} por pessoa · inclui materiais,
+                  queima e café da tarde
                 </p>
               </div>
 
+              <div className="space-y-2">
+                <Label>Quantas vagas?</Label>
+                <QuantitySelector
+                  quantity={quantity}
+                  onQuantityChange={setSpots}
+                  min={1}
+                  max={maxSpots}
+                />
+              </div>
 
               {waitlist ? (
                 <p className="text-sm text-destructive">
@@ -250,7 +265,8 @@ const WorkshopDetail = () => {
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  {spotsLeft} {spotsLeft === 1 ? "vaga disponível" : "vagas disponíveis"}
+                  {spotsLeft} {spotsLeft === 1 ? "vaga disponível" : "vagas disponíveis"} ·
+                  a vaga só é reservada depois do pagamento confirmado
                 </p>
               )}
 
