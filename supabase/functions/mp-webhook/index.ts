@@ -39,12 +39,12 @@ async function approve(orderId: string, payment: any) {
     })
     .eq("id", orderId);
 
-  // Confirma vagas de oficina associadas ao pedido
+  // Confirma vagas de oficina associadas ao pedido (só aqui a vaga é ocupada)
   await supabase
     .from("workshop_registrations")
-    .update({ status: "confirmed" })
+    .update({ status: "paid" })
     .eq("order_id", orderId)
-    .eq("status", "pending");
+    .in("status", ["pending", "confirmed"]);
 }
 
 async function cancel(orderId: string, payment: any) {
