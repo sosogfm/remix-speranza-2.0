@@ -238,7 +238,7 @@ const WorkshopDetail = () => {
                   </span>
                   {sale != null && (
                     <span className="text-base text-muted-foreground line-through">
-                      {formatBRL(workshop.priceCents + extraCents)}
+                      {formatBRL((workshop.priceCents + extraCents) * quantity)}
                     </span>
                   )}
                 </p>
