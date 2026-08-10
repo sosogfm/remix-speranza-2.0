@@ -5,6 +5,12 @@
  * (ou importar um arquivo de `src/assets`).
  */
 import pratinhosMonograma from "@/assets/pratinhos-monograma.jpg.asset.json";
+import insta1 from "@/assets/insta-1.avif.asset.json";
+import insta2 from "@/assets/insta-2.avif.asset.json";
+import insta3 from "@/assets/insta-3.avif.asset.json";
+import insta4 from "@/assets/insta-4.avif.asset.json";
+import insta5 from "@/assets/insta-5.avif.asset.json";
+import insta6 from "@/assets/insta-6.avif.asset.json";
 
 export const siteImages = {
   /** Foto grande do topo da página inicial */
