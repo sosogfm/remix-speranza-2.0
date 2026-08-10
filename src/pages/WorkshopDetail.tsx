@@ -40,6 +40,7 @@ const WorkshopDetail = () => {
   const [phone, setPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
+  const [spots, setSpots] = useState(1);
   const [submitting, setSubmitting] = useState(false);
 
 
