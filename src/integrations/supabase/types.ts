@@ -772,6 +772,7 @@ export type Database = {
           notes: string | null
           order_id: string | null
           phone: string
+          spots: number
           status: string
           updated_at: string
           user_id: string | null
@@ -790,6 +791,7 @@ export type Database = {
           notes?: string | null
           order_id?: string | null
           phone: string
+          spots?: number
           status?: string
           updated_at?: string
           user_id?: string | null
@@ -808,6 +810,7 @@ export type Database = {
           notes?: string | null
           order_id?: string | null
           phone?: string
+          spots?: number
           status?: string
           updated_at?: string
           user_id?: string | null
@@ -947,21 +950,38 @@ export type Database = {
           order_number: string
         }[]
       }
-      register_workshop_guest: {
-        Args: {
-          _answers?: Json
-          _dietary_restriction?: string
-          _extra_cents?: number
-          _full_name: string
-          _instagram?: string
-          _is_waitlist?: boolean
-          _notes?: string
-          _phone: string
-          _wants_glazing?: boolean
-          _workshop_id: string
-        }
-        Returns: string
-      }
+      register_workshop_guest:
+        | {
+            Args: {
+              _answers?: Json
+              _dietary_restriction?: string
+              _extra_cents?: number
+              _full_name: string
+              _instagram?: string
+              _is_waitlist?: boolean
+              _notes?: string
+              _phone: string
+              _wants_glazing?: boolean
+              _workshop_id: string
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              _answers?: Json
+              _dietary_restriction?: string
+              _extra_cents?: number
+              _full_name: string
+              _instagram?: string
+              _is_waitlist?: boolean
+              _notes?: string
+              _phone: string
+              _spots?: number
+              _wants_glazing?: boolean
+              _workshop_id: string
+            }
+            Returns: string
+          }
       revoke_admin: { Args: { _user_id: string }; Returns: undefined }
     }
     Enums: {
