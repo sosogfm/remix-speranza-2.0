@@ -243,10 +243,20 @@ const WorkshopDetail = () => {
                 </p>
                 {sale != null && <SaleCountdown endsAt={workshop.saleEndsAt} />}
                 <p className="text-sm text-muted-foreground">
-                  por pessoa · inclui materiais, queima e café da tarde
+                  {formatBRL(basePrice + extraCents)} por pessoa · inclui materiais,
+                  queima e café da tarde
                 </p>
               </div>
 
+              <div className="space-y-2">
+                <Label>Quantas vagas?</Label>
+                <QuantitySelector
+                  quantity={quantity}
+                  onQuantityChange={setSpots}
+                  min={1}
+                  max={maxSpots}
+                />
+              </div>
 
               {waitlist ? (
                 <p className="text-sm text-destructive">
@@ -254,7 +264,8 @@ const WorkshopDetail = () => {
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  {spotsLeft} {spotsLeft === 1 ? "vaga disponível" : "vagas disponíveis"}
+                  {spotsLeft} {spotsLeft === 1 ? "vaga disponível" : "vagas disponíveis"} ·
+                  a vaga só é reservada depois do pagamento confirmado
                 </p>
               )}
 
