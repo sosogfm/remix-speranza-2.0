@@ -27,11 +27,12 @@ export const siteImages = {
 
   /** Grade do Instagram (usada enquanto não houver conexão com o Instagram) */
   instagramFallback: [
-    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=400&q=80",
-    "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400&q=80",
-    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80",
-    "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80",
-    "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&q=80",
-    "https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=400&q=80",
+    insta1.url,
+    insta2.url,
+    insta3.url,
+    insta4.url,
+    insta5.url,
+    insta6.url,
+    insta7.url,
   ],
 } as const;
