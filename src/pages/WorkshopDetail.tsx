@@ -80,9 +80,11 @@ const WorkshopDetail = () => {
   const extraCents = blocksExtra;
   const sale = activeWorkshopSaleCents(workshop);
   const basePrice = workshopPriceCents(workshop);
-  const total = basePrice + extraCents;
   const spotsLeft = Math.max(workshop.totalSpots - workshop.spotsTaken, 0);
   const waitlist = workshop.isSoldOut || spotsLeft === 0;
+  const maxSpots = Math.max(waitlist ? 10 : Math.min(spotsLeft, 10), 1);
+  const quantity = Math.min(Math.max(spots, 1), maxSpots);
+  const total = (basePrice + extraCents) * quantity;
 
 
   const handleSubmit = async (e: React.FormEvent) => {
