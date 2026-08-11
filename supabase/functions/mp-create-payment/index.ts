@@ -239,6 +239,14 @@ Deno.serve(async (req) => {
       .from("order_items").insert(orderItems.map((i) => ({ ...i, order_id: order.id })));
     if (itemsErr) throw itemsErr;
 
+    // Vincula a inscrição da oficina ao pedido — a vaga só é confirmada no webhook
+    if (workshopReg) {
+      await supabase
+        .from("workshop_registrations")
+        .update({ order_id: order.id, status: "pending" })
+        .eq("id", workshopReg.id);
+    }
+
     const totals = {
       orderId: order.id,
       orderNumber: order.order_number,
