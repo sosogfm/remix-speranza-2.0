@@ -297,6 +297,7 @@ const AdminProducts = () => {
 
 const orderFilters = [
   { value: "all", label: "Todos" },
+  { value: "awaiting", label: "Aguardando pagamento" },
   { value: "pending", label: "A preparar" },
   { value: "preparing", label: "Em produção" },
   { value: "shipped", label: "Enviados" },
@@ -308,6 +309,7 @@ const AdminOrders = () => {
   const qc = useQueryClient();
   const [filter, setFilter] = useState("all");
   const [sendingId, setSendingId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<any | null>(null);
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["admin-orders"],
