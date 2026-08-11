@@ -105,6 +105,17 @@ const Products = () => {
 
       <section className="py-10">
         <div className="container-full space-y-10">
+          {/* Busca */}
+          <div className="relative max-w-md">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar peças pelo nome…"
+              className="rounded-none pl-10 h-12"
+            />
+          </div>
+
           {/* Category chips */}
           <div className="flex flex-wrap gap-2">
             <button
