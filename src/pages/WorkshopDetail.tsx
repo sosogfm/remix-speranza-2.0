@@ -361,7 +361,7 @@ const WorkshopDetail = () => {
                       ? "Enviando…"
                       : waitlist
                         ? "Entrar na lista de espera"
-                        : "Garantir minha vaga"}
+                        : "Pagar e garantir minha vaga"}
                   </Button>
                 </form>
               )}
