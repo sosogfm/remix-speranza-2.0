@@ -154,11 +154,28 @@ const WorkshopDetail = () => {
       });
     }
 
+    if (waitlist) {
+      toast({
+        title: "Você entrou na lista de espera",
+        description: "Vamos te chamar no WhatsApp se abrir uma vaga.",
+      });
+      navigate("/minha-conta");
+      return;
+    }
+
     toast({
-      title: waitlist ? "Você entrou na lista de espera" : "Inscrição enviada",
-      description: "Vamos te chamar no WhatsApp para confirmar sua vaga.",
+      title: "Quase lá!",
+      description: "Finalize o pagamento para garantir sua vaga.",
     });
-    navigate("/minha-conta");
+    navigate(`/oficinas/pagamento/${registrationId}`, {
+      state: {
+        workshopTitle: workshop.title,
+        totalCents: total,
+        spots: quantity,
+        fullName: fullName.trim(),
+        phone: phone.trim(),
+      },
+    });
   };
 
   return (
