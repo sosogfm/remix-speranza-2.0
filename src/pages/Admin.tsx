@@ -364,9 +364,25 @@ const AdminOrders = () => {
     });
   };
 
-  // Boletos só entram na lista de pedidos depois que o pagamento é confirmado
+
+  const removeOrder = async (order: any) => {
+    await supabase.from("workshop_registrations").update({ order_id: null }).eq("order_id", order.id);
+    await supabase.from("order_items").delete().eq("order_id", order.id);
+    const { error } = await supabase.from("orders").delete().eq("id", order.id);
+    setDeleting(null);
+    if (error) {
+      toast({ title: "Não consegui excluir", description: error.message, variant: "destructive" });
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ["admin-orders"] });
+    toast({ title: "Pedido excluído" });
+  };
+
+  // Boletos pendentes ficam separados na aba "Aguardando pagamento"
   const visible = (orders as any[]).filter((o) => {
-    if (o.payment_method === "boleto" && o.payment_status !== "paid") return false;
+    const awaiting = o.payment_status !== "paid";
+    if (filter === "awaiting") return awaiting;
+    if (awaiting && o.payment_method === "boleto") return false;
     if (filter !== "all" && o.shipping_status !== filter) return false;
     return true;
   });
