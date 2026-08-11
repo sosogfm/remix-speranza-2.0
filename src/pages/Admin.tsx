@@ -120,9 +120,31 @@ const AdminProducts = () => {
 
   if (isLoading) return <p className="text-muted-foreground py-10">Carregando…</p>;
 
+  const term = search.trim().toLowerCase();
+  const visibleProducts = term
+    ? (products as any[]).filter((p) =>
+        [p.name, p.description ?? "", p.slug ?? ""]
+          .join(" ")
+          .toLowerCase()
+          .includes(term),
+      )
+    : (products as any[]);
+
   return (
     <>
     <AdminNewProduct />
+    <div className="relative max-w-md my-6">
+      <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+      <Input
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Buscar peça pelo nome…"
+        className="rounded-none pl-10 h-11"
+      />
+    </div>
+    {visibleProducts.length === 0 && (
+      <p className="text-muted-foreground py-6">Nenhuma peça encontrada.</p>
+    )}
     <Table>
       <TableHeader>
         <TableRow>
@@ -135,7 +157,7 @@ const AdminProducts = () => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {products.map((p: any) => (
+        {visibleProducts.map((p: any) => (
           <TableRow key={p.id}>
             <TableCell className="align-top min-w-72">
               <div className="flex items-center gap-2">
