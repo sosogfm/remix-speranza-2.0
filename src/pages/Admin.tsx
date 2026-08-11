@@ -493,8 +493,38 @@ const AdminOrders = () => {
             </div>
           </div>
 
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="rounded-none text-destructive"
+            onClick={() => setDeleting(o)}
+          >
+            <Trash2 className="w-3.5 h-3.5 mr-2" /> Excluir pedido
+          </Button>
         </div>
       ))}
+
+      <AlertDialog open={!!deleting} onOpenChange={(open) => !open && setDeleting(null)}>
+        <AlertDialogContent className="rounded-none">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir o pedido {deleting?.order_number}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. O pedido de {deleting?.customer_name} e seus
+              itens serão apagados do painel.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-none">Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-none bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => deleting && removeOrder(deleting)}
+            >
+              Excluir pedido
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
