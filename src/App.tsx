@@ -16,6 +16,7 @@ import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import Workshops from "./pages/Workshops";
 import WorkshopDetail from "./pages/WorkshopDetail";
+import WorkshopCheckout from "./pages/WorkshopCheckout";
 import Account from "./pages/Account";
 import NotFound from "./pages/NotFound";
 
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/sacola" element={<Cart />} />
             <Route path="/finalizar" element={<Checkout />} />
             <Route path="/oficinas" element={<Workshops />} />
+            <Route path="/oficinas/pagamento/:registrationId" element={<WorkshopCheckout />} />
             <Route path="/oficinas/:slug" element={<WorkshopDetail />} />
             <Route path="/minha-conta" element={<Account />} />
             <Route path="/pedido/:id" element={<OrderConfirmation />} />

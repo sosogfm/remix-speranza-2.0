@@ -6,6 +6,8 @@ import { ProductCard } from "@/components/ProductCard";
 import { activeSaleCents, effectivePriceCents, isLowStock } from "@/data/products";
 import { useProducts, useCollections } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -21,6 +23,7 @@ const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCollection = searchParams.get("colecao") ?? "all";
   const [sort, setSort] = useState("featured");
+  const [search, setSearch] = useState("");
   const [onlyPersonalizable, setOnlyPersonalizable] = useState(false);
   const [onlyInStock, setOnlyInStock] = useState(false);
   const [onlySale, setOnlySale] = useState(false);
@@ -36,6 +39,15 @@ const Products = () => {
         (p) =>
           p.collection === activeCollection ||
           (p.collectionSlugs ?? []).includes(activeCollection)
+      );
+    }
+    const term = search.trim().toLowerCase();
+    if (term) {
+      list = list.filter((p) =>
+        [p.name, p.description ?? "", p.collection ?? ""]
+          .join(" ")
+          .toLowerCase()
+          .includes(term)
       );
     }
     if (onlyPersonalizable) list = list.filter((p) => p.isPersonalizable);
@@ -60,7 +72,7 @@ const Products = () => {
         list.sort((a, b) => Number(b.featured) - Number(a.featured));
     }
     return list;
-  }, [products, activeCollection, sort, onlyPersonalizable, onlyInStock, onlySale, onlyLowStock]);
+  }, [products, activeCollection, search, sort, onlyPersonalizable, onlyInStock, onlySale, onlyLowStock]);
 
   const setCollection = (slug: string) => {
     if (slug === "all") setSearchParams({});
@@ -95,6 +107,17 @@ const Products = () => {
 
       <section className="py-10">
         <div className="container-full space-y-10">
+          {/* Busca */}
+          <div className="relative max-w-md">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar peças pelo nome…"
+              className="rounded-none pl-10 h-12"
+            />
+          </div>
+
           {/* Category chips */}
           <div className="flex flex-wrap gap-2">
             <button

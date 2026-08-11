@@ -10,6 +10,8 @@ interface Props {
   card: CardFormState;
   onCardChange: (next: CardFormState) => void;
   totalCents: number;
+  /** limita as formas de pagamento disponíveis (ex.: oficinas não usam boleto) */
+  methods?: PaymentMethod[];
 }
 
 /** Abas de pagamento: Pix, Boleto e Cartão (com parcelamento) */
@@ -19,20 +21,32 @@ export function PaymentTabs({
   card,
   onCardChange,
   totalCents,
+  methods = ["pix", "boleto", "card"],
 }: Props) {
+  const show = (m: PaymentMethod) => methods.includes(m);
   return (
     <Tabs value={method} onValueChange={(v) => onMethodChange(v as PaymentMethod)}>
-      <TabsList className="w-full grid grid-cols-3 rounded-none h-auto p-1">
-        <TabsTrigger value="pix" className="rounded-none py-3 text-xs tracking-[0.1em] uppercase">
-          <QrCode className="w-4 h-4 mr-2" /> Pix
-        </TabsTrigger>
-        <TabsTrigger value="boleto" className="rounded-none py-3 text-xs tracking-[0.1em] uppercase">
-          <Barcode className="w-4 h-4 mr-2" /> Boleto
-        </TabsTrigger>
-        <TabsTrigger value="card" className="rounded-none py-3 text-xs tracking-[0.1em] uppercase">
-          <CreditCard className="w-4 h-4 mr-2" /> Cartão
-        </TabsTrigger>
+      <TabsList
+        className="w-full grid rounded-none h-auto p-1"
+        style={{ gridTemplateColumns: `repeat(${methods.length}, minmax(0, 1fr))` }}
+      >
+        {show("pix") && (
+          <TabsTrigger value="pix" className="rounded-none py-3 text-xs tracking-[0.1em] uppercase">
+            <QrCode className="w-4 h-4 mr-2" /> Pix
+          </TabsTrigger>
+        )}
+        {show("boleto") && (
+          <TabsTrigger value="boleto" className="rounded-none py-3 text-xs tracking-[0.1em] uppercase">
+            <Barcode className="w-4 h-4 mr-2" /> Boleto
+          </TabsTrigger>
+        )}
+        {show("card") && (
+          <TabsTrigger value="card" className="rounded-none py-3 text-xs tracking-[0.1em] uppercase">
+            <CreditCard className="w-4 h-4 mr-2" /> Cartão
+          </TabsTrigger>
+        )}
       </TabsList>
+
 
       <TabsContent value="pix" className="pt-6">
         <p className="text-sm text-muted-foreground">

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2, Search, Trash2 } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +10,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -68,6 +78,7 @@ const AdminProducts = () => {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["admin-products"],
@@ -119,9 +130,31 @@ const AdminProducts = () => {
 
   if (isLoading) return <p className="text-muted-foreground py-10">Carregando…</p>;
 
+  const term = search.trim().toLowerCase();
+  const visibleProducts = term
+    ? (products as any[]).filter((p) =>
+        [p.name, p.description ?? "", p.slug ?? ""]
+          .join(" ")
+          .toLowerCase()
+          .includes(term),
+      )
+    : (products as any[]);
+
   return (
     <>
     <AdminNewProduct />
+    <div className="relative max-w-md my-6">
+      <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+      <Input
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Buscar peça pelo nome…"
+        className="rounded-none pl-10 h-11"
+      />
+    </div>
+    {visibleProducts.length === 0 && (
+      <p className="text-muted-foreground py-6">Nenhuma peça encontrada.</p>
+    )}
     <Table>
       <TableHeader>
         <TableRow>
@@ -134,7 +167,7 @@ const AdminProducts = () => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {products.map((p: any) => (
+        {visibleProducts.map((p: any) => (
           <TableRow key={p.id}>
             <TableCell className="align-top min-w-72">
               <div className="flex items-center gap-2">
@@ -274,6 +307,7 @@ const AdminProducts = () => {
 
 const orderFilters = [
   { value: "all", label: "Todos" },
+  { value: "awaiting", label: "Aguardando pagamento" },
   { value: "pending", label: "A preparar" },
   { value: "preparing", label: "Em produção" },
   { value: "shipped", label: "Enviados" },
@@ -285,6 +319,7 @@ const AdminOrders = () => {
   const qc = useQueryClient();
   const [filter, setFilter] = useState("all");
   const [sendingId, setSendingId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<any | null>(null);
 
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["admin-orders"],
@@ -339,9 +374,25 @@ const AdminOrders = () => {
     });
   };
 
-  // Boletos só entram na lista de pedidos depois que o pagamento é confirmado
+
+  const removeOrder = async (order: any) => {
+    await supabase.from("workshop_registrations").update({ order_id: null }).eq("order_id", order.id);
+    await supabase.from("order_items").delete().eq("order_id", order.id);
+    const { error } = await supabase.from("orders").delete().eq("id", order.id);
+    setDeleting(null);
+    if (error) {
+      toast({ title: "Não consegui excluir", description: error.message, variant: "destructive" });
+      return;
+    }
+    qc.invalidateQueries({ queryKey: ["admin-orders"] });
+    toast({ title: "Pedido excluído" });
+  };
+
+  // Boletos pendentes ficam separados na aba "Aguardando pagamento"
   const visible = (orders as any[]).filter((o) => {
-    if (o.payment_method === "boleto" && o.payment_status !== "paid") return false;
+    const awaiting = o.payment_status !== "paid";
+    if (filter === "awaiting") return awaiting;
+    if (awaiting && o.payment_method === "boleto") return false;
     if (filter !== "all" && o.shipping_status !== filter) return false;
     return true;
   });
@@ -452,8 +503,38 @@ const AdminOrders = () => {
             </div>
           </div>
 
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="rounded-none text-destructive"
+            onClick={() => setDeleting(o)}
+          >
+            <Trash2 className="w-3.5 h-3.5 mr-2" /> Excluir pedido
+          </Button>
         </div>
       ))}
+
+      <AlertDialog open={!!deleting} onOpenChange={(open) => !open && setDeleting(null)}>
+        <AlertDialogContent className="rounded-none">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir o pedido {deleting?.order_number}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. O pedido de {deleting?.customer_name} e seus
+              itens serão apagados do painel.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-none">Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-none bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => deleting && removeOrder(deleting)}
+            >
+              Excluir pedido
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
