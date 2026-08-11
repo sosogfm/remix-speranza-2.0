@@ -68,6 +68,7 @@ const AdminProducts = () => {
   const { toast } = useToast();
   const qc = useQueryClient();
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["admin-products"],
