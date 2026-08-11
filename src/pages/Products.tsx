@@ -21,6 +21,7 @@ const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const activeCollection = searchParams.get("colecao") ?? "all";
   const [sort, setSort] = useState("featured");
+  const [search, setSearch] = useState("");
   const [onlyPersonalizable, setOnlyPersonalizable] = useState(false);
   const [onlyInStock, setOnlyInStock] = useState(false);
   const [onlySale, setOnlySale] = useState(false);
@@ -36,6 +37,15 @@ const Products = () => {
         (p) =>
           p.collection === activeCollection ||
           (p.collectionSlugs ?? []).includes(activeCollection)
+      );
+    }
+    const term = search.trim().toLowerCase();
+    if (term) {
+      list = list.filter((p) =>
+        [p.name, p.description ?? "", p.collection ?? ""]
+          .join(" ")
+          .toLowerCase()
+          .includes(term)
       );
     }
     if (onlyPersonalizable) list = list.filter((p) => p.isPersonalizable);
@@ -60,7 +70,7 @@ const Products = () => {
         list.sort((a, b) => Number(b.featured) - Number(a.featured));
     }
     return list;
-  }, [products, activeCollection, sort, onlyPersonalizable, onlyInStock, onlySale, onlyLowStock]);
+  }, [products, activeCollection, search, sort, onlyPersonalizable, onlyInStock, onlySale, onlyLowStock]);
 
   const setCollection = (slug: string) => {
     if (slug === "all") setSearchParams({});
