@@ -6,6 +6,8 @@ import { ProductCard } from "@/components/ProductCard";
 import { activeSaleCents, effectivePriceCents, isLowStock } from "@/data/products";
 import { useProducts, useCollections } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 import {
   Select,
   SelectContent,
