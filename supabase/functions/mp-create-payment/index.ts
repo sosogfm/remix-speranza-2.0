@@ -105,60 +105,101 @@ Deno.serve(async (req) => {
     let subtotalCents = 0;
     const orderItems: any[] = [];
 
-    for (const item of body.items) {
-      const product = products?.find((p: any) => p.id === item.productId);
-      if (!product || !product.is_active) return json({ error: "Peça indisponível no momento." }, 400);
-      if (product.is_quote_only) return json({ error: `${product.name} é sob orçamento.` }, 400);
-      if (product.stock_quantity < item.quantity) {
-        return json({ error: `Estoque insuficiente para ${product.name}.` }, 400);
+    let workshopReg: any = null;
+
+    if (body.workshopRegistrationId) {
+      const { data: reg } = await supabase
+        .from("workshop_registrations")
+        .select("*, workshops(*)")
+        .eq("id", body.workshopRegistrationId)
+        .maybeSingle();
+      if (!reg) return json({ error: "Inscrição não encontrada." }, 400);
+      if (reg.order_id && reg.status === "paid") {
+        return json({ error: "Esta inscrição já foi paga." }, 400);
       }
+      const w = reg.workshops;
+      if (!w) return json({ error: "Oficina não encontrada." }, 400);
 
-      const productFields = (fields ?? []).filter((f: any) => f.product_id === product.id);
-      let sizeBase: number | null = null;
-      let extras = 0;
-      const summary: string[] = [];
+      const spots = Math.max(reg.spots ?? 1, 1);
+      const unitCents =
+        activeSalePrice({
+          price_cents: w.price_cents,
+          sale_price_cents: w.sale_price_cents,
+          sale_starts_at: w.sale_starts_at,
+          sale_ends_at: w.sale_ends_at,
+        }) + Math.max(reg.extra_cents ?? 0, 0);
 
-      for (const f of productFields) {
-        const value = (item.values[f.id] ?? "").trim();
-        if (f.is_required && !value) {
-          return json({ error: `Complete a personalização de ${product.name}.` }, 400);
-        }
-        if (!value) continue;
-        const optionPrices = (f.option_prices ?? {}) as Record<string, number>;
-        if (f.field_type === "size") {
-          if (optionPrices[value] != null) sizeBase = optionPrices[value];
-        } else if (f.field_type === "addon") {
-          extras += splitAddon(value).reduce((t, o) => t + (optionPrices[o] ?? 0), 0);
-        } else if (f.field_type === "choice") {
-          extras += optionPrices[value] ?? f.extra_price_cents ?? 0;
-        } else {
-          extras += f.extra_price_cents ?? 0;
-        }
-        summary.push(`${f.label}: ${value}`);
-      }
-
-      const unitCents = (sizeBase ?? activeSalePrice(product)) + extras;
-      subtotalCents += unitCents * item.quantity;
-
+      subtotalCents = unitCents * spots;
       orderItems.push({
-        product_id: product.id,
-        product_name: product.name,
+        product_id: null,
+        product_name: `Oficina: ${w.title}`,
         unit_price_cents: unitCents,
-        quantity: item.quantity,
-        personalization_text: summary.length ? summary.join(" · ") : null,
+        quantity: spots,
+        personalization_text: `Inscrição de ${reg.full_name}`,
       });
+      workshopReg = reg;
+    } else {
+      if (!body.items.length) return json({ error: "Sua sacola está vazia." }, 400);
+
+      for (const item of body.items) {
+        const product = products?.find((p: any) => p.id === item.productId);
+        if (!product || !product.is_active) return json({ error: "Peça indisponível no momento." }, 400);
+        if (product.is_quote_only) return json({ error: `${product.name} é sob orçamento.` }, 400);
+        if (product.stock_quantity < item.quantity) {
+          return json({ error: `Estoque insuficiente para ${product.name}.` }, 400);
+        }
+
+        const productFields = (fields ?? []).filter((f: any) => f.product_id === product.id);
+        let sizeBase: number | null = null;
+        let extras = 0;
+        const summary: string[] = [];
+
+        for (const f of productFields) {
+          const value = (item.values[f.id] ?? "").trim();
+          if (f.is_required && !value) {
+            return json({ error: `Complete a personalização de ${product.name}.` }, 400);
+          }
+          if (!value) continue;
+          const optionPrices = (f.option_prices ?? {}) as Record<string, number>;
+          if (f.field_type === "size") {
+            if (optionPrices[value] != null) sizeBase = optionPrices[value];
+          } else if (f.field_type === "addon") {
+            extras += splitAddon(value).reduce((t, o) => t + (optionPrices[o] ?? 0), 0);
+          } else if (f.field_type === "choice") {
+            extras += optionPrices[value] ?? f.extra_price_cents ?? 0;
+          } else {
+            extras += f.extra_price_cents ?? 0;
+          }
+          summary.push(`${f.label}: ${value}`);
+        }
+
+        const unitCents = (sizeBase ?? activeSalePrice(product)) + extras;
+        subtotalCents += unitCents * item.quantity;
+
+        orderItems.push({
+          product_id: product.id,
+          product_name: product.name,
+          unit_price_cents: unitCents,
+          quantity: item.quantity,
+          personalization_text: summary.length ? summary.join(" · ") : null,
+        });
+      }
     }
 
-    // Frete pela tabela de CEP do ateliê
+    // Frete pela tabela de CEP do ateliê (oficina é presencial: sem frete)
     const cep = onlyDigits(body.customer.postalCode);
-    const { data: rate } = await supabase
-      .from("shipping_rates").select("*").eq("is_active", true)
-      .lte("cep_start", cep).gte("cep_end", cep).limit(1).maybeSingle();
-    if (!rate) return json({ error: "Não conseguimos calcular o frete para este CEP." }, 400);
+    let shippingCents = 0;
+    if (!workshopReg) {
+      const { data: rate } = await supabase
+        .from("shipping_rates").select("*").eq("is_active", true)
+        .lte("cep_start", cep).gte("cep_end", cep).limit(1).maybeSingle();
+      if (!rate) return json({ error: "Não conseguimos calcular o frete para este CEP." }, 400);
 
-    const freeShipping = rate.free_above_cents != null && subtotalCents >= rate.free_above_cents;
-    const shippingCents = freeShipping ? 0 : rate.price_cents;
-    const giftWrapCents = body.isGift ? GIFT_WRAP_CENTS : 0;
+      const freeShipping = rate.free_above_cents != null && subtotalCents >= rate.free_above_cents;
+      shippingCents = freeShipping ? 0 : rate.price_cents;
+    }
+
+    const giftWrapCents = body.isGift && !workshopReg ? GIFT_WRAP_CENTS : 0;
     const totalCents = subtotalCents + shippingCents + giftWrapCents;
 
     const methodColumn =
