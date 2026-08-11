@@ -16,6 +16,7 @@ import Auth from "./pages/Auth";
 import Admin from "./pages/Admin";
 import Workshops from "./pages/Workshops";
 import WorkshopDetail from "./pages/WorkshopDetail";
+import WorkshopCheckout from "./pages/WorkshopCheckout";
 import Account from "./pages/Account";
 import NotFound from "./pages/NotFound";
 
