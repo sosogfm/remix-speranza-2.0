@@ -27,17 +27,19 @@ const BodySchema = z.object({
     email: z.string().trim().email().max(200),
     phone: z.string().trim().max(40).optional().nullable(),
     document: z.string().trim().max(20),
-    postalCode: z.string().trim().max(12),
-    addressLine: z.string().trim().max(200),
-    addressNumber: z.string().trim().max(20),
+    postalCode: z.string().trim().max(12).default(""),
+    addressLine: z.string().trim().max(200).default(""),
+    addressNumber: z.string().trim().max(20).default(""),
     complement: z.string().trim().max(120).optional().nullable(),
-    neighborhood: z.string().trim().max(120),
-    city: z.string().trim().max(120),
-    state: z.string().trim().max(2),
+    neighborhood: z.string().trim().max(120).default(""),
+    city: z.string().trim().max(120).default(""),
+    state: z.string().trim().max(2).default(""),
     notes: z.string().trim().max(1000).optional().nullable(),
   }),
   isGift: z.boolean().default(false),
   giftMessage: z.string().trim().max(500).optional().nullable(),
+  /** pagamento de vaga(s) de oficina — nesse caso items vem vazio */
+  workshopRegistrationId: z.string().uuid().optional().nullable(),
   items: z
     .array(
       z.object({
@@ -46,8 +48,8 @@ const BodySchema = z.object({
         values: z.record(z.string()).default({}),
       }),
     )
-    .min(1)
-    .max(50),
+    .max(50)
+    .default([]),
 });
 
 const onlyDigits = (v: string) => (v ?? "").replace(/\D/g, "");
