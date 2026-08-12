@@ -43,7 +43,7 @@ const OrderConfirmation = () => {
   if (isLoading && !local) {
     return (
       <Layout>
-        <div className="container-narrow py-28 text-center text-muted-foreground">
+        <div className="container-narrow py-16 md:py-28 text-center text-muted-foreground">
           Carregando pedido…
         </div>
       </Layout>
@@ -53,7 +53,7 @@ const OrderConfirmation = () => {
   if (!data) {
     return (
       <Layout>
-        <div className="container-narrow py-28 text-center space-y-6">
+        <div className="container-narrow py-16 md:py-28 text-center space-y-6">
           <h1 className="font-serif text-4xl">Pedido não encontrado</h1>
           <Button asChild className="rounded-none">
             <Link to="/produtos">Voltar à loja</Link>

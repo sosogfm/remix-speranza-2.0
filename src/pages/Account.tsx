@@ -175,7 +175,7 @@ const Account = () => {
   if (loading)
     return (
       <Layout>
-        <div className="container-full py-28 text-center text-muted-foreground">
+        <div className="container-full py-16 md:py-28 text-center text-muted-foreground">
           Carregando…
         </div>
       </Layout>

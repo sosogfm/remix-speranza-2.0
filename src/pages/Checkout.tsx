@@ -84,7 +84,7 @@ const Checkout = () => {
   if (items.length === 0) {
     return (
       <Layout>
-        <div className="container-narrow py-28 text-center space-y-6">
+        <div className="container-narrow py-16 md:py-28 text-center space-y-6">
           <h1 className="font-serif text-4xl">Sua sacola está vazia</h1>
           <Button asChild className="rounded-none px-8 text-sm tracking-[0.1em] uppercase">
             <Link to="/produtos">Ver peças</Link>

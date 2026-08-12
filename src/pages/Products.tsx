@@ -199,9 +199,9 @@ const Products = () => {
           </div>
 
           {isLoading ? (
-            <p className="py-20 text-center text-muted-foreground">Carregando peças…</p>
+            <p className="py-14 md:py-20 text-center text-muted-foreground">Carregando peças…</p>
           ) : filtered.length === 0 ? (
-            <div className="py-20 text-center space-y-5">
+            <div className="py-14 md:py-20 text-center space-y-5">
               <p className="text-muted-foreground">
                 Nenhuma peça encontrada com esses filtros.
               </p>

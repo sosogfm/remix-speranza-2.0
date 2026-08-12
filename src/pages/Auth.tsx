@@ -73,7 +73,7 @@ const Auth = () => {
 
   return (
     <Layout>
-      <section className="py-20">
+      <section className="py-14 md:py-20">
         <div className="container-narrow max-w-md">
           <h1 className="font-serif text-4xl mb-8 text-center">Minha conta</h1>
 

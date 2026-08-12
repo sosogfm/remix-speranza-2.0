@@ -48,7 +48,7 @@ const WorkshopDetail = () => {
   if (isLoading) {
     return (
       <Layout>
-        <div className="container-narrow py-28 text-center text-muted-foreground">
+        <div className="container-narrow py-16 md:py-28 text-center text-muted-foreground">
           Carregando oficina…
         </div>
       </Layout>
@@ -58,7 +58,7 @@ const WorkshopDetail = () => {
   if (!workshop) {
     return (
       <Layout>
-        <div className="container-narrow py-28 text-center space-y-5">
+        <div className="container-narrow py-16 md:py-28 text-center space-y-5">
           <h1 className="font-serif text-4xl">Oficina não encontrada</h1>
           <Button asChild className="rounded-none">
             <Link to="/oficinas">Ver todas as oficinas</Link>

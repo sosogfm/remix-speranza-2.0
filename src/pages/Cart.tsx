@@ -28,7 +28,7 @@ const Cart = () => {
   if (items.length === 0) {
     return (
       <Layout>
-        <div className="container-narrow py-28 text-center">
+        <div className="container-narrow py-16 md:py-28 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

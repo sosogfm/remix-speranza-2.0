@@ -48,7 +48,7 @@ const WorkshopCheckout = () => {
   if (!registrationId) {
     return (
       <Layout>
-        <div className="container-narrow py-28 text-center space-y-6">
+        <div className="container-narrow py-16 md:py-28 text-center space-y-6">
           <h1 className="font-serif text-4xl">Inscrição não encontrada</h1>
           <Button asChild className="rounded-none px-8">
             <Link to="/oficinas">Ver oficinas</Link>
