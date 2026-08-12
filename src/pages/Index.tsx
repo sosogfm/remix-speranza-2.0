@@ -107,7 +107,7 @@ const Index = () => {
 
       {/* Featured Collection */}
       {featuredCollection && (
-      <section className="py-20 md:py-28">
+      <section className="py-14 md:py-28">
 
         <div className="container-full">
           <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-center">
@@ -165,7 +165,7 @@ const Index = () => {
           </div>
 
           {featuredProducts.length > 0 && (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mt-14">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mt-10 md:mt-14">
               {featuredProducts.map((product, index) => (
                 <ProductCard key={product.id} product={product} index={index} />
               ))}
@@ -178,9 +178,9 @@ const Index = () => {
 
 
       {/* Latest Products */}
-      <section className="py-20 md:py-28 bg-linen">
+      <section className="py-14 md:py-28 bg-linen">
         <div className="container-full">
-          <div className="flex items-end justify-between mb-14">
+          <div className="flex items-end justify-between mb-10 md:mb-14">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -210,7 +210,7 @@ const Index = () => {
             ))}
           </div>
 
-          <div className="mt-14 text-center md:hidden">
+          <div className="mt-10 md:mt-14 text-center md:hidden">
             <Button
               asChild
               variant="outline"
@@ -223,7 +223,7 @@ const Index = () => {
       </section>
 
       {/* Collections Grid */}
-      <section className="py-24 md:py-32">
+      <section className="py-16 md:py-32">
         <div className="container-full">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -278,7 +278,7 @@ const Index = () => {
       <ReviewsMarquee />
 
       {/* About Us Section */}
-      <section className="py-24 md:py-32 bg-linen">
+      <section className="py-16 md:py-32 bg-linen">
         <div className="container-narrow text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -315,7 +315,7 @@ const Index = () => {
       </section>
 
       {/* Instagram */}
-      <section className="py-20 md:py-28">
+      <section className="py-14 md:py-28">
         <div className="container-full">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
