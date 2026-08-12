@@ -202,6 +202,18 @@ Deno.serve(async (req) => {
     const giftWrapCents = body.isGift && !workshopReg ? GIFT_WRAP_CENTS : 0;
     const totalCents = subtotalCents + shippingCents + giftWrapCents;
 
+    // O Mercado Pago recusa cobranças de valor zero — avisamos antes de criar o pedido
+    if (totalCents <= 0) {
+      return json(
+        {
+          error:
+            "Não é possível cobrar R$ 0,00. Confira o preço das peças da sacola (alguma está sem valor cadastrado).",
+        },
+        400,
+      );
+    }
+
+
     const methodColumn =
       body.method === "card" ? "credit_card" : body.method === "pix" ? "pix" : "boleto";
 
