@@ -5,6 +5,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { GIFT_WRAP_CENTS } from "@/data/site";
 import { SmartImage } from "@/components/SmartImage";
 import { Layout } from "@/components/Layout";
+import { Seo } from "@/components/Seo";
 import { useCart, unitPriceCents } from "@/hooks/useCart";
 import { useShippingQuote, onlyDigits } from "@/hooks/useShipping";
 import { formatBRL } from "@/data/products";
@@ -84,7 +85,7 @@ const Checkout = () => {
   if (items.length === 0) {
     return (
       <Layout>
-        <div className="container-narrow py-28 text-center space-y-6">
+        <div className="container-narrow py-16 md:py-28 text-center space-y-6">
           <h1 className="font-serif text-4xl">Sua sacola está vazia</h1>
           <Button asChild className="rounded-none px-8 text-sm tracking-[0.1em] uppercase">
             <Link to="/produtos">Ver peças</Link>
@@ -283,6 +284,12 @@ const Checkout = () => {
 
   return (
     <Layout>
+      <Seo
+        title="Finalizar compra | Speranza Ateliê"
+        description="Pagamento seguro com Pix, boleto ou cartão de crédito parcelado."
+        path="/finalizar"
+        noindex
+      />
       <div className="container-full py-6 border-b border-border">
         <Link
           to="/sacola"

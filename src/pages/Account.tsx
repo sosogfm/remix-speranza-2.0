@@ -3,6 +3,7 @@ import { Heart, Package, CalendarDays, LogOut } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { SmartImage } from "@/components/SmartImage";
 import { Layout } from "@/components/Layout";
+import { Seo } from "@/components/Seo";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useWishlistProducts, useWishlist } from "@/hooks/useWishlist";
@@ -175,7 +176,7 @@ const Account = () => {
   if (loading)
     return (
       <Layout>
-        <div className="container-full py-28 text-center text-muted-foreground">
+        <div className="container-full py-16 md:py-28 text-center text-muted-foreground">
           Carregando…
         </div>
       </Layout>
@@ -183,6 +184,12 @@ const Account = () => {
 
   return (
     <Layout>
+      <Seo
+        title="Minha conta | Speranza Ateliê"
+        description="Acompanhe seus pedidos, oficinas e peças favoritas."
+        path="/minha-conta"
+        noindex
+      />
       <section className="py-12 md:py-16">
         <div className="container-full space-y-10">
           <div className="flex flex-wrap items-end justify-between gap-4">

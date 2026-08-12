@@ -4,6 +4,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+
 
 /** Favoritos salvos no aparelho — funcionam sem login */
 interface LocalWishlistState {
@@ -60,8 +62,12 @@ export const useWishlist = () => {
   const qc = useQueryClient();
   const { data: ids = [] } = useWishlistIds();
   const local = useLocalWishlist();
+  const { toast } = useToast();
 
-  const invalidate = () => qc.invalidateQueries({ queryKey: ["wishlist"] });
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["wishlist"] });
+    qc.invalidateQueries({ queryKey: ["wishlist-products"] });
+  };
 
   const isInWishlist = (productId: string) => ids.includes(productId);
 
@@ -76,6 +82,22 @@ export const useWishlist = () => {
 
   const removeItem = async (productId: string) => {
     local.remove(productId);
+
+    // some da lista na hora, sem esperar o servidor
+    qc.setQueriesData({ queryKey: ["wishlist-products"] }, (old: any) =>
+      Array.isArray(old)
+        ? old.filter((row: any) => row.product_id !== productId)
+        : old
+    );
+    qc.setQueriesData({ queryKey: ["wishlist"] }, (old: any) =>
+      Array.isArray(old) ? old.filter((id: string) => id !== productId) : old
+    );
+
+    toast({
+      title: "Removido dos favoritos",
+      description: "A peça saiu da sua lista de favoritos.",
+    });
+
     if (!user) return;
     await supabase.from("wishlists").delete().eq("product_id", productId);
     invalidate();
@@ -88,6 +110,7 @@ export const useWishlist = () => {
 
   return { ids, isInWishlist, addItem, removeItem, toggle };
 };
+
 
 /** Ao entrar na conta, leva os favoritos do aparelho para a conta */
 export const useSyncWishlistOnLogin = () => {

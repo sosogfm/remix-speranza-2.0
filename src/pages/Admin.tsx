@@ -633,7 +633,7 @@ const Admin = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="container-full py-28 text-center text-muted-foreground">
+        <div className="container-full py-16 md:py-28 text-center text-muted-foreground">
           Carregando…
         </div>
       </Layout>
@@ -645,7 +645,7 @@ const Admin = () => {
   if (!isAdmin) {
     return (
       <Layout>
-        <div className="container-narrow py-28 text-center space-y-5">
+        <div className="container-narrow py-16 md:py-28 text-center space-y-5">
           <h1 className="font-serif text-4xl">Acesso restrito</h1>
           <p className="text-muted-foreground">
             Esta área é exclusiva da administração do ateliê.

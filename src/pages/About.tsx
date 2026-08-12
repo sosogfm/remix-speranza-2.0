@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { ArrowRight, Instagram, MessageCircle } from "lucide-react";
 import { Layout } from "@/components/Layout";
+import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { site } from "@/data/site";
 import xicaraPresente from "@/assets/xicara-presente.jpg.asset.json";
@@ -17,6 +18,11 @@ const About = () => {
 
   return (
     <Layout>
+      <Seo
+        title="Sobre o Speranza Ateliê e a Júlia Brandalise"
+        description="A história do Speranza Ateliê, em Videira/SC: da odontologia à porcelana pintada à mão, com queima a 780°C e detalhes em ouro 24k."
+        path="/sobre"
+      />
       {/* Hero */}
       <section ref={heroRef} className="relative h-[80vh] md:h-screen overflow-hidden">
         <motion.div className="absolute inset-0" style={{ y: heroImageY }}>
@@ -48,7 +54,7 @@ const About = () => {
       </section>
 
       {/* Filosofia */}
-      <section className="py-28 md:py-40">
+      <section className="py-16 md:py-40">
         <div className="container-narrow">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -208,7 +214,7 @@ const About = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-14 md:mb-20"
+            className="text-center mb-10 md:mb-14 md:mb-20"
           >
             <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-3">Nossa trajetória</p>
             <h2 className="font-serif text-3xl md:text-5xl text-foreground">Passo a passo</h2>
@@ -247,7 +253,7 @@ const About = () => {
       </section>
 
       {/* Valores */}
-      <section className="py-24 md:py-36 bg-linen">
+      <section className="py-16 md:py-36 bg-linen">
         <div className="container-full">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -302,7 +308,7 @@ const About = () => {
       </section>
 
       {/* Contato */}
-      <section className="py-28 md:py-40 relative overflow-hidden">
+      <section className="py-16 md:py-40 relative overflow-hidden">
         <div className="absolute inset-0">
           <img
             src={bandejaLibelula.url}

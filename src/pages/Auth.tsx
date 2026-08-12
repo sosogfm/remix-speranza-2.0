@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
+import { Seo } from "@/components/Seo";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/useAuth";
@@ -73,7 +74,13 @@ const Auth = () => {
 
   return (
     <Layout>
-      <section className="py-20">
+      <Seo
+        title="Entrar | Speranza Ateliê"
+        description="Acesse sua conta do Speranza Ateliê."
+        path="/auth"
+        noindex
+      />
+      <section className="py-14 md:py-20">
         <div className="container-narrow max-w-md">
           <h1 className="font-serif text-4xl mb-8 text-center">Minha conta</h1>
 

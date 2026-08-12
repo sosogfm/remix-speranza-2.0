@@ -66,7 +66,7 @@ const ProductDetail = () => {
   if (isLoading) {
     return (
       <Layout>
-        <div className="container-wide py-28 text-center text-muted-foreground">
+        <div className="container-wide py-16 md:py-28 text-center text-muted-foreground">
           Carregando peça…
         </div>
       </Layout>
@@ -76,7 +76,7 @@ const ProductDetail = () => {
   if (!product) {
     return (
       <Layout>
-        <div className="container-wide py-28 text-center">
+        <div className="container-wide py-16 md:py-28 text-center">
           <h1 className="font-serif text-4xl mb-4">Peça não encontrada</h1>
           <Button asChild className="rounded-none px-8 text-sm tracking-[0.1em] uppercase">
             <Link to="/produtos">Ver todas as peças</Link>
@@ -372,7 +372,7 @@ const ProductDetail = () => {
       </section>
 
       {relatedProducts.length > 0 && (
-        <section className="py-20 border-t border-border">
+        <section className="py-14 md:py-20 border-t border-border">
           <div className="container-full">
             <h2 className="font-serif text-3xl mb-10">Você também pode gostar</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 const NotFound = () => {
   return (
     <Layout>
-      <section className="py-20 md:py-28">
+      <section className="py-14 md:py-28">
         <div className="container-narrow text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
