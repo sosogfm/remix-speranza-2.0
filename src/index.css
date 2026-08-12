@@ -124,6 +124,8 @@
 
   html {
     scroll-behavior: smooth;
+    /* animações de entrada nunca criam barra lateral no celular */
+    overflow-x: hidden;
   }
 
   body {
@@ -131,7 +133,9 @@
     font-feature-settings: "kern" 1, "liga" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
+
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif font-medium tracking-tight;
@@ -163,20 +167,21 @@
 
 @layer components {
   .container-narrow {
-    @apply max-w-5xl mx-auto px-6;
+    @apply max-w-5xl mx-auto px-5 sm:px-6;
   }
 
   .container-wide {
-    @apply max-w-7xl mx-auto px-6;
+    @apply max-w-7xl mx-auto px-5 sm:px-6;
   }
 
   .container-full {
-    @apply max-w-[1600px] mx-auto px-6 lg:px-12;
+    @apply max-w-[1600px] mx-auto px-5 sm:px-6 lg:px-12;
   }
 
   /* Editorial grid for products */
   .editorial-grid {
-    @apply grid gap-8 md:gap-10;
+    @apply grid gap-6 sm:gap-8 md:gap-10;
+
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   }
 
