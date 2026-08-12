@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Layout } from "@/components/Layout";
+import { Seo } from "@/components/Seo";
 import { ProductCard } from "@/components/ProductCard";
 import { activeSaleCents, effectivePriceCents, isLowStock } from "@/data/products";
 import { useProducts, useCollections } from "@/hooks/useProducts";
@@ -83,6 +84,11 @@ const Products = () => {
 
   return (
     <Layout>
+      <Seo
+        title="Peças de porcelana pintadas à mão | Speranza Ateliê"
+        description="Canecas, xícaras, boleiras, porta joias e kits de presente em porcelana pintada à mão. Personalize com nome, inicial ou desenho e receba em casa."
+        path="/produtos"
+      />
       <section className="py-14 md:py-20 border-b border-border">
         <div className="container-full">
           <motion.div

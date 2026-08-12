@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Layout } from "@/components/Layout";
+import { Seo } from "@/components/Seo";
 import {
   useWorkshops,
   formatWorkshopDate,
@@ -69,6 +70,11 @@ const Workshops = () => {
 
   return (
     <Layout>
+      <Seo
+        title="Oficinas de pintura em porcelana em Videira/SC | Speranza Ateliê"
+        description="Participe das nossas oficinas de pintura em porcelana e cerâmica, sem precisar de experiência. Vagas limitadas, materiais e queima das peças inclusos."
+        path="/oficinas"
+      />
       <section className="py-16 md:py-24 border-b border-border">
         <div className="container-narrow text-center">
           <p className="text-[11px] font-semibold tracking-[0.3em] uppercase text-primary mb-4">

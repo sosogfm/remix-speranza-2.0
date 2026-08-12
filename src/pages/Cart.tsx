@@ -4,6 +4,7 @@ import { ArrowRight, ShoppingBag, Trash2, Gift } from "lucide-react";
 import { GIFT_WRAP_CENTS } from "@/data/site";
 import { SmartImage } from "@/components/SmartImage";
 import { Layout } from "@/components/Layout";
+import { Seo } from "@/components/Seo";
 import { QuantitySelector } from "@/components/QuantitySelector";
 import { useCart, unitPriceCents, useCartCleanup } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
@@ -58,6 +59,12 @@ const Cart = () => {
 
   return (
     <Layout>
+      <Seo
+        title="Sua sacola | Speranza Ateliê"
+        description="Confira as peças escolhidas e finalize sua compra com Pix, boleto ou cartão parcelado."
+        path="/sacola"
+        noindex
+      />
       <div className="container-full py-6 border-b border-border">
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
           <Link to="/produtos" className="hover:text-foreground transition-colors">

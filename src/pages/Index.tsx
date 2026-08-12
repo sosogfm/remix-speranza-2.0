@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Instagram } from "lucide-react";
 import { useRef } from "react";
 import { Layout } from "@/components/Layout";
+import { Seo } from "@/components/Seo";
 import { ProductCard } from "@/components/ProductCard";
 import { CollectionCard } from "@/components/CollectionCard";
 import { SmartImage } from "@/components/SmartImage";
@@ -40,6 +41,27 @@ const Index = () => {
 
   return (
     <Layout>
+      <Seo
+        title="Speranza Ateliê — Porcelanas pintadas à mão em Videira/SC"
+        description="Porcelanas afetivas pintadas à mão por Júlia Brandalise. Peças personalizáveis, kits de presente e oficinas de pintura, com envio para todo o Brasil."
+        path="/"
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: "Speranza Ateliê",
+            url: "https://speranzatelie.com.br",
+            description:
+              "Porcelanas artesanais pintadas à mão em Videira, Santa Catarina.",
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "Speranza Ateliê",
+            url: "https://speranzatelie.com.br",
+          },
+        ]}
+      />
       {/* Hero Section — Full Viewport */}
       <section ref={heroRef} className="relative h-[100svh] -mt-16 md:-mt-20 overflow-hidden">
         <motion.div className="absolute inset-0" style={{ y: heroImageY }}>

@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { ArrowRight, Instagram, MessageCircle } from "lucide-react";
 import { Layout } from "@/components/Layout";
+import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { site } from "@/data/site";
 import xicaraPresente from "@/assets/xicara-presente.jpg.asset.json";
@@ -17,6 +18,11 @@ const About = () => {
 
   return (
     <Layout>
+      <Seo
+        title="Sobre o Speranza Ateliê e a Júlia Brandalise"
+        description="A história do Speranza Ateliê, em Videira/SC: da odontologia à porcelana pintada à mão, com queima a 780°C e detalhes em ouro 24k."
+        path="/sobre"
+      />
       {/* Hero */}
       <section ref={heroRef} className="relative h-[80vh] md:h-screen overflow-hidden">
         <motion.div className="absolute inset-0" style={{ y: heroImageY }}>
