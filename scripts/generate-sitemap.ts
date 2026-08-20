@@ -54,7 +54,7 @@ function generateSitemap(entries: SitemapEntry[]) {
   ].join("\n");
 }
 
-const products = await fetchRows("products", "select=slug&is_published=eq.true");
+const products = await fetchRows("products", "select=slug&is_active=eq.true");
 const workshops = await fetchRows("workshops", "select=slug&is_published=eq.true");
 
 const entries: SitemapEntry[] = [
