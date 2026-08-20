@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight, ShoppingBag, Heart, MessageCircle } from "lucide-react";
 import { SmartImage } from "@/components/SmartImage";
 import { Layout } from "@/components/Layout";
+import { Seo, SITE_URL } from "@/components/Seo";
 import { ProductCard } from "@/components/ProductCard";
 import { QuantitySelector } from "@/components/QuantitySelector";
 import {
@@ -138,8 +139,38 @@ const ProductDetail = () => {
     );
 
 
+  const seoImage = (product.images ?? []).find((i) => /^https?:/i.test(i)) ?? null;
+  const seoPrice = ((effectivePriceCents(product) || product.priceCents) / 100).toFixed(2);
+
   return (
     <Layout>
+      <Seo
+        title={`${product.name} — Speranza Ateliê`}
+        description={
+          product.description ||
+          `${product.name} em porcelana pintada à mão por Júlia Brandalise.`
+        }
+        path={`/produto/${product.slug}`}
+        image={seoImage}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: product.name,
+          description: product.description || product.longDescription || undefined,
+          image: seoImage ? [seoImage] : undefined,
+          brand: { "@type": "Brand", name: "Speranza Ateliê" },
+          offers: {
+            "@type": "Offer",
+            url: `${SITE_URL}/produto/${product.slug}`,
+            price: seoPrice,
+            priceCurrency: "BRL",
+            availability:
+              product.stock > 0
+                ? "https://schema.org/InStock"
+                : "https://schema.org/OutOfStock",
+          },
+        }}
+      />
       <div className="container-full py-6 border-b border-border">
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
           <Link to="/produtos" className="hover:text-foreground transition-colors">

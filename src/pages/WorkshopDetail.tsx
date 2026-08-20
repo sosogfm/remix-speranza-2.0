@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { CalendarDays, MapPin, Clock } from "lucide-react";
 import { Layout } from "@/components/Layout";
+import { Seo, SITE_URL } from "@/components/Seo";
 import { SmartImage } from "@/components/SmartImage";
 import { SaleCountdown } from "@/components/SaleCountdown";
 import {
@@ -178,8 +179,47 @@ const WorkshopDetail = () => {
     });
   };
 
+  const wImage = workshop.imageUrl && /^https?:/i.test(workshop.imageUrl) ? workshop.imageUrl : null;
+  const wPrice = (workshopPriceCents(workshop) / 100).toFixed(2);
+
   return (
     <Layout>
+      <Seo
+        title={`${workshop.title} — Oficina | Speranza Ateliê`}
+        description={
+          workshop.summary ||
+          `Oficina de pintura em porcelana com Júlia Brandalise em ${workshop.location}.`
+        }
+        path={`/oficinas/${workshop.slug}`}
+        image={wImage}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Event",
+          name: workshop.title,
+          description: workshop.summary || workshop.description || undefined,
+          image: wImage ? [wImage] : undefined,
+          startDate: workshop.startTime
+            ? `${workshop.eventDate}T${workshop.startTime}`
+            : workshop.eventDate,
+          eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+          eventStatus: "https://schema.org/EventScheduled",
+          location: {
+            "@type": "Place",
+            name: workshop.location,
+            address: workshop.location,
+          },
+          organizer: { "@type": "Organization", name: "Speranza Ateliê", url: SITE_URL },
+          offers: {
+            "@type": "Offer",
+            url: `${SITE_URL}/oficinas/${workshop.slug}`,
+            price: wPrice,
+            priceCurrency: "BRL",
+            availability: workshop.isSoldOut
+              ? "https://schema.org/SoldOut"
+              : "https://schema.org/InStock",
+          },
+        }}
+      />
       <div className="container-full py-6 border-b border-border">
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
           <Link to="/oficinas" className="hover:text-foreground transition-colors">
